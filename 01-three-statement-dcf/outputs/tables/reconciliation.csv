@@ -1,0 +1,150 @@
+check,period,model,filed,diff,pct,ok
+IS subtotal: Gross profit,FY2021,362.645,362.645,0.0,0.0,True
+IS subtotal: Operating income,FY2021,24.718,24.718,-0.0,4.3118945854848707e-16,True
+IS subtotal: Pre-tax income,FY2021,22.127,22.127,-0.0,6.422404625661863e-16,True
+IS subtotal: Net income incl. NCI,FY2021,2.414,2.414,-0.0,6.6227056978468324e-15,True
+IS subtotal: Net income to Granite,FY2021,10.096,10.096,-0.0,1.5835193695129015e-15,True
+IS subtotal: Gross profit,FY2022,369.494,369.494,-0.0,9.230475005408696e-16,True
+IS subtotal: Operating income,FY2022,85.381,85.381,-0.0,3.828131064869773e-15,True
+IS subtotal: Pre-tax income,FY2022,91.817,91.817,-0.0,3.405020897376783e-15,True
+IS subtotal: Net income incl. NCI,FY2022,78.857,78.857,-0.0,3.964629693425366e-15,True
+IS subtotal: Net income to Granite,FY2022,83.302,83.302,-0.0,3.923671201767617e-15,True
+IS subtotal: Gross profit,FY2023,396.399,396.399,-0.0,2.867990023224479e-16,True
+IS subtotal: Operating income,FY2023,80.062,80.062,-0.0,1.4199849831582527e-15,True
+IS subtotal: Pre-tax income,FY2023,59.854,59.854,-0.0,1.89940250813005e-15,True
+IS subtotal: Net income incl. NCI,FY2023,29.587,29.587,-0.0,3.722382263927249e-15,True
+IS subtotal: Net income to Granite,FY2023,43.599,43.599,-0.0,2.4445838290789935e-15,True
+IS subtotal: Gross profit,FY2024,572.697,572.697,0.0,1.9851132050912792e-16,True
+IS subtotal: Operating income,FY2024,207.363,207.363,0.0,5.482503519027794e-16,True
+IS subtotal: Pre-tax income,FY2024,196.192,196.192,0.0,5.794672449519656e-16,True
+IS subtotal: Net income incl. NCI,FY2024,140.443,140.443,0.0,1.0118592393499143e-15,True
+IS subtotal: Net income to Granite,FY2024,126.346,126.346,0.0,1.237232693296361e-15,True
+IS subtotal: Gross profit,FY2025,711.216,711.216,-0.0,1.5984853788668425e-16,True
+IS subtotal: Operating income,FY2025,282.446,282.446,-0.0,4.025082235953634e-16,True
+IS subtotal: Pre-tax income,FY2025,288.827,288.827,-0.0,3.936156859352347e-16,True
+IS subtotal: Net income incl. NCI,FY2025,220.351,220.351,-0.0,5.159352021166958e-16,True
+IS subtotal: Net income to Granite,FY2025,193.003,193.003,-0.0,5.890418165604474e-16,True
+IS subtotal: Gross profit,H1 2025,282.948,282.948,-0.0,4.017941025263159e-16,True
+IS subtotal: Operating income,H1 2025,63.814,63.814,-0.0,2.1155721282856276e-15,True
+IS subtotal: Pre-tax income,H1 2025,67.476,67.476,-0.0,1.89545456809559e-15,True
+IS subtotal: Net income incl. NCI,H1 2025,52.018,52.018,-0.0,2.458719913045831e-15,True
+IS subtotal: Net income to Granite,H1 2025,38.044,38.044,-0.0,3.3618360960156148e-15,True
+IS subtotal: Gross profit,H1 2026,348.676,348.676,0.0,0.0,True
+IS subtotal: Operating income,H1 2026,95.675,95.675,-0.0,7.426629064646984e-16,True
+IS subtotal: Pre-tax income,H1 2026,-287.844,-287.844,-0.0,1.9747995046208367e-16,True
+IS subtotal: Net income incl. NCI,H1 2026,-307.973,-307.973,-0.0,1.8457273482028623e-16,True
+IS subtotal: Net income to Granite,H1 2026,-319.861,-319.861,-0.0,1.7771287797139387e-16,True
+BS subtotal: Total current assets,FY2021,1827.399,1827.399,0.0,0.0,True
+BS subtotal: Total assets,FY2021,2494.927,2494.927,0.0,0.0,True
+BS subtotal: Total current liabilities,FY2021,1069.318,1069.318,-0.0,2.1263429161692973e-16,True
+BS subtotal: Granite shareholders' equity,FY2021,967.682,967.682,0.0,0.0,True
+BS subtotal: Total equity,FY2021,995.563,995.563,0.0,0.0,True
+BS subtotal: Total liabilities and equity,FY2021,2494.927,2494.927,0.0,0.0,True
+BS subtotal: Total current assets,FY2022,1347.296,1347.296,0.0,0.0,True
+BS subtotal: Total assets,FY2022,2167.933,2167.933,0.0,0.0,True
+BS subtotal: Total current liabilities,FY2022,797.594,797.594,0.0,0.0,True
+BS subtotal: Granite shareholders' equity,FY2022,953.016,953.016,0.0,0.0,True
+BS subtotal: Total equity,FY2022,985.145,985.145,0.0,0.0,True
+BS subtotal: Total liabilities and equity,FY2022,2167.933,2167.933,0.0,2.0976079559952459e-16,True
+BS subtotal: Total current assets,FY2023,1643.451,1643.451,0.0,0.0,True
+BS subtotal: Total assets,FY2023,2813.54,2813.54,0.0,0.0,True
+BS subtotal: Total current liabilities,FY2023,1029.883,1029.883,0.0,0.0,True
+BS subtotal: Granite shareholders' equity,FY2023,977.298,977.298,0.0,0.0,True
+BS subtotal: Total equity,FY2023,1026.966,1026.966,0.0,0.0,True
+BS subtotal: Total liabilities and equity,FY2023,2813.54,2813.54,0.0,0.0,True
+BS subtotal: Total current assets,FY2024,1716.663,1716.663,0.0,0.0,True
+BS subtotal: Total assets,FY2024,3025.655,3025.655,0.0,0.0,True
+BS subtotal: Total current liabilities,FY2024,1031.959,1031.959,-0.0,2.20332082421135e-16,True
+BS subtotal: Granite shareholders' equity,FY2024,1015.226,1015.226,0.0,0.0,True
+BS subtotal: Total equity,FY2024,1079.363,1079.363,0.0,0.0,True
+BS subtotal: Total liabilities and equity,FY2024,3025.655,3025.655,0.0,0.0,True
+BS subtotal: Total current assets,FY2025,1812.231,1812.231,0.0,0.0,True
+BS subtotal: Total assets,FY2025,4030.393,4030.393,0.0,0.0,True
+BS subtotal: Total current liabilities,FY2025,1481.745,1481.745,0.0,0.0,True
+BS subtotal: Granite shareholders' equity,FY2025,1179.048,1179.048,0.0,0.0,True
+BS subtotal: Total equity,FY2025,1221.533,1221.533,0.0,0.0,True
+BS subtotal: Total liabilities and equity,FY2025,4030.393,4030.393,0.0,0.0,True
+BS subtotal: Total current assets,H1 2026,2450.148,2450.148,0.0,0.0,True
+BS subtotal: Total assets,H1 2026,4778.876,4778.876,0.0,0.0,True
+BS subtotal: Total current liabilities,H1 2026,2418.878,2418.878,0.0,0.0,True
+BS subtotal: Granite shareholders' equity,H1 2026,752.748,752.748,0.0,0.0,True
+BS subtotal: Total equity,H1 2026,805.336,805.336,0.0,0.0,True
+BS subtotal: Total liabilities and equity,H1 2026,4778.876,4778.876,-0.0,1.9031561015036343e-16,True
+CF subtotal: Cash from operations,FY2021,21.931,21.931,0.0,4.859851824541289e-16,True
+CF subtotal: Cash from investing,FY2021,-21.478,-21.478,0.0,3.3082351045725867e-16,True
+CF subtotal: Cash from financing,FY2021,-24.446,-24.446,0.0,2.906580772969403e-16,True
+CF subtotal: Net change in cash,FY2021,-23.993,-23.993,0.0,8.884375473180932e-16,True
+CF subtotal: Cash from operations,FY2022,55.647,55.647,-0.0,1.2768751878090467e-16,True
+CF subtotal: Cash from investing,FY2022,-11.0,-11.0,-0.0,3.2297397080004555e-16,True
+CF subtotal: Cash from financing,FY2022,-164.311,-164.311,0.0,0.0,True
+CF subtotal: Net change in cash,FY2022,-119.664,-119.664,-0.0,1.1875630695281793e-16,True
+CF subtotal: Cash from operations,FY2023,183.707,183.707,0.0,0.0,True
+CF subtotal: Cash from investing,FY2023,-359.29,-359.29,0.0,0.0,True
+CF subtotal: Cash from financing,FY2023,299.255,299.255,0.0,0.0,True
+CF subtotal: Net change in cash,FY2023,123.672,123.672,0.0,3.4472284870953823e-16,True
+CF subtotal: Cash from operations,FY2024,456.343,456.343,0.0,0.0,True
+CF subtotal: Cash from investing,FY2024,-228.556,-228.556,0.0,2.487067452213375e-16,True
+CF subtotal: Cash from financing,FY2024,-67.12,-67.12,0.0,2.1172310362339098e-16,True
+CF subtotal: Net change in cash,FY2024,160.667,160.667,0.0,5.306947182135225e-16,True
+CF subtotal: Cash from operations,FY2025,468.916,468.916,0.0,0.0,True
+CF subtotal: Cash from investing,FY2025,-993.721,-993.721,0.0,0.0,True
+CF subtotal: Cash from financing,FY2025,475.695,475.695,0.0,0.0,True
+CF subtotal: Net change in cash,FY2025,-49.11,-49.11,-0.0,4.919253312124498e-15,True
+CF subtotal: Cash from operations,H1 2025,5.438,5.438,0.0,6.696453697628749e-15,True
+CF subtotal: Cash from investing,H1 2025,-207.255,-207.255,0.0,0.0,True
+CF subtotal: Cash from financing,H1 2025,-54.496,-54.496,0.0,0.0,True
+CF subtotal: Net change in cash,H1 2025,-256.313,-256.313,0.0,0.0,True
+CF subtotal: Cash from operations,H1 2026,141.544,141.544,0.0,0.0,True
+CF subtotal: Cash from investing,H1 2026,-114.428,-114.428,0.0,0.0,True
+CF subtotal: Cash from financing,H1 2026,320.785,320.785,0.0,0.0,True
+CF subtotal: Net change in cash,H1 2026,347.901,347.901,-0.0,1.6338963918128438e-16,True
+BS balances (assets - L&E),FY2021,0.0,0.0,0.0,0.0,True
+BS balances (assets - L&E),FY2022,-0.0,0.0,-0.0,0.0,True
+BS balances (assets - L&E),FY2023,0.0,0.0,0.0,0.0,True
+BS balances (assets - L&E),FY2024,0.0,0.0,0.0,0.0,True
+BS balances (assets - L&E),FY2025,0.0,0.0,0.0,0.0,True
+BS balances (assets - L&E),H1 2026,0.0,0.0,0.0,0.0,True
+CF net income = IS net income,FY2021,2.414,2.414,0.0,6.622705697846876e-15,True
+CF net change = change in cash balance,FY2021,-23.993,-23.993,0.0,3.109531415613319e-15,True
+CF net income = IS net income,FY2022,78.857,78.857,0.0,3.9646296934253815e-15,True
+CF net change = change in cash balance,FY2022,-119.664,-119.664,-0.0,2.3751261390563586e-16,True
+CF net income = IS net income,FY2023,29.587,29.587,0.0,3.7223822639272635e-15,True
+CF net change = change in cash balance,FY2023,123.672,123.672,0.0,1.149076162365127e-16,True
+CF net income = IS net income,FY2024,140.443,140.443,-0.0,1.0118592393499133e-15,True
+CF net change = change in cash balance,FY2024,160.667,160.667,0.0,3.537964788090149e-16,True
+CF net income = IS net income,FY2025,220.351,220.351,0.0,5.159352021166961e-16,True
+CF net change = change in cash balance,FY2025,-49.11,-49.11,-0.0,4.6298854702348194e-15,True
+CF net income = IS net income,H1 2025,52.018,52.018,0.0,2.4587199130458368e-15,True
+CF net change = change in cash balance,H1 2025,-256.313,-256.313,0.0,2.2177345222758113e-16,True
+CF net income = IS net income,H1 2026,-307.973,-307.973,0.0,1.845727348202862e-16,True
+CF net change = change in cash balance,H1 2026,347.901,347.901,0.0,0.0,True
+companyfacts API: Revenue,FY2021,3501.865,3501.865,0.0,0.0,True
+companyfacts API: Revenue,FY2022,3301.256,3301.256,0.0,0.0,True
+companyfacts API: Revenue,FY2023,3509.138,3509.138,0.0,0.0,True
+companyfacts API: Revenue,FY2024,4007.574,4007.574,0.0,0.0,True
+companyfacts API: Revenue,FY2025,4424.379,4424.379,0.0,0.0,True
+companyfacts API: Net income to Granite,FY2021,10.096,10.096,-0.0,1.5835193695129015e-15,True
+companyfacts API: Net income to Granite,FY2022,83.302,83.302,-0.0,3.923671201767617e-15,True
+companyfacts API: Net income to Granite,FY2023,43.599,43.599,-0.0,2.4445838290789935e-15,True
+companyfacts API: Net income to Granite,FY2024,126.346,126.346,0.0,1.237232693296361e-15,True
+companyfacts API: Net income to Granite,FY2025,193.003,193.003,-0.0,5.890418165604474e-16,True
+companyfacts API: Total assets,FY2021,2494.927,2494.927,0.0,0.0,True
+companyfacts API: Total assets,FY2022,2167.933,2167.933,0.0,0.0,True
+companyfacts API: Total assets,FY2023,2813.54,2813.54,0.0,0.0,True
+companyfacts API: Total assets,FY2024,3025.655,3025.655,0.0,0.0,True
+companyfacts API: Total assets,FY2025,4030.393,4030.393,0.0,0.0,True
+companyfacts API: Granite shareholders' equity,FY2021,967.682,967.682,0.0,0.0,True
+companyfacts API: Granite shareholders' equity,FY2022,953.016,953.016,0.0,0.0,True
+companyfacts API: Granite shareholders' equity,FY2023,977.298,977.298,0.0,0.0,True
+companyfacts API: Granite shareholders' equity,FY2024,1015.226,1015.226,0.0,0.0,True
+companyfacts API: Granite shareholders' equity,FY2025,1179.048,1179.048,0.0,0.0,True
+companyfacts API: Cash from operations,FY2021,21.931,21.931,0.0,4.859851824541289e-16,True
+companyfacts API: Cash from operations,FY2022,55.647,55.647,-0.0,1.2768751878090467e-16,True
+companyfacts API: Cash from operations,FY2023,183.707,183.707,0.0,0.0,True
+companyfacts API: Cash from operations,FY2024,456.343,456.343,0.0,0.0,True
+companyfacts API: Cash from operations,FY2025,468.916,468.916,0.0,0.0,True
+companyfacts API: Capex,FY2021,94.81,94.81,0.0,0.0,True
+companyfacts API: Capex,FY2022,121.612,121.612,0.0,0.0,True
+companyfacts API: Capex,FY2023,140.384,140.384,0.0,0.0,True
+companyfacts API: Capex,FY2024,136.405,136.405,0.0,0.0,True
+companyfacts API: Capex,FY2025,138.27,138.27,0.0,0.0,True

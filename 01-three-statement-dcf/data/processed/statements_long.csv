@@ -1,0 +1,745 @@
+statement,line,period,value,filed_total,is_total,tag,accession
+IS,Revenue,FY2021,3501.865,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-24-000006
+IS,Cost of revenue,FY2021,-3139.22,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-24-000006
+IS,Gross profit,FY2021,362.645,362.645,True,us-gaap:GrossProfit,0000861459-24-000006
+IS,SG&A,FY2021,-303.015,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-24-000006
+IS,"Other costs, net",FY2021,-101.351,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-24-000006
+IS,Gain on sale of PP&E,FY2021,66.439,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-24-000006
+IS,Impairment charges,FY2021,0.0,,False,,0000861459-24-000006
+IS,Operating income,FY2021,24.71799999999999,24.718,True,us-gaap:OperatingIncomeLoss,0000861459-24-000006
+IS,Loss on convertible debt transactions,FY2021,0.0,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-24-000006
+IS,Interest income,FY2021,1.176,,False,us-gaap:InvestmentIncomeInterest,0000861459-24-000006
+IS,Interest expense,FY2021,-20.739,,False,us-gaap:InterestExpense,0000861459-24-000006
+IS,Equity income of affiliates,FY2021,12.586,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-24-000006
+IS,"Other income, net",FY2021,4.386,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-24-000006
+IS,Pre-tax income,FY2021,22.126999999999985,22.127,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-24-000006
+IS,Income tax,FY2021,-19.713,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-24-000006
+IS,Net income incl. NCI,FY2021,2.4139999999999837,2.414,True,us-gaap:ProfitLoss,0000861459-24-000006
+IS,Non-controlling interests,FY2021,7.682,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-24-000006
+IS,Net income to Granite,FY2021,10.095999999999984,10.096,True,us-gaap:NetIncomeLoss,0000861459-24-000006
+Memo,Diluted shares (m),FY2021,47.599,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-24-000006
+Memo,Diluted EPS (USD),FY2021,0.21,,False,us-gaap:EarningsPerShareDiluted,0000861459-24-000006
+IS,Revenue,FY2022,3301.256,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-25-000007
+IS,Cost of revenue,FY2022,-2931.762,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-25-000007
+IS,Gross profit,FY2022,369.4939999999997,369.494,True,us-gaap:GrossProfit,0000861459-25-000007
+IS,SG&A,FY2022,-272.61,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-25-000007
+IS,"Other costs, net",FY2022,-24.12,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-25-000007
+IS,Gain on sale of PP&E,FY2022,12.617,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-25-000007
+IS,Impairment charges,FY2022,0.0,,False,,0000861459-25-000007
+IS,Operating income,FY2022,85.38099999999967,85.381,True,us-gaap:OperatingIncomeLoss,0000861459-25-000007
+IS,Loss on convertible debt transactions,FY2022,0.0,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-25-000007
+IS,Interest income,FY2022,6.528,,False,us-gaap:InvestmentIncomeInterest,0000861459-25-000007
+IS,Interest expense,FY2022,-12.624,,False,us-gaap:InterestExpenseNonoperating,0000861459-25-000007
+IS,Equity income of affiliates,FY2022,13.571,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-25-000007
+IS,"Other income, net",FY2022,-1.039,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-25-000007
+IS,Pre-tax income,FY2022,91.81699999999968,91.817,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-25-000007
+IS,Income tax,FY2022,-12.96,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-25-000007
+IS,Net income incl. NCI,FY2022,78.85699999999969,78.857,True,us-gaap:ProfitLoss,0000861459-25-000007
+IS,Non-controlling interests,FY2022,4.445,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-25-000007
+IS,Net income to Granite,FY2022,83.30199999999968,83.302,True,us-gaap:NetIncomeLoss,0000861459-25-000007
+Memo,Diluted shares (m),FY2022,52.326,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-25-000007
+Memo,Diluted EPS (USD),FY2022,1.7,,False,us-gaap:EarningsPerShareDiluted,0000861459-25-000007
+IS,Revenue,FY2023,3509.138,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-26-000004
+IS,Cost of revenue,FY2023,-3112.739,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-26-000004
+IS,Gross profit,FY2023,396.3989999999999,396.399,True,us-gaap:GrossProfit,0000861459-26-000004
+IS,SG&A,FY2023,-294.466,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-26-000004
+IS,"Other costs, net",FY2023,-50.217,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-26-000004
+IS,Gain on sale of PP&E,FY2023,28.346,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-26-000004
+IS,Impairment charges,FY2023,0.0,,False,,0000861459-26-000004
+IS,Operating income,FY2023,80.06199999999988,80.062,True,us-gaap:OperatingIncomeLoss,0000861459-26-000004
+IS,Loss on convertible debt transactions,FY2023,-51.052,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-26-000004
+IS,Interest income,FY2023,17.538,,False,us-gaap:InvestmentIncomeInterest,0000861459-26-000004
+IS,Interest expense,FY2023,-18.462,,False,us-gaap:InterestExpenseNonoperating,0000861459-26-000004
+IS,Equity income of affiliates,FY2023,25.748,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000004
+IS,"Other income, net",FY2023,6.02,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-26-000004
+IS,Pre-tax income,FY2023,59.853999999999886,59.854,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-26-000004
+IS,Income tax,FY2023,-30.267,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-26-000004
+IS,Net income incl. NCI,FY2023,29.586999999999886,29.587,True,us-gaap:ProfitLoss,0000861459-26-000004
+IS,Non-controlling interests,FY2023,14.012,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-26-000004
+IS,Net income to Granite,FY2023,43.59899999999989,43.599,True,us-gaap:NetIncomeLoss,0000861459-26-000004
+Memo,Diluted shares (m),FY2023,52.565,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-26-000004
+Memo,Diluted EPS (USD),FY2023,0.97,,False,us-gaap:EarningsPerShareDiluted,0000861459-26-000004
+IS,Revenue,FY2024,4007.574,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-26-000004
+IS,Cost of revenue,FY2024,-3434.877,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-26-000004
+IS,Gross profit,FY2024,572.6970000000001,572.697,True,us-gaap:GrossProfit,0000861459-26-000004
+IS,SG&A,FY2024,-334.162,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-26-000004
+IS,"Other costs, net",FY2024,-39.936,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-26-000004
+IS,Gain on sale of PP&E,FY2024,8.764,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-26-000004
+IS,Impairment charges,FY2024,0.0,,False,,0000861459-26-000004
+IS,Operating income,FY2024,207.36300000000014,207.363,True,us-gaap:OperatingIncomeLoss,0000861459-26-000004
+IS,Loss on convertible debt transactions,FY2024,-27.552,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-26-000004
+IS,Interest income,FY2024,24.349,,False,us-gaap:InvestmentIncomeInterest,0000861459-26-000004
+IS,Interest expense,FY2024,-29.188,,False,us-gaap:InterestExpenseNonoperating,0000861459-26-000004
+IS,Equity income of affiliates,FY2024,16.982,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000004
+IS,"Other income, net",FY2024,4.238,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-26-000004
+IS,Pre-tax income,FY2024,196.19200000000015,196.192,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-26-000004
+IS,Income tax,FY2024,-55.749,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-26-000004
+IS,Net income incl. NCI,FY2024,140.44300000000015,140.443,True,us-gaap:ProfitLoss,0000861459-26-000004
+IS,Non-controlling interests,FY2024,-14.097,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-26-000004
+IS,Net income to Granite,FY2024,126.34600000000016,126.346,True,us-gaap:NetIncomeLoss,0000861459-26-000004
+Memo,Diluted shares (m),FY2024,52.514,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-26-000004
+Memo,Diluted EPS (USD),FY2024,2.62,,False,us-gaap:EarningsPerShareDiluted,0000861459-26-000004
+IS,Revenue,FY2025,4424.379,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-26-000004
+IS,Cost of revenue,FY2025,-3713.163,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-26-000004
+IS,Gross profit,FY2025,711.2159999999999,711.216,True,us-gaap:GrossProfit,0000861459-26-000004
+IS,SG&A,FY2025,-407.561,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-26-000004
+IS,"Other costs, net",FY2025,-41.416,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-26-000004
+IS,Gain on sale of PP&E,FY2025,20.207,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-26-000004
+IS,Impairment charges,FY2025,0.0,,False,,0000861459-26-000004
+IS,Operating income,FY2025,282.4459999999999,282.446,True,us-gaap:OperatingIncomeLoss,0000861459-26-000004
+IS,Loss on convertible debt transactions,FY2025,0.0,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-26-000004
+IS,Interest income,FY2025,26.878,,False,us-gaap:InvestmentIncomeInterest,0000861459-26-000004
+IS,Interest expense,FY2025,-47.223,,False,us-gaap:InterestExpenseNonoperating,0000861459-26-000004
+IS,Equity income of affiliates,FY2025,14.958,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000004
+IS,"Other income, net",FY2025,11.768,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-26-000004
+IS,Pre-tax income,FY2025,288.8269999999999,288.827,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-26-000004
+IS,Income tax,FY2025,-68.476,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-26-000004
+IS,Net income incl. NCI,FY2025,220.35099999999989,220.351,True,us-gaap:ProfitLoss,0000861459-26-000004
+IS,Non-controlling interests,FY2025,-27.348,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-26-000004
+IS,Net income to Granite,FY2025,193.00299999999987,193.003,True,us-gaap:NetIncomeLoss,0000861459-26-000004
+Memo,Diluted shares (m),FY2025,53.132,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-26-000004
+Memo,Diluted EPS (USD),FY2025,3.86,,False,us-gaap:EarningsPerShareDiluted,0000861459-26-000004
+IS,Revenue,H1 2025,1825.511,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-26-000029
+IS,Cost of revenue,H1 2025,-1542.563,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-26-000029
+IS,Gross profit,H1 2025,282.94799999999987,282.948,True,us-gaap:GrossProfit,0000861459-26-000029
+IS,SG&A,H1 2025,-201.798,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-26-000029
+IS,"Other costs, net",H1 2025,-22.679,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-26-000029
+IS,Gain on sale of PP&E,H1 2025,5.343,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-26-000029
+IS,Impairment charges,H1 2025,0.0,,False,,0000861459-26-000029
+IS,Operating income,H1 2025,63.813999999999865,63.814,True,us-gaap:OperatingIncomeLoss,0000861459-26-000029
+IS,Loss on convertible debt transactions,H1 2025,0.0,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-26-000029
+IS,Interest income,H1 2025,12.029,,False,us-gaap:InvestmentIncomeInterest,0000861459-26-000029
+IS,Interest expense,H1 2025,-15.684,,False,us-gaap:InterestExpenseNonoperating,0000861459-26-000029
+IS,Equity income of affiliates,H1 2025,4.792,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000029
+IS,"Other income, net",H1 2025,2.525,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-26-000029
+IS,Pre-tax income,H1 2025,67.47599999999987,67.476,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-26-000029
+IS,Income tax,H1 2025,-15.458,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-26-000029
+IS,Net income incl. NCI,H1 2025,52.01799999999987,52.018,True,us-gaap:ProfitLoss,0000861459-26-000029
+IS,Non-controlling interests,H1 2025,-13.974,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-26-000029
+IS,Net income to Granite,H1 2025,38.04399999999987,38.044,True,us-gaap:NetIncomeLoss,0000861459-26-000029
+Memo,Diluted shares (m),H1 2025,52.616,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-26-000029
+Memo,Diluted EPS (USD),H1 2025,0.84,,False,us-gaap:EarningsPerShareDiluted,0000861459-26-000029
+IS,Revenue,H1 2026,2368.337,,False,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,0000861459-26-000029
+IS,Cost of revenue,H1 2026,-2019.661,,False,us-gaap:CostOfGoodsAndServicesSold,0000861459-26-000029
+IS,Gross profit,H1 2026,348.67599999999993,348.676,True,us-gaap:GrossProfit,0000861459-26-000029
+IS,SG&A,H1 2026,-248.744,,False,us-gaap:SellingGeneralAndAdministrativeExpense,0000861459-26-000029
+IS,"Other costs, net",H1 2026,-8.443,,False,us-gaap:OtherOperatingIncomeExpenseNet,0000861459-26-000029
+IS,Gain on sale of PP&E,H1 2026,4.186,,False,us-gaap:GainLossOnDispositionOfAssets1,0000861459-26-000029
+IS,Impairment charges,H1 2026,0.0,,False,,0000861459-26-000029
+IS,Operating income,H1 2026,95.67499999999993,95.675,True,us-gaap:OperatingIncomeLoss,0000861459-26-000029
+IS,Loss on convertible debt transactions,H1 2026,-369.423,,False,us-gaap:GainsLossesOnExtinguishmentOfDebt,0000861459-26-000029
+IS,Interest income,H1 2026,10.996,,False,us-gaap:InvestmentIncomeInterest,0000861459-26-000029
+IS,Interest expense,H1 2026,-38.093,,False,us-gaap:InterestExpenseNonoperating,0000861459-26-000029
+IS,Equity income of affiliates,H1 2026,9.17,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000029
+IS,"Other income, net",H1 2026,3.831,,False,us-gaap:OtherNonoperatingIncomeExpense,0000861459-26-000029
+IS,Pre-tax income,H1 2026,-287.84400000000005,-287.844,True,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,0000861459-26-000029
+IS,Income tax,H1 2026,-20.129,,False,us-gaap:IncomeTaxExpenseBenefit,0000861459-26-000029
+IS,Net income incl. NCI,H1 2026,-307.97300000000007,-307.973,True,us-gaap:ProfitLoss,0000861459-26-000029
+IS,Non-controlling interests,H1 2026,-11.888,,False,us-gaap:NetIncomeLossAttributableToNoncontrollingInterest,0000861459-26-000029
+IS,Net income to Granite,H1 2026,-319.86100000000005,-319.861,True,us-gaap:NetIncomeLoss,0000861459-26-000029
+Memo,Diluted shares (m),H1 2026,43.641,,False,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,0000861459-26-000029
+Memo,Diluted EPS (USD),H1 2026,-7.33,,False,us-gaap:EarningsPerShareDiluted,0000861459-26-000029
+BS,Cash and cash equivalents,FY2021,395.647,,False,us-gaap:CashAndCashEquivalentsAtCarryingValue,0001437749-23-004014
+BS,"Marketable securities, current",FY2021,0.0,,False,us-gaap:MarketableSecuritiesCurrent,0001437749-23-004014
+BS,"Receivables, net",FY2021,464.588,,False,us-gaap:ReceivablesNetCurrent,0001437749-23-004014
+BS,Contract assets,FY2021,145.437,,False,us-gaap:ContractWithCustomerAssetNet,0001437749-23-004014
+BS,Inventories,FY2021,61.965,,False,us-gaap:InventoryNet,0001437749-23-004014
+BS,Equity in construction JVs,FY2021,189.911,,False,gva:EquityInConstructionJointVenturesCurrentAssets,0001437749-23-004014
+BS,Other current assets,FY2021,177.21,,False,us-gaap:OtherAssetsCurrent,0001437749-23-004014
+BS,Current assets held for sale,FY2021,392.641,,False,us-gaap:AssetsOfDisposalGroupIncludingDiscontinuedOperationCurrent,0001437749-23-004014
+BS,Total current assets,FY2021,1827.3990000000001,1827.399,True,us-gaap:AssetsCurrent,0001437749-23-004014
+BS,"PP&E, net",FY2021,433.504,,False,us-gaap:PropertyPlantAndEquipmentNet,0001437749-23-004014
+BS,"Marketable securities, long-term",FY2021,15.6,,False,us-gaap:HeldToMaturitySecuritiesNoncurrent,0001437749-23-004014
+BS,Investments in affiliates,FY2021,23.368,,False,us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures,0001437749-23-004014
+BS,Goodwill,FY2021,53.715,,False,us-gaap:Goodwill,0001437749-23-004014
+BS,Intangible assets,FY2021,0.0,,False,,0001437749-23-004014
+BS,Right of use assets,FY2021,49.312,,False,us-gaap:OperatingLeaseRightOfUseAsset,0001437749-23-004014
+BS,Deferred tax assets,FY2021,24.141,,False,us-gaap:DeferredIncomeTaxAssetsNet,0001437749-23-004014
+BS,Other noncurrent assets,FY2021,67.888,,False,us-gaap:OtherAssetsNoncurrent,0001437749-23-004014
+BS,Total assets,FY2021,2494.927,2494.927,True,us-gaap:Assets,0001437749-23-004014
+BS,Current debt,FY2021,8.727,,False,us-gaap:LongTermDebtCurrent,0001437749-23-004014
+BS,Accounts payable,FY2021,324.313,,False,us-gaap:AccountsPayableCurrent,0001437749-23-004014
+BS,Contract liabilities,FY2021,200.041,,False,us-gaap:ContractWithCustomerLiabilityCurrent,0001437749-23-004014
+BS,Conversion option derivative,FY2021,0.0,,False,,0001437749-23-004014
+BS,Accrued and other current liabilities,FY2021,452.829,,False,gva:AccruedExpensesAndOtherCurrentLiabilities,0001437749-23-004014
+BS,Current liabilities held for sale,FY2021,83.408,,False,us-gaap:LiabilitiesOfDisposalGroupIncludingDiscontinuedOperationCurrent,0001437749-23-004014
+BS,Total current liabilities,FY2021,1069.3179999999998,1069.318,True,us-gaap:LiabilitiesCurrent,0001437749-23-004014
+BS,Long-term debt,FY2021,331.191,,False,us-gaap:LongTermDebtNoncurrent,0001437749-23-004014
+BS,Long-term lease liabilities,FY2021,32.928,,False,us-gaap:OperatingLeaseLiabilityNoncurrent,0001437749-23-004014
+BS,Deferred tax liabilities,FY2021,1.856,,False,us-gaap:DeferredIncomeTaxLiabilitiesNet,0001437749-23-004014
+BS,Other long-term liabilities,FY2021,64.071,,False,us-gaap:OtherLiabilitiesNoncurrent,0001437749-23-004014
+BS,Total liabilities,FY2021,1499.3639999999998,,True,,0001437749-23-004014
+BS,Common stock,FY2021,0.458,,False,us-gaap:CommonStockValue,0001437749-23-004014
+BS,Additional paid-in capital,FY2021,559.752,,False,us-gaap:AdditionalPaidInCapitalCommonStock,0001437749-23-004014
+BS,AOCI,FY2021,-3.359,,False,us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax,0001437749-23-004014
+BS,Retained earnings,FY2021,410.831,,False,us-gaap:RetainedEarningsAccumulatedDeficit,0001437749-23-004014
+BS,Granite shareholders' equity,FY2021,967.6819999999999,967.682,True,us-gaap:StockholdersEquity,0001437749-23-004014
+BS,Non-controlling interests,FY2021,27.881,,False,us-gaap:MinorityInterest,0001437749-23-004014
+BS,Total equity,FY2021,995.5629999999999,995.563,True,us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest,0001437749-23-004014
+BS,Total liabilities and equity,FY2021,2494.9269999999997,2494.927,True,us-gaap:LiabilitiesAndStockholdersEquity,0001437749-23-004014
+Memo,Retention receivable,FY2021,131.279,,False,gva:ContractWithCustomerRetention,0001437749-23-004014
+Memo,Backlog (RPO),FY2021,2595.085,,False,us-gaap:RevenueRemainingPerformanceObligation,0001437749-23-004014
+BS,Cash and cash equivalents,FY2022,293.991,,False,us-gaap:CashAndCashEquivalentsAtCarryingValue,0000861459-24-000006
+BS,"Marketable securities, current",FY2022,39.374,,False,us-gaap:MarketableSecuritiesCurrent,0000861459-24-000006
+BS,"Receivables, net",FY2022,463.987,,False,us-gaap:ReceivablesNetCurrent,0000861459-24-000006
+BS,Contract assets,FY2022,241.916,,False,us-gaap:ContractWithCustomerAssetNet,0000861459-24-000006
+BS,Inventories,FY2022,86.809,,False,us-gaap:InventoryNet,0000861459-24-000006
+BS,Equity in construction JVs,FY2022,183.808,,False,gva:EquityInConstructionJointVenturesCurrentAssets,0000861459-24-000006
+BS,Other current assets,FY2022,37.411,,False,us-gaap:OtherAssetsCurrent,0000861459-24-000006
+BS,Current assets held for sale,FY2022,0.0,,False,,0000861459-24-000006
+BS,Total current assets,FY2022,1347.296,1347.296,True,us-gaap:AssetsCurrent,0000861459-24-000006
+BS,"PP&E, net",FY2022,509.21,,False,us-gaap:PropertyPlantAndEquipmentNet,0000861459-24-000006
+BS,"Marketable securities, long-term",FY2022,26.569,,False,us-gaap:HeldToMaturitySecuritiesNoncurrent,0000861459-24-000006
+BS,Investments in affiliates,FY2022,80.725,,False,us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures,0000861459-24-000006
+BS,Goodwill,FY2022,73.703,,False,us-gaap:Goodwill,0000861459-24-000006
+BS,Intangible assets,FY2022,9.212,,False,us-gaap:IntangibleAssetsNetExcludingGoodwill,0000861459-24-000006
+BS,Right of use assets,FY2022,49.079,,False,us-gaap:OperatingLeaseRightOfUseAsset,0000861459-24-000006
+BS,Deferred tax assets,FY2022,22.208,,False,us-gaap:DeferredIncomeTaxAssetsNet,0000861459-24-000006
+BS,Other noncurrent assets,FY2022,49.931,,False,us-gaap:OtherAssetsNoncurrent,0000861459-24-000006
+BS,Total assets,FY2022,2167.933,2167.933,True,us-gaap:Assets,0000861459-24-000006
+BS,Current debt,FY2022,1.447,,False,us-gaap:LongTermDebtCurrent,0000861459-24-000006
+BS,Accounts payable,FY2022,334.392,,False,us-gaap:AccountsPayableCurrent,0000861459-24-000006
+BS,Contract liabilities,FY2022,173.286,,False,us-gaap:ContractWithCustomerLiabilityCurrent,0000861459-24-000006
+BS,Conversion option derivative,FY2022,0.0,,False,,0000861459-24-000006
+BS,Accrued and other current liabilities,FY2022,288.469,,False,gva:AccruedExpensesAndOtherCurrentLiabilities,0000861459-24-000006
+BS,Current liabilities held for sale,FY2022,0.0,,False,,0000861459-24-000006
+BS,Total current liabilities,FY2022,797.594,797.594,True,us-gaap:LiabilitiesCurrent,0000861459-24-000006
+BS,Long-term debt,FY2022,286.934,,False,us-gaap:LongTermDebtNoncurrent,0000861459-24-000006
+BS,Long-term lease liabilities,FY2022,32.17,,False,us-gaap:OperatingLeaseLiabilityNoncurrent,0000861459-24-000006
+BS,Deferred tax liabilities,FY2022,1.891,,False,us-gaap:DeferredIncomeTaxLiabilitiesNet,0000861459-24-000006
+BS,Other long-term liabilities,FY2022,64.199,,False,us-gaap:OtherLiabilitiesNoncurrent,0000861459-24-000006
+BS,Total liabilities,FY2022,1182.7880000000002,,True,,0000861459-24-000006
+BS,Common stock,FY2022,0.437,,False,us-gaap:CommonStockValue,0000861459-24-000006
+BS,Additional paid-in capital,FY2022,470.407,,False,us-gaap:AdditionalPaidInCapitalCommonStock,0000861459-24-000006
+BS,AOCI,FY2022,0.788,,False,us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax,0000861459-24-000006
+BS,Retained earnings,FY2022,481.384,,False,us-gaap:RetainedEarningsAccumulatedDeficit,0000861459-24-000006
+BS,Granite shareholders' equity,FY2022,953.0160000000001,953.016,True,us-gaap:StockholdersEquity,0000861459-24-000006
+BS,Non-controlling interests,FY2022,32.129,,False,us-gaap:MinorityInterest,0000861459-24-000006
+BS,Total equity,FY2022,985.1450000000001,985.145,True,us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest,0000861459-24-000006
+BS,Total liabilities and equity,FY2022,2167.9330000000004,2167.933,True,us-gaap:LiabilitiesAndStockholdersEquity,0000861459-24-000006
+Memo,Retention receivable,FY2022,161.559,,False,gva:ContractWithCustomerRetention,0000861459-24-000006
+Memo,Backlog (RPO),FY2022,2877.478,,False,us-gaap:RevenueRemainingPerformanceObligation,0000861459-24-000006
+BS,Cash and cash equivalents,FY2023,417.663,,False,us-gaap:CashAndCashEquivalentsAtCarryingValue,0000861459-25-000007
+BS,"Marketable securities, current",FY2023,35.863,,False,us-gaap:MarketableSecuritiesCurrent,0000861459-25-000007
+BS,"Receivables, net",FY2023,598.705,,False,us-gaap:ReceivablesNetCurrent,0000861459-25-000007
+BS,Contract assets,FY2023,262.987,,False,us-gaap:ContractWithCustomerAssetNet,0000861459-25-000007
+BS,Inventories,FY2023,103.898,,False,us-gaap:InventoryNet,0000861459-25-000007
+BS,Equity in construction JVs,FY2023,171.233,,False,gva:EquityInConstructionJointVenturesCurrentAssets,0000861459-25-000007
+BS,Other current assets,FY2023,53.102,,False,us-gaap:OtherAssetsCurrent,0000861459-25-000007
+BS,Current assets held for sale,FY2023,0.0,,False,,0000861459-25-000007
+BS,Total current assets,FY2023,1643.451,1643.451,True,us-gaap:AssetsCurrent,0000861459-25-000007
+BS,"PP&E, net",FY2023,662.864,,False,us-gaap:PropertyPlantAndEquipmentNet,0000861459-25-000007
+BS,"Marketable securities, long-term",FY2023,0.0,,False,,0000861459-25-000007
+BS,Investments in affiliates,FY2023,92.91,,False,us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures,0000861459-25-000007
+BS,Goodwill,FY2023,155.004,,False,us-gaap:Goodwill,0000861459-25-000007
+BS,Intangible assets,FY2023,117.322,,False,us-gaap:IntangibleAssetsNetExcludingGoodwill,0000861459-25-000007
+BS,Right of use assets,FY2023,78.176,,False,us-gaap:OperatingLeaseRightOfUseAsset,0000861459-25-000007
+BS,Deferred tax assets,FY2023,8.179,,False,us-gaap:DeferredIncomeTaxAssetsNet,0000861459-25-000007
+BS,Other noncurrent assets,FY2023,55.634,,False,us-gaap:OtherAssetsNoncurrent,0000861459-25-000007
+BS,Total assets,FY2023,2813.54,2813.54,True,us-gaap:Assets,0000861459-25-000007
+BS,Current debt,FY2023,39.932,,False,us-gaap:LongTermDebtCurrent,0000861459-25-000007
+BS,Accounts payable,FY2023,408.363,,False,us-gaap:AccountsPayableCurrent,0000861459-25-000007
+BS,Contract liabilities,FY2023,243.848,,False,us-gaap:ContractWithCustomerLiabilityCurrent,0000861459-25-000007
+BS,Conversion option derivative,FY2023,0.0,,False,,0000861459-25-000007
+BS,Accrued and other current liabilities,FY2023,337.74,,False,gva:AccruedExpensesAndOtherCurrentLiabilities,0000861459-25-000007
+BS,Current liabilities held for sale,FY2023,0.0,,False,,0000861459-25-000007
+BS,Total current liabilities,FY2023,1029.883,1029.883,True,us-gaap:LiabilitiesCurrent,0000861459-25-000007
+BS,Long-term debt,FY2023,614.781,,False,us-gaap:LongTermDebtNoncurrent,0000861459-25-000007
+BS,Long-term lease liabilities,FY2023,63.548,,False,us-gaap:OperatingLeaseLiabilityNoncurrent,0000861459-25-000007
+BS,Deferred tax liabilities,FY2023,3.708,,False,us-gaap:DeferredIncomeTaxLiabilitiesNet,0000861459-25-000007
+BS,Other long-term liabilities,FY2023,74.654,,False,us-gaap:OtherLiabilitiesNoncurrent,0000861459-25-000007
+BS,Total liabilities,FY2023,1786.574,,True,,0000861459-25-000007
+BS,Common stock,FY2023,0.439,,False,us-gaap:CommonStockValue,0000861459-25-000007
+BS,Additional paid-in capital,FY2023,474.134,,False,us-gaap:AdditionalPaidInCapitalCommonStock,0000861459-25-000007
+BS,AOCI,FY2023,0.881,,False,us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax,0000861459-25-000007
+BS,Retained earnings,FY2023,501.844,,False,us-gaap:RetainedEarningsAccumulatedDeficit,0000861459-25-000007
+BS,Granite shareholders' equity,FY2023,977.298,977.298,True,us-gaap:StockholdersEquity,0000861459-25-000007
+BS,Non-controlling interests,FY2023,49.668,,False,us-gaap:MinorityInterest,0000861459-25-000007
+BS,Total equity,FY2023,1026.966,1026.966,True,us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest,0000861459-25-000007
+BS,Total liabilities and equity,FY2023,2813.54,2813.54,True,us-gaap:LiabilitiesAndStockholdersEquity,0000861459-25-000007
+Memo,Retention receivable,FY2023,162.881,,False,gva:ContractWithCustomerRetention,0000861459-25-000007
+Memo,Backlog (RPO),FY2023,3596.676,,False,us-gaap:RevenueRemainingPerformanceObligation,0000861459-25-000007
+BS,Cash and cash equivalents,FY2024,578.33,,False,us-gaap:CashAndCashEquivalentsAtCarryingValue,0000861459-26-000004
+BS,"Marketable securities, current",FY2024,7.311,,False,us-gaap:MarketableSecuritiesCurrent,0000861459-26-000004
+BS,"Receivables, net",FY2024,511.742,,False,us-gaap:ReceivablesNetCurrent,0000861459-26-000004
+BS,Contract assets,FY2024,328.353,,False,us-gaap:ContractWithCustomerAssetNet,0000861459-26-000004
+BS,Inventories,FY2024,108.175,,False,us-gaap:InventoryNet,0000861459-26-000004
+BS,Equity in construction JVs,FY2024,140.928,,False,gva:EquityInConstructionJointVenturesCurrentAssets,0000861459-26-000004
+BS,Other current assets,FY2024,41.824,,False,us-gaap:OtherAssetsCurrent,0000861459-26-000004
+BS,Current assets held for sale,FY2024,0.0,,False,,0000861459-26-000004
+BS,Total current assets,FY2024,1716.663,1716.663,True,us-gaap:AssetsCurrent,0000861459-26-000004
+BS,"PP&E, net",FY2024,716.184,,False,us-gaap:PropertyPlantAndEquipmentNet,0000861459-26-000004
+BS,"Marketable securities, long-term",FY2024,0.0,,False,us-gaap:HeldToMaturitySecuritiesNoncurrent,0000861459-26-000004
+BS,Investments in affiliates,FY2024,94.031,,False,us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures,0000861459-26-000004
+BS,Goodwill,FY2024,214.465,,False,us-gaap:Goodwill,0000861459-26-000004
+BS,Intangible assets,FY2024,127.886,,False,us-gaap:IntangibleAssetsNetExcludingGoodwill,0000861459-26-000004
+BS,Right of use assets,FY2024,89.791,,False,us-gaap:OperatingLeaseRightOfUseAsset,0000861459-26-000004
+BS,Deferred tax assets,FY2024,0.0,,False,,0000861459-26-000004
+BS,Other noncurrent assets,FY2024,66.635,,False,us-gaap:OtherAssetsNoncurrent,0000861459-26-000004
+BS,Total assets,FY2024,3025.655,3025.655,True,us-gaap:Assets,0000861459-26-000004
+BS,Current debt,FY2024,1.109,,False,us-gaap:LongTermDebtCurrent,0000861459-26-000004
+BS,Accounts payable,FY2024,407.223,,False,us-gaap:AccountsPayableCurrent,0000861459-26-000004
+BS,Contract liabilities,FY2024,299.671,,False,us-gaap:ContractWithCustomerLiabilityCurrent,0000861459-26-000004
+BS,Conversion option derivative,FY2024,0.0,,False,,0000861459-26-000004
+BS,Accrued and other current liabilities,FY2024,323.956,,False,gva:AccruedExpensesAndOtherCurrentLiabilities,0000861459-26-000004
+BS,Current liabilities held for sale,FY2024,0.0,,False,,0000861459-26-000004
+BS,Total current liabilities,FY2024,1031.9589999999998,1031.959,True,us-gaap:LiabilitiesCurrent,0000861459-26-000004
+BS,Long-term debt,FY2024,737.939,,False,us-gaap:LongTermDebtNoncurrent,0000861459-26-000004
+BS,Long-term lease liabilities,FY2024,73.638,,False,us-gaap:OperatingLeaseLiabilityNoncurrent,0000861459-26-000004
+BS,Deferred tax liabilities,FY2024,13.874,,False,us-gaap:DeferredIncomeTaxLiabilitiesNet,0000861459-26-000004
+BS,Other long-term liabilities,FY2024,88.882,,False,us-gaap:OtherLiabilitiesNoncurrent,0000861459-26-000004
+BS,Total liabilities,FY2024,1946.2919999999997,,True,,0000861459-26-000004
+BS,Common stock,FY2024,0.434,,False,us-gaap:CommonStockValue,0000861459-26-000004
+BS,Additional paid-in capital,FY2024,410.739,,False,us-gaap:AdditionalPaidInCapitalCommonStock,0000861459-26-000004
+BS,AOCI,FY2024,-0.582,,False,us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax,0000861459-26-000004
+BS,Retained earnings,FY2024,604.635,,False,us-gaap:RetainedEarningsAccumulatedDeficit,0000861459-26-000004
+BS,Granite shareholders' equity,FY2024,1015.226,1015.226,True,us-gaap:StockholdersEquity,0000861459-26-000004
+BS,Non-controlling interests,FY2024,64.137,,False,us-gaap:MinorityInterest,0000861459-26-000004
+BS,Total equity,FY2024,1079.363,1079.363,True,us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest,0000861459-26-000004
+BS,Total liabilities and equity,FY2024,3025.6549999999997,3025.655,True,us-gaap:LiabilitiesAndStockholdersEquity,0000861459-26-000004
+Memo,Retention receivable,FY2024,188.917,,False,gva:ContractWithCustomerRetention,0000861459-26-000004
+Memo,Backlog (RPO),FY2024,3584.378,,False,us-gaap:RevenueRemainingPerformanceObligation,0000861459-26-000004
+BS,Cash and cash equivalents,FY2025,529.22,,False,us-gaap:CashAndCashEquivalentsAtCarryingValue,0000861459-26-000029
+BS,"Marketable securities, current",FY2025,71.021,,False,us-gaap:MarketableSecuritiesCurrent,0000861459-26-000029
+BS,"Receivables, net",FY2025,630.392,,False,us-gaap:ReceivablesNetCurrent,0000861459-26-000029
+BS,Contract assets,FY2025,236.879,,False,us-gaap:ContractWithCustomerAssetNet,0000861459-26-000029
+BS,Inventories,FY2025,143.129,,False,us-gaap:InventoryNet,0000861459-26-000029
+BS,Equity in construction JVs,FY2025,134.67,,False,gva:EquityInConstructionJointVenturesCurrentAssets,0000861459-26-000029
+BS,Other current assets,FY2025,66.92,,False,us-gaap:OtherAssetsCurrent,0000861459-26-000029
+BS,Current assets held for sale,FY2025,0.0,,False,,0000861459-26-000029
+BS,Total current assets,FY2025,1812.231,1812.231,True,us-gaap:AssetsCurrent,0000861459-26-000029
+BS,"PP&E, net",FY2025,1260.823,,False,us-gaap:PropertyPlantAndEquipmentNet,0000861459-26-000029
+BS,"Marketable securities, long-term",FY2025,49.534,,False,us-gaap:HeldToMaturitySecuritiesNoncurrent,0000861459-26-000029
+BS,Investments in affiliates,FY2025,96.764,,False,us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures,0000861459-26-000029
+BS,Goodwill,FY2025,400.814,,False,us-gaap:Goodwill,0000861459-26-000029
+BS,Intangible assets,FY2025,179.548,,False,us-gaap:IntangibleAssetsNetExcludingGoodwill,0000861459-26-000029
+BS,Right of use assets,FY2025,152.678,,False,us-gaap:OperatingLeaseRightOfUseAsset,0000861459-26-000029
+BS,Deferred tax assets,FY2025,0.0,,False,,0000861459-26-000029
+BS,Other noncurrent assets,FY2025,78.001,,False,us-gaap:OtherAssetsNoncurrent,0000861459-26-000029
+BS,Total assets,FY2025,4030.393,4030.393,True,us-gaap:Assets,0000861459-26-000029
+BS,Current debt,FY2025,375.896,,False,us-gaap:LongTermDebtCurrent,0000861459-26-000029
+BS,Accounts payable,FY2025,430.298,,False,us-gaap:AccountsPayableCurrent,0000861459-26-000029
+BS,Contract liabilities,FY2025,327.372,,False,us-gaap:ContractWithCustomerLiabilityCurrent,0000861459-26-000029
+BS,Conversion option derivative,FY2025,0.0,,False,us-gaap:DerivativeLiabilitiesCurrent,0000861459-26-000029
+BS,Accrued and other current liabilities,FY2025,348.179,,False,gva:AccruedExpensesAndOtherCurrentLiabilities,0000861459-26-000029
+BS,Current liabilities held for sale,FY2025,0.0,,False,,0000861459-26-000029
+BS,Total current liabilities,FY2025,1481.745,1481.745,True,us-gaap:LiabilitiesCurrent,0000861459-26-000029
+BS,Long-term debt,FY2025,963.233,,False,us-gaap:LongTermDebtNoncurrent,0000861459-26-000029
+BS,Long-term lease liabilities,FY2025,125.733,,False,us-gaap:OperatingLeaseLiabilityNoncurrent,0000861459-26-000029
+BS,Deferred tax liabilities,FY2025,141.489,,False,us-gaap:DeferredIncomeTaxLiabilitiesNet,0000861459-26-000029
+BS,Other long-term liabilities,FY2025,96.66,,False,us-gaap:OtherLiabilitiesNoncurrent,0000861459-26-000029
+BS,Total liabilities,FY2025,2808.86,,True,,0000861459-26-000029
+BS,Common stock,FY2025,0.435,,False,us-gaap:CommonStockValue,0000861459-26-000029
+BS,Additional paid-in capital,FY2025,402.391,,False,us-gaap:AdditionalPaidInCapitalCommonStock,0000861459-26-000029
+BS,AOCI,FY2025,1.581,,False,us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax,0000861459-26-000029
+BS,Retained earnings,FY2025,774.641,,False,us-gaap:RetainedEarningsAccumulatedDeficit,0000861459-26-000029
+BS,Granite shareholders' equity,FY2025,1179.048,1179.048,True,us-gaap:StockholdersEquity,0000861459-26-000029
+BS,Non-controlling interests,FY2025,42.485,,False,us-gaap:MinorityInterest,0000861459-26-000029
+BS,Total equity,FY2025,1221.533,1221.533,True,us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest,0000861459-26-000029
+BS,Total liabilities and equity,FY2025,4030.393,4030.393,True,us-gaap:LiabilitiesAndStockholdersEquity,0000861459-26-000029
+Memo,Retention receivable,FY2025,163.8,,False,gva:ContractWithCustomerRetention,0000861459-26-000029
+Memo,Backlog (RPO),FY2025,4123.113,,False,us-gaap:RevenueRemainingPerformanceObligation,0000861459-26-000029
+BS,Cash and cash equivalents,H1 2026,877.121,,False,us-gaap:CashAndCashEquivalentsAtCarryingValue,0000861459-26-000029
+BS,"Marketable securities, current",H1 2026,36.852,,False,us-gaap:MarketableSecuritiesCurrent,0000861459-26-000029
+BS,"Receivables, net",H1 2026,886.793,,False,us-gaap:ReceivablesNetCurrent,0000861459-26-000029
+BS,Contract assets,H1 2026,283.191,,False,us-gaap:ContractWithCustomerAssetNet,0000861459-26-000029
+BS,Inventories,H1 2026,182.116,,False,us-gaap:InventoryNet,0000861459-26-000029
+BS,Equity in construction JVs,H1 2026,131.096,,False,gva:EquityInConstructionJointVenturesCurrentAssets,0000861459-26-000029
+BS,Other current assets,H1 2026,52.979,,False,us-gaap:OtherAssetsCurrent,0000861459-26-000029
+BS,Current assets held for sale,H1 2026,0.0,,False,,0000861459-26-000029
+BS,Total current assets,H1 2026,2450.1479999999997,2450.148,True,us-gaap:AssetsCurrent,0000861459-26-000029
+BS,"PP&E, net",H1 2026,1304.105,,False,us-gaap:PropertyPlantAndEquipmentNet,0000861459-26-000029
+BS,"Marketable securities, long-term",H1 2026,17.55,,False,us-gaap:HeldToMaturitySecuritiesNoncurrent,0000861459-26-000029
+BS,Investments in affiliates,H1 2026,102.424,,False,us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures,0000861459-26-000029
+BS,Goodwill,H1 2026,445.984,,False,us-gaap:Goodwill,0000861459-26-000029
+BS,Intangible assets,H1 2026,211.812,,False,us-gaap:IntangibleAssetsNetExcludingGoodwill,0000861459-26-000029
+BS,Right of use assets,H1 2026,167.074,,False,us-gaap:OperatingLeaseRightOfUseAsset,0000861459-26-000029
+BS,Deferred tax assets,H1 2026,0.0,,False,,0000861459-26-000029
+BS,Other noncurrent assets,H1 2026,79.779,,False,us-gaap:OtherAssetsNoncurrent,0000861459-26-000029
+BS,Total assets,H1 2026,4778.876,4778.876,True,us-gaap:Assets,0000861459-26-000029
+BS,Current debt,H1 2026,381.008,,False,us-gaap:LongTermDebtCurrent,0000861459-26-000029
+BS,Accounts payable,H1 2026,607.814,,False,us-gaap:AccountsPayableCurrent,0000861459-26-000029
+BS,Contract liabilities,H1 2026,440.364,,False,us-gaap:ContractWithCustomerLiabilityCurrent,0000861459-26-000029
+BS,Conversion option derivative,H1 2026,630.473,,False,us-gaap:DerivativeLiabilitiesCurrent,0000861459-26-000029
+BS,Accrued and other current liabilities,H1 2026,359.219,,False,gva:AccruedExpensesAndOtherCurrentLiabilities,0000861459-26-000029
+BS,Current liabilities held for sale,H1 2026,0.0,,False,,0000861459-26-000029
+BS,Total current liabilities,H1 2026,2418.8779999999997,2418.878,True,us-gaap:LiabilitiesCurrent,0000861459-26-000029
+BS,Long-term debt,H1 2026,1177.644,,False,us-gaap:LongTermDebtNoncurrent,0000861459-26-000029
+BS,Long-term lease liabilities,H1 2026,137.747,,False,us-gaap:OperatingLeaseLiabilityNoncurrent,0000861459-26-000029
+BS,Deferred tax liabilities,H1 2026,143.955,,False,us-gaap:DeferredIncomeTaxLiabilitiesNet,0000861459-26-000029
+BS,Other long-term liabilities,H1 2026,95.316,,False,us-gaap:OtherLiabilitiesNoncurrent,0000861459-26-000029
+BS,Total liabilities,H1 2026,3973.5399999999995,,True,,0000861459-26-000029
+BS,Common stock,H1 2026,0.438,,False,us-gaap:CommonStockValue,0000861459-26-000029
+BS,Additional paid-in capital,H1 2026,304.47,,False,us-gaap:AdditionalPaidInCapitalCommonStock,0000861459-26-000029
+BS,AOCI,H1 2026,4.568,,False,us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax,0000861459-26-000029
+BS,Retained earnings,H1 2026,443.272,,False,us-gaap:RetainedEarningsAccumulatedDeficit,0000861459-26-000029
+BS,Granite shareholders' equity,H1 2026,752.748,752.748,True,us-gaap:StockholdersEquity,0000861459-26-000029
+BS,Non-controlling interests,H1 2026,52.588,,False,us-gaap:MinorityInterest,0000861459-26-000029
+BS,Total equity,H1 2026,805.336,805.336,True,us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest,0000861459-26-000029
+BS,Total liabilities and equity,H1 2026,4778.875999999999,4778.876,True,us-gaap:LiabilitiesAndStockholdersEquity,0000861459-26-000029
+Memo,Retention receivable,H1 2026,168.045,,False,gva:ContractWithCustomerRetention,0000861459-26-000029
+Memo,Backlog (RPO),H1 2026,5056.462,,False,us-gaap:RevenueRemainingPerformanceObligation,0000861459-26-000029
+CF,Net income incl. NCI,FY2021,2.414,,False,us-gaap:ProfitLoss,0000861459-24-000006
+CF,D&A,FY2021,109.05,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-24-000006
+CF,Stock-based compensation,FY2021,6.407,,False,us-gaap:ShareBasedCompensation,0000861459-24-000006
+CF,Deferred income taxes,FY2021,16.6,,False,us-gaap:DeferredIncomeTaxExpenseBenefit,0000861459-24-000006
+CF,Gain on sale of PP&E,FY2021,-66.439,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-24-000006
+CF,Amortisation of debt costs,FY2021,9.448,,False,us-gaap:AmortizationOfFinancingCostsAndDiscounts,0000861459-24-000006
+CF,Amortisation of convertible discount,FY2021,0.0,,False,,0000861459-24-000006
+CF,Non-cash loss on debt extinguishment,FY2021,-0.0,,False,gva:GainLossOnExtinguishmentOfDebtNonCash,0000861459-24-000006
+CF,Loss on conversion option derivative,FY2021,0.0,,False,,0000861459-24-000006
+CF,Convertible inducement expense,FY2021,0.0,,False,,0000861459-24-000006
+CF,Impairment charges,FY2021,0.0,,False,,0000861459-24-000006
+CF,Construction JV (income) loss,FY2021,0.765,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-24-000006
+CF,Income from affiliates,FY2021,-12.586,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-24-000006
+CF,Other non-cash items,FY2021,-0.0,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-24-000006
+CF,Change in receivables,FY2021,-11.317,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-24-000006
+CF,Change in contract assets,FY2021,12.046,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-24-000006
+CF,Change in inventories,FY2021,0.774,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-24-000006
+CF,Contributions to construction JVs,FY2021,-61.78,,False,gva:EquityInConstructionJointVentures,0000861459-24-000006
+CF,Distributions from construction JVs,FY2021,22.004,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-24-000006
+CF,Change in other assets,FY2021,-11.969,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-24-000006
+CF,Change in accounts payable,FY2021,7.396,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-24-000006
+CF,Change in accrued and other liabilities,FY2021,-0.882,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-24-000006
+CF,Legal settlement deposit,FY2021,-129.0,,False,gva:IncreaseDecreaseInInsuranceReceivableForLegalSettlement,0000861459-24-000006
+CF,Legal settlement accrual,FY2021,129.0,,False,gva:IncreaseDecreaseInAccrualForLegalSettlement,0000861459-24-000006
+CF,Cash from operations,FY2021,21.93100000000001,21.931,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-24-000006
+CF,Capex,FY2021,-94.81,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-24-000006
+CF,Proceeds from sale of PP&E,FY2021,94.802,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-24-000006
+CF,Acquisitions,FY2021,-0.0,,False,us-gaap:PaymentsToAcquireBusinessesNetOfCashAcquired,0000861459-24-000006
+CF,Acquisition price adjustments,FY2021,0.0,,False,,0000861459-24-000006
+CF,Proceeds from sale of business,FY2021,0.0,,False,us-gaap:ProceedsFromDivestitureOfBusinessesNetOfCashDivested,0000861459-24-000006
+CF,Purchases of marketable securities,FY2021,-10.0,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-24-000006
+CF,Maturities of marketable securities,FY2021,0.0,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-24-000006
+CF,Called marketable securities,FY2021,0.0,,False,us-gaap:ProceedsFromSaleAndMaturityOfMarketableSecurities,0000861459-24-000006
+CF,Notes receivable issued,FY2021,-20.4,,False,gva:PaymentsForProceedsFromNotesReceivableNetOfCollections,0000861459-24-000006
+CF,Notes receivable collected,FY2021,0.0,,False,,0000861459-24-000006
+CF,Life insurance proceeds,FY2021,0.0,,False,us-gaap:ProceedsFromLifeInsurancePolicies,0000861459-24-000006
+CF,Other investing,FY2021,8.93,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-24-000006
+CF,Cash from investing,FY2021,-21.477999999999994,-21.478,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-24-000006
+CF,Convertible notes issued,FY2021,0.0,,False,us-gaap:ProceedsFromConvertibleDebt,0000861459-24-000006
+CF,Other debt issued,FY2021,0.0,,False,us-gaap:ProceedsFromLongTermLinesOfCredit,0000861459-24-000006
+CF,Debt repaid,FY2021,-8.922,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-24-000006
+CF,Capped calls,FY2021,-0.0,,False,gva:PaymentsForCappedCallTransaction,0000861459-24-000006
+CF,Capped call unwind,FY2021,0.0,,False,,0000861459-24-000006
+CF,Warrants redeemed,FY2021,-0.0,,False,us-gaap:PaymentsForRepurchaseOfWarrants,0000861459-24-000006
+CF,Debt issuance costs,FY2021,-0.0,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-24-000006
+CF,Dividends paid,FY2021,-23.804,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-24-000006
+CF,Share repurchases,FY2021,-2.73,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-24-000006
+CF,NCI contributions,FY2021,20.126,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-24-000006
+CF,NCI distributions,FY2021,-9.514,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-24-000006
+CF,Other financing,FY2021,0.398,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-24-000006
+CF,Cash from financing,FY2021,-24.445999999999994,-24.446,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-24-000006
+CF,Net change in cash,FY2021,-23.992999999999977,-23.993,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-24-000006
+CF,Net income incl. NCI,FY2022,78.857,,False,us-gaap:ProfitLoss,0000861459-25-000007
+CF,D&A,FY2022,82.569,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-25-000007
+CF,Stock-based compensation,FY2022,7.765,,False,us-gaap:ShareBasedCompensation,0000861459-25-000007
+CF,Deferred income taxes,FY2022,5.447,,False,us-gaap:DeferredIncomeTaxExpenseBenefit,0000861459-25-000007
+CF,Gain on sale of PP&E,FY2022,-12.617,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-25-000007
+CF,Amortisation of debt costs,FY2022,2.366,,False,us-gaap:AmortizationOfFinancingCostsAndDiscounts,0000861459-25-000007
+CF,Amortisation of convertible discount,FY2022,0.0,,False,,0000861459-25-000007
+CF,Non-cash loss on debt extinguishment,FY2022,-0.0,,False,gva:GainLossOnExtinguishmentOfDebtNonCash,0000861459-25-000007
+CF,Loss on conversion option derivative,FY2022,0.0,,False,,0000861459-25-000007
+CF,Convertible inducement expense,FY2022,0.0,,False,,0000861459-25-000007
+CF,Impairment charges,FY2022,0.0,,False,,0000861459-25-000007
+CF,Construction JV (income) loss,FY2022,19.676,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-25-000007
+CF,Income from affiliates,FY2022,-13.571,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-25-000007
+CF,Other non-cash items,FY2022,0.222,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-25-000007
+CF,Change in receivables,FY2022,59.623,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-25-000007
+CF,Change in contract assets,FY2022,-113.41,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-25-000007
+CF,Change in inventories,FY2022,-14.307,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-25-000007
+CF,Contributions to construction JVs,FY2022,-53.787,,False,gva:EquityInConstructionJointVentures,0000861459-25-000007
+CF,Distributions from construction JVs,FY2022,19.223,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-25-000007
+CF,Change in other assets,FY2022,16.868,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-25-000007
+CF,Change in accounts payable,FY2022,-9.778,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-25-000007
+CF,Change in accrued and other liabilities,FY2022,-19.499,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-25-000007
+CF,Legal settlement deposit,FY2022,129.0,,False,gva:IncreaseDecreaseInInsuranceReceivableForLegalSettlement,0000861459-25-000007
+CF,Legal settlement accrual,FY2022,-129.0,,False,gva:IncreaseDecreaseInAccrualForLegalSettlement,0000861459-25-000007
+CF,Cash from operations,FY2022,55.64699999999999,55.647,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-25-000007
+CF,Capex,FY2022,-121.612,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-25-000007
+CF,Proceeds from sale of PP&E,FY2022,26.064,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-25-000007
+CF,Acquisitions,FY2022,-0.0,,False,us-gaap:PaymentsToAcquireBusinessesGross,0000861459-25-000007
+CF,Acquisition price adjustments,FY2022,-0.0,,False,us-gaap:PaymentsForProceedsFromPreviousAcquisition,0000861459-25-000007
+CF,Proceeds from sale of business,FY2022,140.576,,False,us-gaap:ProceedsFromDivestitureOfBusinessesNetOfCashDivested,0000861459-25-000007
+CF,Purchases of marketable securities,FY2022,-94.104,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-25-000007
+CF,Maturities of marketable securities,FY2022,45.0,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-25-000007
+CF,Called marketable securities,FY2022,0.0,,False,,0000861459-25-000007
+CF,Notes receivable issued,FY2022,-7.56,,False,gva:PaymentsForProceedsFromNotesReceivableNetOfCollections,0000861459-25-000007
+CF,Notes receivable collected,FY2022,0.63,,False,us-gaap:ProceedsFromCollectionOfNotesReceivable,0000861459-25-000007
+CF,Life insurance proceeds,FY2022,0.0,,False,,0000861459-25-000007
+CF,Other investing,FY2022,0.006,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-25-000007
+CF,Cash from investing,FY2022,-11.000000000000005,-11.0,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-25-000007
+CF,Convertible notes issued,FY2022,0.0,,False,us-gaap:ProceedsFromConvertibleDebt,0000861459-25-000007
+CF,Other debt issued,FY2022,50.0,,False,us-gaap:ProceedsFromLongTermLinesOfCredit,0000861459-25-000007
+CF,Debt repaid,FY2022,-125.164,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-25-000007
+CF,Capped calls,FY2022,-0.0,,False,gva:PaymentsForCappedCallTransaction,0000861459-25-000007
+CF,Capped call unwind,FY2022,0.0,,False,,0000861459-25-000007
+CF,Warrants redeemed,FY2022,-0.0,,False,us-gaap:PaymentsForRepurchaseOfWarrants,0000861459-25-000007
+CF,Debt issuance costs,FY2022,-0.0,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-25-000007
+CF,Dividends paid,FY2022,-23.271,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-25-000007
+CF,Share repurchases,FY2022,-70.898,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-25-000007
+CF,NCI contributions,FY2022,13.15,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-25-000007
+CF,NCI distributions,FY2022,-8.567,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-25-000007
+CF,Other financing,FY2022,0.439,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-25-000007
+CF,Cash from financing,FY2022,-164.311,-164.311,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-25-000007
+CF,Net change in cash,FY2022,-119.66400000000002,-119.664,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-25-000007
+CF,Net income incl. NCI,FY2023,29.587,,False,us-gaap:ProfitLoss,0000861459-26-000004
+CF,D&A,FY2023,92.27,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-26-000004
+CF,Stock-based compensation,FY2023,10.477,,False,us-gaap:ShareBasedCompensation,0000861459-26-000004
+CF,Deferred income taxes,FY2023,26.556,,False,us-gaap:DeferredIncomeTaxExpenseBenefit,0000861459-26-000004
+CF,Gain on sale of PP&E,FY2023,-28.346,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-26-000004
+CF,Amortisation of debt costs,FY2023,2.39,,False,us-gaap:AmortizationOfFinancingCostsAndDiscounts,0000861459-26-000004
+CF,Amortisation of convertible discount,FY2023,0.0,,False,,0000861459-26-000004
+CF,Non-cash loss on debt extinguishment,FY2023,51.052,,False,gva:GainLossOnExtinguishmentOfDebtNonCash,0000861459-26-000004
+CF,Loss on conversion option derivative,FY2023,0.0,,False,,0000861459-26-000004
+CF,Convertible inducement expense,FY2023,0.0,,False,,0000861459-26-000004
+CF,Impairment charges,FY2023,0.0,,False,,0000861459-26-000004
+CF,Construction JV (income) loss,FY2023,18.617,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-26-000004
+CF,Income from affiliates,FY2023,-25.748,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000004
+CF,Other non-cash items,FY2023,5.695,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-26-000004
+CF,Change in receivables,FY2023,-128.099,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-26-000004
+CF,Change in contract assets,FY2023,49.691,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-26-000004
+CF,Change in inventories,FY2023,-1.43,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-26-000004
+CF,Contributions to construction JVs,FY2023,-21.323,,False,gva:EquityInConstructionJointVentures,0000861459-26-000004
+CF,Distributions from construction JVs,FY2023,29.337,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-26-000004
+CF,Change in other assets,FY2023,-17.718,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-26-000004
+CF,Change in accounts payable,FY2023,66.828,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-26-000004
+CF,Change in accrued and other liabilities,FY2023,23.871,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-26-000004
+CF,Legal settlement deposit,FY2023,0.0,,False,,0000861459-26-000004
+CF,Legal settlement accrual,FY2023,0.0,,False,,0000861459-26-000004
+CF,Cash from operations,FY2023,183.707,183.707,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-26-000004
+CF,Capex,FY2023,-140.384,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-26-000004
+CF,Proceeds from sale of PP&E,FY2023,38.109,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-26-000004
+CF,Acquisitions,FY2023,-294.018,,False,us-gaap:PaymentsToAcquireBusinessesGross,0000861459-26-000004
+CF,Acquisition price adjustments,FY2023,0.0,,False,,0000861459-26-000004
+CF,Proceeds from sale of business,FY2023,0.0,,False,,0000861459-26-000004
+CF,Purchases of marketable securities,FY2023,-9.74,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-26-000004
+CF,Maturities of marketable securities,FY2023,40.0,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-26-000004
+CF,Called marketable securities,FY2023,0.0,,False,,0000861459-26-000004
+CF,Notes receivable issued,FY2023,0.0,,False,,0000861459-26-000004
+CF,Notes receivable collected,FY2023,0.0,,False,,0000861459-26-000004
+CF,Life insurance proceeds,FY2023,0.0,,False,,0000861459-26-000004
+CF,Other investing,FY2023,6.743,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-26-000004
+CF,Cash from investing,FY2023,-359.28999999999996,-359.29,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-26-000004
+CF,Convertible notes issued,FY2023,373.75,,False,us-gaap:ProceedsFromConvertibleDebt,0000861459-26-000004
+CF,Other debt issued,FY2023,305.0,,False,us-gaap:ProceedsFromLongTermLinesOfCredit,0000861459-26-000004
+CF,Debt repaid,FY2023,-305.118,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-26-000004
+CF,Capped calls,FY2023,-53.035,,False,gva:PaymentsForCappedCallTransaction,0000861459-26-000004
+CF,Capped call unwind,FY2023,0.0,,False,,0000861459-26-000004
+CF,Warrants redeemed,FY2023,-13.201,,False,us-gaap:PaymentsForRepurchaseOfWarrants,0000861459-26-000004
+CF,Debt issuance costs,FY2023,-10.865,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-26-000004
+CF,Dividends paid,FY2023,-22.811,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-26-000004
+CF,Share repurchases,FY2023,-4.124,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-26-000004
+CF,NCI contributions,FY2023,43.3,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-26-000004
+CF,NCI distributions,FY2023,-14.224,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-26-000004
+CF,Other financing,FY2023,0.583,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-26-000004
+CF,Cash from financing,FY2023,299.255,299.255,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-26-000004
+CF,Net change in cash,FY2023,123.67200000000003,123.672,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-26-000004
+CF,Net income incl. NCI,FY2024,140.443,,False,us-gaap:ProfitLoss,0000861459-26-000004
+CF,D&A,FY2024,126.331,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-26-000004
+CF,Stock-based compensation,FY2024,19.595,,False,us-gaap:ShareBasedCompensation,0000861459-26-000004
+CF,Deferred income taxes,FY2024,13.655,,False,us-gaap:DeferredIncomeTaxExpenseBenefit,0000861459-26-000004
+CF,Gain on sale of PP&E,FY2024,-8.764,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-26-000004
+CF,Amortisation of debt costs,FY2024,4.501,,False,us-gaap:AmortizationOfFinancingCostsAndDiscounts,0000861459-26-000004
+CF,Amortisation of convertible discount,FY2024,0.0,,False,,0000861459-26-000004
+CF,Non-cash loss on debt extinguishment,FY2024,27.552,,False,gva:GainLossOnExtinguishmentOfDebtNonCash,0000861459-26-000004
+CF,Loss on conversion option derivative,FY2024,0.0,,False,,0000861459-26-000004
+CF,Convertible inducement expense,FY2024,0.0,,False,,0000861459-26-000004
+CF,Impairment charges,FY2024,0.0,,False,,0000861459-26-000004
+CF,Construction JV (income) loss,FY2024,5.102,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-26-000004
+CF,Income from affiliates,FY2024,-16.982,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000004
+CF,Other non-cash items,FY2024,3.958,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-26-000004
+CF,Change in receivables,FY2024,102.891,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-26-000004
+CF,Change in contract assets,FY2024,-11.468,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-26-000004
+CF,Change in inventories,FY2024,-2.862,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-26-000004
+CF,Contributions to construction JVs,FY2024,-7.718,,False,gva:EquityInConstructionJointVentures,0000861459-26-000004
+CF,Distributions from construction JVs,FY2024,33.836,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-26-000004
+CF,Change in other assets,FY2024,9.534,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-26-000004
+CF,Change in accounts payable,FY2024,0.42,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-26-000004
+CF,Change in accrued and other liabilities,FY2024,16.319,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-26-000004
+CF,Legal settlement deposit,FY2024,0.0,,False,,0000861459-26-000004
+CF,Legal settlement accrual,FY2024,0.0,,False,,0000861459-26-000004
+CF,Cash from operations,FY2024,456.343,456.343,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-26-000004
+CF,Capex,FY2024,-136.405,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-26-000004
+CF,Proceeds from sale of PP&E,FY2024,13.852,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-26-000004
+CF,Acquisitions,FY2024,-134.361,,False,us-gaap:PaymentsToAcquireBusinessesGross,0000861459-26-000004
+CF,Acquisition price adjustments,FY2024,0.0,,False,,0000861459-26-000004
+CF,Proceeds from sale of business,FY2024,0.0,,False,,0000861459-26-000004
+CF,Purchases of marketable securities,FY2024,-10.977,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-26-000004
+CF,Maturities of marketable securities,FY2024,38.0,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-26-000004
+CF,Called marketable securities,FY2024,0.0,,False,,0000861459-26-000004
+CF,Notes receivable issued,FY2024,0.0,,False,,0000861459-26-000004
+CF,Notes receivable collected,FY2024,0.0,,False,,0000861459-26-000004
+CF,Life insurance proceeds,FY2024,0.0,,False,,0000861459-26-000004
+CF,Other investing,FY2024,1.335,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-26-000004
+CF,Cash from investing,FY2024,-228.55599999999995,-228.556,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-26-000004
+CF,Convertible notes issued,FY2024,373.75,,False,us-gaap:ProceedsFromConvertibleDebt,0000861459-26-000004
+CF,Other debt issued,FY2024,0.0,,False,us-gaap:ProceedsFromLongTermLinesOfCredit,0000861459-26-000004
+CF,Debt repaid,FY2024,-310.498,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-26-000004
+CF,Capped calls,FY2024,-46.046,,False,gva:PaymentsForCappedCallTransaction,0000861459-26-000004
+CF,Capped call unwind,FY2024,0.0,,False,,0000861459-26-000004
+CF,Warrants redeemed,FY2024,-0.497,,False,us-gaap:PaymentsForRepurchaseOfWarrants,0000861459-26-000004
+CF,Debt issuance costs,FY2024,-10.474,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-26-000004
+CF,Dividends paid,FY2024,-22.813,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-26-000004
+CF,Share repurchases,FY2024,-50.631,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-26-000004
+CF,NCI contributions,FY2024,24.0,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-26-000004
+CF,NCI distributions,FY2024,-25.587,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-26-000004
+CF,Other financing,FY2024,1.676,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-26-000004
+CF,Cash from financing,FY2024,-67.11999999999999,-67.12,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-26-000004
+CF,Net change in cash,FY2024,160.6670000000001,160.667,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-26-000004
+CF,Net income incl. NCI,FY2025,220.351,,False,us-gaap:ProfitLoss,0000861459-26-000004
+CF,D&A,FY2025,162.433,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-26-000004
+CF,Stock-based compensation,FY2025,39.15,,False,us-gaap:ShareBasedCompensation,0000861459-26-000004
+CF,Deferred income taxes,FY2025,23.8,,False,us-gaap:DeferredIncomeTaxExpenseBenefit,0000861459-26-000004
+CF,Gain on sale of PP&E,FY2025,-20.207,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-26-000004
+CF,Amortisation of debt costs,FY2025,4.59,,False,us-gaap:AmortizationOfFinancingCostsAndDiscounts,0000861459-26-000004
+CF,Amortisation of convertible discount,FY2025,0.0,,False,,0000861459-26-000004
+CF,Non-cash loss on debt extinguishment,FY2025,-0.0,,False,gva:GainLossOnExtinguishmentOfDebtNonCash,0000861459-26-000004
+CF,Loss on conversion option derivative,FY2025,0.0,,False,,0000861459-26-000004
+CF,Convertible inducement expense,FY2025,0.0,,False,,0000861459-26-000004
+CF,Impairment charges,FY2025,0.0,,False,,0000861459-26-000004
+CF,Construction JV (income) loss,FY2025,-7.622,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-26-000004
+CF,Income from affiliates,FY2025,-14.958,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000004
+CF,Other non-cash items,FY2025,0.863,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-26-000004
+CF,Change in receivables,FY2025,-38.709,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-26-000004
+CF,Change in contract assets,FY2025,122.004,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-26-000004
+CF,Change in inventories,FY2025,-0.746,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-26-000004
+CF,Contributions to construction JVs,FY2025,-9.163,,False,gva:EquityInConstructionJointVentures,0000861459-26-000004
+CF,Distributions from construction JVs,FY2025,12.237,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-26-000004
+CF,Change in other assets,FY2025,-27.685,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-26-000004
+CF,Change in accounts payable,FY2025,-20.374,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-26-000004
+CF,Change in accrued and other liabilities,FY2025,22.952,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-26-000004
+CF,Legal settlement deposit,FY2025,0.0,,False,,0000861459-26-000004
+CF,Legal settlement accrual,FY2025,0.0,,False,,0000861459-26-000004
+CF,Cash from operations,FY2025,468.91599999999994,468.916,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-26-000004
+CF,Capex,FY2025,-138.27,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-26-000004
+CF,Proceeds from sale of PP&E,FY2025,32.845,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-26-000004
+CF,Acquisitions,FY2025,-777.517,,False,us-gaap:PaymentsToAcquireBusinessesGross,0000861459-26-000004
+CF,Acquisition price adjustments,FY2025,0.0,,False,,0000861459-26-000004
+CF,Proceeds from sale of business,FY2025,0.0,,False,,0000861459-26-000004
+CF,Purchases of marketable securities,FY2025,-238.371,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-26-000004
+CF,Maturities of marketable securities,FY2025,125.225,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-26-000004
+CF,Called marketable securities,FY2025,0.0,,False,,0000861459-26-000004
+CF,Notes receivable issued,FY2025,0.0,,False,,0000861459-26-000004
+CF,Notes receivable collected,FY2025,0.0,,False,,0000861459-26-000004
+CF,Life insurance proceeds,FY2025,0.0,,False,,0000861459-26-000004
+CF,Other investing,FY2025,2.367,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-26-000004
+CF,Cash from investing,FY2025,-993.7210000000001,-993.721,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-26-000004
+CF,Convertible notes issued,FY2025,0.0,,False,us-gaap:ProceedsFromConvertibleDebt,0000861459-26-000004
+CF,Other debt issued,FY2025,685.0,,False,us-gaap:ProceedsFromLongTermLinesOfCredit,0000861459-26-000004
+CF,Debt repaid,FY2025,-86.113,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-26-000004
+CF,Capped calls,FY2025,-0.0,,False,gva:PaymentsForCappedCallTransaction,0000861459-26-000004
+CF,Capped call unwind,FY2025,0.0,,False,,0000861459-26-000004
+CF,Warrants redeemed,FY2025,-0.0,,False,us-gaap:PaymentsForRepurchaseOfWarrants,0000861459-26-000004
+CF,Debt issuance costs,FY2025,-2.799,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-26-000004
+CF,Dividends paid,FY2025,-22.719,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-26-000004
+CF,Share repurchases,FY2025,-48.208,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-26-000004
+CF,NCI contributions,FY2025,3.345,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-26-000004
+CF,NCI distributions,FY2025,-53.247,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-26-000004
+CF,Other financing,FY2025,0.436,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-26-000004
+CF,Cash from financing,FY2025,475.69499999999994,475.695,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-26-000004
+CF,Net change in cash,FY2025,-49.11000000000024,-49.11,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-26-000004
+CF,Net income incl. NCI,H1 2025,52.018,,False,us-gaap:ProfitLoss,0000861459-26-000029
+CF,D&A,H1 2025,65.368,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-26-000029
+CF,Stock-based compensation,H1 2025,34.632,,False,us-gaap:ShareBasedCompensation,0000861459-26-000029
+CF,Deferred income taxes,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Gain on sale of PP&E,H1 2025,-5.343,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-26-000029
+CF,Amortisation of debt costs,H1 2025,2.163,,False,us-gaap:AmortizationOfFinancingCosts,0000861459-26-000029
+CF,Amortisation of convertible discount,H1 2025,0.0,,False,us-gaap:AmortizationOfDebtDiscountPremium,0000861459-26-000029
+CF,Non-cash loss on debt extinguishment,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Loss on conversion option derivative,H1 2025,0.0,,False,us-gaap:DerivativeLossOnDerivative,0000861459-26-000029
+CF,Convertible inducement expense,H1 2025,0.0,,False,us-gaap:InducedConversionOfConvertibleDebtExpense,0000861459-26-000029
+CF,Impairment charges,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Construction JV (income) loss,H1 2025,-3.814,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-26-000029
+CF,Income from affiliates,H1 2025,-4.792,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000029
+CF,Other non-cash items,H1 2025,-0.207,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-26-000029
+CF,Change in receivables,H1 2025,-192.494,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-26-000029
+CF,Change in contract assets,H1 2025,40.197,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-26-000029
+CF,Change in inventories,H1 2025,-18.319,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-26-000029
+CF,Contributions to construction JVs,H1 2025,-9.163,,False,gva:EquityInConstructionJointVentures,0000861459-26-000029
+CF,Distributions from construction JVs,H1 2025,5.55,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-26-000029
+CF,Change in other assets,H1 2025,7.221,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-26-000029
+CF,Change in accounts payable,H1 2025,35.92,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-26-000029
+CF,Change in accrued and other liabilities,H1 2025,-3.499,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-26-000029
+CF,Legal settlement deposit,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Legal settlement accrual,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Cash from operations,H1 2025,5.438000000000036,5.438,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-26-000029
+CF,Capex,H1 2025,-61.022,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-26-000029
+CF,Proceeds from sale of PP&E,H1 2025,8.346,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-26-000029
+CF,Acquisitions,H1 2025,-0.0,,False,us-gaap:PaymentsToAcquireBusinessesGross,0000861459-26-000029
+CF,Acquisition price adjustments,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Proceeds from sale of business,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Purchases of marketable securities,H1 2025,-172.578,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-26-000029
+CF,Maturities of marketable securities,H1 2025,17.6,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-26-000029
+CF,Called marketable securities,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Notes receivable issued,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Notes receivable collected,H1 2025,0.0,,False,us-gaap:ProceedsFromCollectionOfNotesReceivable,0000861459-26-000029
+CF,Life insurance proceeds,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Other investing,H1 2025,0.399,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-26-000029
+CF,Cash from investing,H1 2025,-207.25500000000002,-207.255,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-26-000029
+CF,Convertible notes issued,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Other debt issued,H1 2025,0.0,,False,us-gaap:ProceedsFromIssuanceOfLongTermDebt,0000861459-26-000029
+CF,Debt repaid,H1 2025,-0.552,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-26-000029
+CF,Capped calls,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Capped call unwind,H1 2025,0.0,,False,gva:ProceedsFromPartialUnwindOfCappedCall,0000861459-26-000029
+CF,Warrants redeemed,H1 2025,0.0,,False,,0000861459-26-000029
+CF,Debt issuance costs,H1 2025,-0.0,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-26-000029
+CF,Dividends paid,H1 2025,-11.338,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-26-000029
+CF,Share repurchases,H1 2025,-15.317,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-26-000029
+CF,NCI contributions,H1 2025,0.0,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-26-000029
+CF,NCI distributions,H1 2025,-27.25,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-26-000029
+CF,Other financing,H1 2025,-0.039,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-26-000029
+CF,Cash from financing,H1 2025,-54.496,-54.496,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-26-000029
+CF,Net change in cash,H1 2025,-256.313,-256.313,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-26-000029
+CF,Net income incl. NCI,H1 2026,-307.973,,False,us-gaap:ProfitLoss,0000861459-26-000029
+CF,D&A,H1 2026,89.048,,False,us-gaap:DepreciationDepletionAndAmortization,0000861459-26-000029
+CF,Stock-based compensation,H1 2026,43.86,,False,us-gaap:ShareBasedCompensation,0000861459-26-000029
+CF,Deferred income taxes,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Gain on sale of PP&E,H1 2026,-4.186,,False,us-gaap:GainLossOnSaleOfPropertyPlantEquipment,0000861459-26-000029
+CF,Amortisation of debt costs,H1 2026,3.344,,False,us-gaap:AmortizationOfFinancingCosts,0000861459-26-000029
+CF,Amortisation of convertible discount,H1 2026,3.511,,False,us-gaap:AmortizationOfDebtDiscountPremium,0000861459-26-000029
+CF,Non-cash loss on debt extinguishment,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Loss on conversion option derivative,H1 2026,363.53,,False,us-gaap:DerivativeLossOnDerivative,0000861459-26-000029
+CF,Convertible inducement expense,H1 2026,2.9,,False,us-gaap:InducedConversionOfConvertibleDebtExpense,0000861459-26-000029
+CF,Impairment charges,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Construction JV (income) loss,H1 2026,-13.096,,False,gva:UnconsolidatedConstructionJointVentureNetIncomeLoss,0000861459-26-000029
+CF,Income from affiliates,H1 2026,-9.17,,False,us-gaap:IncomeLossFromEquityMethodInvestments,0000861459-26-000029
+CF,Other non-cash items,H1 2026,2.782,,False,us-gaap:OtherNoncashIncomeExpense,0000861459-26-000029
+CF,Change in receivables,H1 2026,-268.405,,False,us-gaap:IncreaseDecreaseInReceivables,0000861459-26-000029
+CF,Change in contract assets,H1 2026,62.262,,False,us-gaap:IncreaseDecreaseInContractWithCustomerAsset,0000861459-26-000029
+CF,Change in inventories,H1 2026,-36.634,,False,us-gaap:IncreaseDecreaseInInventories,0000861459-26-000029
+CF,Contributions to construction JVs,H1 2026,-0.0,,False,gva:EquityInConstructionJointVentures,0000861459-26-000029
+CF,Distributions from construction JVs,H1 2026,14.562,,False,us-gaap:EquityMethodInvestmentDividendsOrDistributions,0000861459-26-000029
+CF,Change in other assets,H1 2026,18.0,,False,us-gaap:IncreaseDecreaseInOtherOperatingAssets,0000861459-26-000029
+CF,Change in accounts payable,H1 2026,169.933,,False,us-gaap:IncreaseDecreaseInAccountsPayable,0000861459-26-000029
+CF,Change in accrued and other liabilities,H1 2026,7.276,,False,us-gaap:IncreaseDecreaseInOtherAccountsPayableAndAccruedLiabilities,0000861459-26-000029
+CF,Legal settlement deposit,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Legal settlement accrual,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Cash from operations,H1 2026,141.544,141.544,True,us-gaap:NetCashProvidedByUsedInOperatingActivities,0000861459-26-000029
+CF,Capex,H1 2026,-55.868,,False,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,0000861459-26-000029
+CF,Proceeds from sale of PP&E,H1 2026,11.041,,False,us-gaap:ProceedsFromSaleOfPropertyPlantAndEquipment,0000861459-26-000029
+CF,Acquisitions,H1 2026,-162.098,,False,us-gaap:PaymentsToAcquireBusinessesGross,0000861459-26-000029
+CF,Acquisition price adjustments,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Proceeds from sale of business,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Purchases of marketable securities,H1 2026,-0.0,,False,us-gaap:PaymentsToAcquireMarketableSecurities,0000861459-26-000029
+CF,Maturities of marketable securities,H1 2026,66.5,,False,us-gaap:ProceedsFromSaleAndMaturityOfHeldToMaturitySecurities,0000861459-26-000029
+CF,Called marketable securities,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Notes receivable issued,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Notes receivable collected,H1 2026,24.96,,False,us-gaap:ProceedsFromCollectionOfNotesReceivable,0000861459-26-000029
+CF,Life insurance proceeds,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Other investing,H1 2026,1.037,,False,us-gaap:PaymentsForProceedsFromOtherInvestingActivities,0000861459-26-000029
+CF,Cash from investing,H1 2026,-114.428,-114.428,True,us-gaap:NetCashProvidedByUsedInInvestingActivities,0000861459-26-000029
+CF,Convertible notes issued,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Other debt issued,H1 2026,770.0,,False,us-gaap:ProceedsFromIssuanceOfLongTermDebt,0000861459-26-000029
+CF,Debt repaid,H1 2026,-465.293,,False,us-gaap:RepaymentsOfLongTermDebt,0000861459-26-000029
+CF,Capped calls,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Capped call unwind,H1 2026,56.675,,False,gva:ProceedsFromPartialUnwindOfCappedCall,0000861459-26-000029
+CF,Warrants redeemed,H1 2026,0.0,,False,,0000861459-26-000029
+CF,Debt issuance costs,H1 2026,-9.22,,False,us-gaap:PaymentsOfDebtIssuanceCosts,0000861459-26-000029
+CF,Dividends paid,H1 2026,-11.342,,False,us-gaap:PaymentsOfDividendsCommonStock,0000861459-26-000029
+CF,Share repurchases,H1 2026,-18.669,,False,us-gaap:PaymentsForRepurchaseOfCommonStock,0000861459-26-000029
+CF,NCI contributions,H1 2026,2.4,,False,us-gaap:ProceedsFromMinorityShareholders,0000861459-26-000029
+CF,NCI distributions,H1 2026,-4.185,,False,gva:DistributionsToNoncontrollingPartnersNet,0000861459-26-000029
+CF,Other financing,H1 2026,0.419,,False,us-gaap:ProceedsFromPaymentsForOtherFinancingActivities,0000861459-26-000029
+CF,Cash from financing,H1 2026,320.78499999999997,320.785,True,us-gaap:NetCashProvidedByUsedInFinancingActivities,0000861459-26-000029
+CF,Net change in cash,H1 2026,347.90099999999995,347.901,True,us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,0000861459-26-000029

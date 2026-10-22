@@ -26,6 +26,12 @@ PROCESSED = ROOT / "data" / "processed"
 
 FORMS = ("10-K", "10-K/A", "10-Q", "10-Q/A")
 
+# 8-K documents quoted in the assumptions memo
+EXTRA_DOCS = [
+    ("0000861459-26-000027", "gva-20260630xexx991.htm"),  # Q2 2026 earnings release, FY2026 guidance
+    ("0000861459-26-000036", "gva-20260811.htm"),          # settlement of the 2028 convertible notes
+]
+
 
 def filings_index(submissions_path: Path) -> pd.DataFrame:
     """Periodic reports from the submissions JSON, oldest first."""
@@ -55,6 +61,8 @@ def main() -> None:
 
     for row in idx.itertuples():
         sec_filing_doc(CIK, row.accessionNumber, row.primaryDocument, SEC_DIR)
+    for accession, document in EXTRA_DOCS:
+        sec_filing_doc(CIK, accession, document, SEC_DIR)
     print(f"documents saved to {SEC_DIR.relative_to(ROOT)}")
 
 
