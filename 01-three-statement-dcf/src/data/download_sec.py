@@ -1,0 +1,62 @@
+"""Download Granite Construction's SEC data: XBRL facts, filing history and
+the annual/quarterly report documents.
+
+Raw files go to data/raw/ untouched. The only thing written to
+data/processed/ is a list of the 10-K, 10-K/A and 10-Q filings, so the
+later steps (and SOURCES.md) can point to exact accession numbers.
+
+Run from the project folder:  python -m src.data.download_sec
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pandas as pd
+
+from common.data import sec_company_facts, sec_filing_doc, sec_submissions
+
+CIK = 861459  # GRANITE CONSTRUCTION INC, from sec.gov/files/company_tickers.json
+FIRST_YEAR = 2018  # filing date cut-off; early enough to see the restatement filings
+
+ROOT = Path(__file__).resolve().parents[2]
+RAW = ROOT / "data" / "raw"
+SEC_DIR = RAW / "sec"
+PROCESSED = ROOT / "data" / "processed"
+
+FORMS = ("10-K", "10-K/A", "10-Q", "10-Q/A")
+
+
+def filings_index(submissions_path: Path) -> pd.DataFrame:
+    """Periodic reports from the submissions JSON, oldest first."""
+    sub = json.loads(submissions_path.read_text())
+    recent = pd.DataFrame(sub["filings"]["recent"])
+    # older filings sit in extra JSON pages; GVA's recent block reaches back far
+    # enough, but check so a silent gap can't slip through
+    if recent["filingDate"].min() > f"{FIRST_YEAR}-01-01":
+        raise RuntimeError("recent filings don't reach back to FIRST_YEAR; load the extra pages")
+
+    cols = ["form", "filingDate", "reportDate", "accessionNumber", "primaryDocument"]
+    df = recent.loc[recent["form"].isin(FORMS), cols]
+    df = df[df["filingDate"] >= f"{FIRST_YEAR}-01-01"]
+    return df.sort_values("filingDate").reset_index(drop=True)
+
+
+def main() -> None:
+    facts = sec_company_facts(CIK, RAW)
+    subs = sec_submissions(CIK, RAW)
+    print(f"saved {facts.name} and {subs.name}")
+
+    idx = filings_index(subs)
+    PROCESSED.mkdir(parents=True, exist_ok=True)
+    idx.to_csv(PROCESSED / "filings_index.csv", index=False)
+    print(f"{len(idx)} periodic filings since {FIRST_YEAR}:")
+    print(idx["form"].value_counts().to_string())
+
+    for row in idx.itertuples():
+        sec_filing_doc(CIK, row.accessionNumber, row.primaryDocument, SEC_DIR)
+    print(f"documents saved to {SEC_DIR.relative_to(ROOT)}")
+
+
+if __name__ == "__main__":
+    main()

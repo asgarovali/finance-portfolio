@@ -20,6 +20,7 @@ load_dotenv()
 
 FRED_URL = "https://api.stlouisfed.org/fred/series/observations"
 SEC_FACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json"
+SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
 
 
 def _env(name: str) -> str:
@@ -65,13 +66,31 @@ def fred_series(series_id: str, raw_dir: str | Path, refresh: bool = False) -> P
     return download(FRED_URL, Path(raw_dir) / f"fred_{series_id}.json", params=params, refresh=refresh)
 
 
-def sec_company_facts(cik: int, raw_dir: str | Path, refresh: bool = False) -> Path:
-    """Download the XBRL companyfacts JSON for one company from SEC EDGAR."""
+def _sec_get(url: str, dest: Path, refresh: bool) -> Path:
     # SEC wants a User-Agent with a contact email and at most 10 requests/second
     headers = {"User-Agent": f"Ali Asgarov finance-portfolio {_env('SEC_EMAIL')}"}
-    dest = Path(raw_dir) / f"sec_companyfacts_{cik:010d}.json"
     existed = dest.exists()
-    path = download(SEC_FACTS_URL.format(cik=cik), dest, headers=headers, refresh=refresh)
+    path = download(url, dest, headers=headers, refresh=refresh)
     if refresh or not existed:
         time.sleep(0.2)
     return path
+
+
+def sec_company_facts(cik: int, raw_dir: str | Path, refresh: bool = False) -> Path:
+    """Download the XBRL companyfacts JSON for one company from SEC EDGAR."""
+    dest = Path(raw_dir) / f"sec_companyfacts_{cik:010d}.json"
+    return _sec_get(SEC_FACTS_URL.format(cik=cik), dest, refresh)
+
+
+def sec_submissions(cik: int, raw_dir: str | Path, refresh: bool = False) -> Path:
+    """Download the filing history (form types, dates, accession numbers)."""
+    dest = Path(raw_dir) / f"sec_submissions_{cik:010d}.json"
+    return _sec_get(SEC_SUBMISSIONS_URL.format(cik=cik), dest, refresh)
+
+
+def sec_filing_doc(cik: int, accession: str, document: str, raw_dir: str | Path,
+                   refresh: bool = False) -> Path:
+    """Download one document of a filing from the EDGAR archive."""
+    acc = accession.replace("-", "")
+    url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc}/{document}"
+    return _sec_get(url, Path(raw_dir) / f"{accession}_{document}", refresh)
