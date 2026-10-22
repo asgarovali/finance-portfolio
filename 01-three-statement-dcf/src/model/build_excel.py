@@ -162,7 +162,7 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
 
     sec("Operating profit")
     line("gm", "Gross margin",
-         lambda c, p: f"={I['gm26']}" if c == g else f"=IF({I['scen']}=3,{I['gm_up']},{I['gm']})", xl.FMT_PCT,
+         lambda c, p: f"={I['gm26']}" if c == g else f"=CHOOSE({I['scen']},{I['gm']},{I['gm_down']},{I['gm_up']})", xl.FMT_PCT,
          hist=f"=IS!{f25}{is_at['Gross profit']}/IS!{f25}{is_at['Revenue']}")
     line("gp", "Gross profit", lambda c, p: f"={c}{at['rev']}*{c}{at['gm']}")
     line("cogs", "Cost of revenue", lambda c, p: f"=-({c}{at['rev']}-{c}{at['gp']})")
@@ -208,21 +208,27 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     line("dwc", "Change in working capital (cash)", lambda c, p: f"=-({c}{at['twc']}-{p}{at['twc']})")
 
     sec("Capex and invested capital")
-    line("capex", "Capex", lambda c, p: f"=-{I['capex26']}" if c == g else f"=-{c}{at['rev']}*{I['capex']}")
+    # FY2027E on: net investment = revenue growth / sales-to-capital, so capital grows with revenue;
+    # capex = D&A + net investment - the part of it that goes into working capital
+    line("capex", "Capex", lambda c, p: f"=-{I['capex26']}" if c == g else
+         f"=-({c}{at['da']}+({c}{at['rev']}-{p}{at['rev']})/{I['s2c']}+{c}{at['dwc']})")
+    line("capexp", "Capex % revenue", lambda c, p: f"=-{c}{at['capex']}/{c}{at['rev']}", xl.FMT_PCT,
+         terminal="=-{t}{r_fcap}/{t}{r_rev}")
     line("acq", "Acquisitions (none modelled after FY2026)", lambda c, p: f"=-{I['acq26']}" if c == g else None)
     eq = (f"=BS!{f25}{bs_at['Total equity']}+BS!{f25}{bs_at['Current debt']}+BS!{f25}{bs_at['Long-term debt']}"
           f"-BS!{f25}{bs_at['Cash and cash equivalents']}-BS!{f25}{bs_at['Marketable securities, current']}"
           f"-BS!{f25}{bs_at['Marketable securities, long-term']}")
     line("ic", "Invested capital (year-end)",
          lambda c, p: f"={p}{at['ic']}-{c}{at['capex']}-{c}{at['acq']}-{c}{at['da']}-{c}{at['dwc']}", hist=eq)
-    line("roic", "ROIC on opening capital", lambda c, p: f"={c}{at['nopat']}/{p}{at['ic']}", xl.FMT_PCT,
-         terminal=f"={{t}}{{r_nopat}}/{COL['FY2030']}{{r_ic}}")
+    line("icr", "Invested capital / revenue", lambda c, p: f"={c}{at['ic']}/{c}{at['rev']}", xl.FMT_PCT,
+         hist=f"={f25}{{r_ic}}/{f25}{{r_rev}}")
+    line("roic", "ROIC on opening capital", lambda c, p: f"={c}{at['nopat']}/{p}{at['ic']}", xl.FMT_PCT)
 
     sec("Free cash flow to the firm (before smaller lines; acquisitions excluded)")
     line("fn", "NOPAT", lambda c, p: f"={c}{at['nopat']}", terminal="={t}{r_nopat}")
     line("fda", "D&A", lambda c, p: f"={c}{at['da']}", terminal="={t}{r_da}")
     line("fcap", "Capex", lambda c, p: f"={c}{at['capex']}",
-         terminal=f"=-({{t}}{{r_da}}+{I['gLR']}/{{t}}{{r_roic}}*{{t}}{{r_nopat}})")
+         terminal=f"=-({{t}}{{r_da}}+{I['gLR']}/{I['ronic']}*{{t}}{{r_nopat}})")
     line("fwc", "Change in working capital", lambda c, p: f"={c}{at['dwc']}", terminal="=0")
     line("fcff", "FCFF", lambda c, p: f"={c}{at['fn']}+{c}{at['fda']}+{c}{at['fcap']}+{c}{at['fwc']}",
          terminal=f"={{t}}{{r_fn}}+{{t}}{{r_fda}}+{{t}}{{r_fcap}}+{{t}}{{r_fwc}}", bold=True)
@@ -353,12 +359,22 @@ def build() -> Path:
         inp.cell(row=r, column=note_col, value=note).font = xl.NOTE
         r += 1
 
+    later: dict[str, int] = {}  # formula inputs filled once the statement rows are known
+
+    def placeholder(key, label, note):
+        nonlocal r
+        inp.cell(row=r, column=1, value=label).font = xl.BASE
+        inp.cell(row=r, column=note_col, value=note).font = xl.NOTE
+        I[key] = f"Inputs!$B${r}"
+        later[key] = r
+        r += 1
+
     h1 = interim_h1(facts, wide["IS"], wide["CF"])
     interim = "H1 2026 actual (Q2 10-Q); replace with 9M on 29 Oct"
 
     section("Scenario")
-    scalar("scen", "Scenario (1 base, 2 downside, 3 upside margin)", 1, "0",
-           "2 = reauthorisation gap (memo s.5); 3 = 16% gross margin (memo s.6)")
+    scalar("scen", "Scenario (1 base, 2 downside, 3 upside)", 1, "0",
+           "2 = reauthorisation gap + 14.5% gross margin; 3 = gross margin implied by FY2026 guidance; memo s.5-6")
 
     section("Revenue")
     scalar("rev26", "FY2026E revenue", 5300, xl.FMT_NUM, "Low end of guidance (USD 5.3-5.5bn), 8-K 30 Jul 2026; memo s.5")
@@ -372,9 +388,18 @@ def build() -> Path:
     scalar("down", "Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
 
     section("Margins")
-    scalar("gm26", "FY2026E gross margin", round(h1["gross_margin"], 4), xl.FMT_PCT, interim, "INTERIM")
-    scalar("gm", "Gross margin from FY2027E, base", 0.145, xl.FMT_PCT, "FY2025 16.1% less claim-driven revisions; memo s.6")
-    scalar("gm_up", "Gross margin from FY2027E, upside", 0.16, xl.FMT_PCT, "FY2025 level held; memo s.6")
+    scalar("gm26", "FY2026E gross margin", round(h1["gross_margin"], 4), xl.FMT_PCT,
+           "H1 2026 actual (Q2 10-Q), seasonally low; replace with 9M on 29 Oct", "INTERIM")
+    scalar("gm", "Gross margin from FY2027E, base", 0.15, xl.FMT_PCT,
+           "Midpoint of the 14.6-15.4% FY2025 normalisation range; memo s.6")
+    scalar("gm_down", "Gross margin from FY2027E, downside", 0.145, xl.FMT_PCT,
+           "All FY2025 upward revisions treated as one-off; memo s.6")
+    scalar("adj_lo", "FY2026 guidance: adjusted EBITDA margin, low", 0.1225, xl.FMT_PCT, "8-K 30 Jul 2026, Exhibit 99.1")
+    scalar("adj_hi", "FY2026 guidance: adjusted EBITDA margin, high", 0.1325, xl.FMT_PCT, "8-K 30 Jul 2026, Exhibit 99.1")
+    placeholder("adj25", "FY2025 adjusted EBITDA margin (rebuilt)",
+                "Granite definition from filed lines: EBIT + D&A + SBC + other costs + affiliates + other income - NCI")
+    placeholder("gm_up", "Gross margin from FY2027E, upside",
+                "Guidance midpoint + FY2025 gap between gross margin and adjusted EBITDA margin; memo s.6")
     scalar("sga", "SG&A % revenue", 0.0875, xl.FMT_PCT,
            "Top of FY2026 guidance (8.25-8.75%, incl. SBC), held; low-end revenue on a largely fixed cost base; memo s.6")
 
@@ -386,8 +411,8 @@ def build() -> Path:
 
     section("Capex, D&A, tax")
     scalar("capex26", "FY2026E capex", 150, xl.FMT_NUM, "Midpoint of guidance USD 140-160m, 8-K 30 Jul 2026")
-    scalar("capex", "Capex % revenue FY2027E-FY2030E", 0.035, xl.FMT_PCT,
-           "Near FY2022-25 average 3.6%; terminal year set by reinvestment rule (Sched); memo s.8")
+    placeholder("s2c", "Sales-to-capital ratio, FY2022-25 average",
+                "Revenue / year-end invested capital; drives FY2027E-30E reinvestment; memo s.8")
     dep_row = r
     I["dep"] = f"Inputs!$B${r}"
     r += 1  # formula, filled below
@@ -412,6 +437,8 @@ def build() -> Path:
            "Damodaran histimpl.xls, implied ERP start of 2026; check Oct 2026 monthly in step 5")
     scalar("rf", "Risk-free rate (10y Treasury)", None, xl.FMT_PCT, "FRED DGS10 on valuation date", "PENDING")
     scalar("kd", "Pre-tax cost of debt", None, xl.FMT_PCT, "market yield on 6.375% 2034 notes at valuation date", "PENDING")
+    placeholder("ronic", "Terminal RONIC, base (FY2022-25 average ROIC)",
+                "EBIT after 25% tax / average invested capital; sensitivities WACC and 13%; memo s.8")
 
     # statements
     sheets = {}
@@ -498,6 +525,28 @@ def build() -> Path:
                    f"=(CF!{f25}{cf_at['D&A']}-CF!{f25}{cf_at['memo:of which: intangible amortisation (in D&A)']})/IS!{f25}{rev}",
                    xl.FMT_PCT)
     inp.cell(row=dep_row, column=note_col, value="FY2025 level, excl. amortisation; memo s.8").font = xl.NOTE
+
+    yrs = ["FY2022", "FY2023", "FY2024", "FY2025"]
+
+    def ic(c):  # invested capital = equity incl. NCI + debt - cash - marketable securities
+        b = lambda name: f"BS!{c}{bs_at[name]}"
+        return (f"({b('Total equity')}+{b('Current debt')}+{b('Long-term debt')}-{b('Cash and cash equivalents')}"
+                f"-{b('Marketable securities, current')}-{b('Marketable securities, long-term')})")
+
+    fills = {
+        "s2c": ("=AVERAGE(" + ",".join(f"IS!{COL[y]}{rev}/{ic(COL[y])}" for y in yrs) + ")", "0.00"),
+        "ronic": ("=AVERAGE(" + ",".join(
+            f"IS!{COL[y]}{is_at['Operating income']}*(1-{I['tax']})/(({ic(COL[y])}+{ic(COL[HIST[HIST.index(y) - 1]])})/2)"
+            for y in yrs) + ")", xl.FMT_PCT),
+        "adj25": (f"=(IS!{f25}{is_at['Operating income']}+CF!{f25}{cf_at['D&A']}+CF!{f25}{cf_at['Stock-based compensation']}"
+                  f"-IS!{f25}{is_at['Other costs, net']}+IS!{f25}{is_at['Equity income of affiliates']}"
+                  f"+IS!{f25}{is_at['Other income, net']}+IS!{f25}{is_at['Non-controlling interests']})/IS!{f25}{rev}",
+                  xl.FMT_PCT),
+        "gm_up": (f"=AVERAGE({I['adj_lo']},{I['adj_hi']})+(IS!{f25}{is_at['Gross profit']}/IS!{f25}{rev}-{I['adj25']})",
+                  xl.FMT_PCT),
+    }
+    for key, (formula, fmt) in fills.items():
+        xl.put_formula(inp, f"B{later[key]}", formula, fmt)
 
     sched_ws, _ = build_sched(wb, I, is_at, bs_at)
 

@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. Section 8 agreed, including the terminal RONIC. Section 9 sets out the approach; numbers come in step 5.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. Section 8 agreed, including the terminal RONIC (9.7%); the sales-to-capital basis is still open. The smaller-lines table in section 6 is awaiting review. Section 9 sets out the approach; numbers come in step 5.
 
 ## 1. Valuation date and balance sheet
 
@@ -105,12 +105,23 @@ So the base case assumes reauthorisation passes without a long gap, and the down
 
 Projects below USD 5m aren't disclosed, so this is a partial view.
 
-| Case | Gross margin |
+| Case | Gross margin from FY2027E |
 |---|---|
-| Base | 14.5% from FY2027 (agreed 22 Oct), slightly below FY2025 and between the two adjusted FY2025 figures above. FY2026E uses the 9M actual margin. |
-| Upside | 16%, the FY2025 level, held. |
+| Base | **15.0%**, the midpoint of the 14.6-15.4% range above |
+| Downside | 14.5%: all FY2025 upward revisions treated as one-off. Combined with the reauthorisation gap in section 5 |
+| Upside | about 17.0%: management's FY2026 guidance, translated as below |
+
+FY2026E uses the 9M actual margin once it's out (see the note on interim values below).
+
+**Why the base case moved from 14.5% to 15.0% (22 Oct).** With 14.5% the base case stacked three conservative choices on top of each other: low-end revenue, the most conservative margin normalisation, and high-end SG&A. Each one is defensible, but together they describe a worse year than any single piece of evidence supports. 15.0% sits in the middle of the range the revision data gives, and 14.5% becomes the downside.
+
+**Upside: management guidance.** Guidance is for adjusted EBITDA margin (12.25-13.25% for FY2026), not gross margin, so it needs translating. Using Granite's own definition (net income after the JV partners' share, plus interest, tax, D&A, stock-based compensation and "other costs, net"), I rebuilt FY2025 adjusted EBITDA from the filed lines at 11.9% of revenue, against a 16.1% gross margin, a gap of 4.2 points. For H1 2026 the same rebuild gives 10.1%, against Granite's reported 10.3%, so the definition matches. Adding the 4.2-point gap to the 12.75% guidance midpoint gives an upside gross margin of about 17.0%. This is approximate: forecast SG&A (8.75%) is lower than FY2025's 9.2%, so guidance could be met with a slightly lower gross margin. Once the smaller lines are in the model, I'll add an adjusted EBITDA row and check the upside against guidance directly.
+
+**The gap to guidance that remains.** On the same translation, the base case's 15.0% gross margin gives an adjusted EBITDA margin of roughly 10.8%, still 1.5-2.5 points below FY2026 guidance. I keep that gap on purpose, because of Granite's forecasting history. The 2017-2019 restatement came from project forecasts that were too optimistic. FY2025 and H1 2026 margins were helped by claim settlements, which management itself calls out. Until margins without the claim benefits show up in the reported numbers, I don't take guidance as the central case.
 
 Segment margins follow from the total, with Materials kept above Construction as in every year since FY2021 except FY2024. The exact segment margins are set after Q3.
+
+**Interim values until Q3.** The FY2026E gross margin (14.7%), Materials share (16.7%) and organic growth (15.9%) in the model are H1 2026 actuals, used as placeholders until the 9M figures come out on 29 Oct. H1 margins are seasonally low for road construction: paving and highway work is concentrated in the warmer months. The filings show this. H1 2026 gross margin was 14.7%, but Q2 alone was 16.4%; H1 2025 was 15.5%, against 16.1% for the full year 2025. So the FY2026E placeholder understates the full year.
 
 **SG&A: 8.75% of revenue in FY2026E, the top of guidance** (8.25% to 8.75%, including about USD 48m of stock-based compensation). Much of SG&A is fixed: offices, management, systems. If revenue comes in at the low end of guidance, as I assume, the same cost base is a larger share of it, so the ratio sits at the high end. That's consistent with the revenue choice, not just extra caution. After FY2026 SG&A is held at 8.75% of revenue.
 
@@ -158,7 +169,7 @@ At a 14.5% gross margin these averages imply trade working capital of about **-1
 
 Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of roughly 1% of revenue in FY2026. The Q3 balance sheet will show whether that is already happening; at 30 June it is distorted by seasonality.
 
-## 8. Capex, D&A and tax (proposed, for review)
+## 8. Capex, D&A and tax
 
 **Depreciation and depletion: 3.3% of revenue.** This is the FY2025 level, excluding intangible amortisation. It rose from 2.6% (FY2023) and 2.8% (FY2024) because the 2025 acquisitions added a lot of quarry and plant assets. Net PP&E went from USD 716m to USD 1,261m in one year. An FY2022-25 average would understate depreciation on today's asset base, so I don't use it here. H1 2026 total D&A was 3.8% of revenue, which is consistent with this.
 
@@ -166,7 +177,27 @@ Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of 
 
 **Capex**
 - FY2026E: USD 150m, the midpoint of guidance (USD 140m to 160m, including about USD 50m of strategic materials investment). That's 2.8% of USD 5.3bn.
-- FY2027E-30E: 3.5% of revenue, close to the FY2022-25 average of 3.6%.
+- FY2027E-30E: driven by a sales-to-capital ratio, so invested capital grows with revenue (agreed 22 Oct). My first version (3.5% of revenue) let revenue grow 38% while capital stayed flat, which only works if the new revenue needs no new capital.
+
+Each year, net investment (capex minus D&A plus the increase in working capital) = increase in revenue / sales-to-capital. Working capital is already modelled from the days in section 7, so capex is what's left: D&A + net investment - increase in working capital.
+
+The ratio comes from Granite's FY2022-25 history (revenue / year-end invested capital). One choice is still open: whether to include goodwill and acquired intangibles in invested capital.
+
+| Sales-to-capital | FY2022 | FY2023 | FY2024 | FY2025 | Average |
+|---|---|---|---|---|---|
+| Including goodwill and intangibles | 3.61 | 2.86 | 3.25 | 2.32 | 3.01 |
+| Excluding goodwill and intangibles | 3.97 | 3.67 | 4.50 | 3.33 | 3.87 |
+
+The resulting path, in the base case:
+
+| | FY2026E | FY2027E | FY2028E | FY2029E | FY2030E | Terminal |
+|---|---|---|---|---|---|---|
+| Capex % revenue, ratio 3.01 | 2.8% | 7.2% | 6.4% | 5.5% | 4.5% | 5.5% |
+| ROIC on opening capital, ratio 3.01 | 12.4% | 13.6% | 13.5% | 13.3% | 13.0% | |
+| Capex % revenue, ratio 3.87 | 2.8% | 6.4% | 5.7% | 5.0% | 4.3% | 5.5% |
+| ROIC on opening capital, ratio 3.87 | 12.4% | 13.6% | 13.8% | 13.8% | 13.7% | |
+
+Either way, capex in FY2027E is about twice anything in Granite's FY2021-25 history (2.7-4.0% of revenue). That's what 12.9% organic growth costs if it needs capital at the historical rate. Granite's own recent growth didn't work like that: it came largely from acquisitions and from working capital being released, and both are excluded here by design.
 
 **Terminal year: reinvestment consistent with growth.** A business can only grow forever at rate g if it reinvests enough to fund that growth. The reinvestment rate, as a share of after-tax operating profit (NOPAT), has to be:
 
@@ -176,17 +207,17 @@ RONIC is the return earned on new capital. Net reinvestment is capex minus D&A p
 
 > capex = D&A + (g / RONIC) × NOPAT
 
-Capex in the terminal year therefore comes from this formula, not from a fixed percentage of revenue. In the model the terminal year is a separate, normalised column after FY2030E (FY2030E NOPAT grown by g), so FY2027E-FY2030E keep capex at 3.5% and the step-up shows in that column. I do it this way because in FY2030E itself working capital is still moving to its target, which would muddle the rule.
+Capex in the terminal year therefore comes from this formula, not from a fixed percentage of revenue. In the model the terminal year is a separate, normalised column after FY2030E (FY2030E NOPAT grown by g). I do it this way because in FY2030E itself working capital is still moving to its target, which would muddle the rule.
 
-**Base case (agreed): RONIC = the model's own ROIC in the terminal year** (NOPAT over invested capital), so new capital earns what the existing business earns. I'm comfortable with this because it should land close to Granite's FY2022-25 average ROIC of about 9.7% (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). A rough estimate at the base-case margins gives about 9-10%. The exact figure comes out of the model, and I check it against that average.
+**Base case (agreed 22 Oct): RONIC = 9.7%, Granite's FY2022-25 average ROIC**, entered as a formula over the history (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). My first proposal was to use the model's own terminal ROIC, on the expectation that it would land near 9.7%. That expectation was wrong. With capex at 3.5% of revenue the model's ROIC climbed to 15.6%, because capital didn't grow with revenue. So the historical average is now an input in its own right.
 
-**Open issue, found when the forecast was built (22 Oct):** the model's terminal ROIC comes out at about 15.6%, not 9-10% (Sched, interim inputs, before the smaller lines). The reason is that invested capital barely grows: capex at 3.5% of revenue only just covers D&A (3.3% depreciation plus amortisation), so capital stays around USD 2.1bn while revenue grows 38% from FY2026E to FY2030E. My earlier 9-10% estimate assumed capital would stay at FY2025's 43% of revenue; in the model it falls to about 29%. So "RONIC = model ROIC" no longer means "close to the historical 9.7%". Decision pending.
+With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.5% of revenue.
+
+During FY2027E-30E the model's ROIC on opening capital runs at about 13-14% (table above), above the 9.7% assumed for new capital in the terminal year. That's deliberate: by then the returns on today's business shouldn't be assumed to carry over to every new dollar invested.
 
 Sensitivities:
 - **RONIC = WACC (conservative):** growth creates no value.
 - **RONIC = 13% (optimistic):** about Granite's FY2024-25 ROIC. FY2022-23 were much lower, so I don't treat 13% as normal.
-
-A rough check shows why this matters. At the base-case 14.5% gross margin, NOPAT is about 4% of revenue. With g = 4% and RONIC around 10%, the reinvestment rate is about 40%, or roughly 1.6% of revenue. Terminal capex would then be about 4.9% of revenue (3.3% depreciation plus 1.6%), well above the 3.5% used in FY2027-30. If I just carried 3.5% into the terminal year, net capex would be about 0.2% of revenue. That only funds 4% growth if new capital earns around 80%, which isn't realistic, and it would overstate the terminal value. The step-up in FY2030E will be visible in the model rather than hidden.
 
 **Tax rate on operating profit: 25%.** This is the 21% federal rate plus about 4% state tax. In FY2025, state tax was USD 12.3m on USD 288.8m of pre-tax income, or 4.2% (tax rate reconciliation, FY2025 10-K). Several things support it:
 - Guidance is "mid-20s".
