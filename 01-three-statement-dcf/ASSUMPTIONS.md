@@ -77,14 +77,15 @@ I forecast Construction and Materials separately, because their margins differ a
 
 **FY2027E to FY2030E: organic growth only, fading to 4% by FY2030.** After FY2026 there are no further acquisitions unless I model one explicitly, with its price (section 4). Growth fades in a straight line from the FY2026 organic rate to 4% in FY2030. I chose 4% as a rough long-run US nominal GDP growth rate, and it will be sourced in step 5 alongside the terminal growth rate. The FY2026 organic rate needs the acquired-revenue figure for 9M 2026, which comes with the Q3 release. In H1 2026 organic growth was about 16%.
 
-**Federal funding (IIJA).** IIJA authorised federal highway programmes through federal fiscal year 2026, which ended on 30 Sep 2026. From what I've found so far:
-- Congress extended the programmes to 11 Dec 2026 in a short-term extension (reported as the Surface Transportation Extension Act of 2026, P.L. 119-103, passed as part of continuing resolution H.R. 6500).
-- A five-year reauthorisation bill, the BUILD America 250 Act (H.R. 8870), was approved by the House Transportation and Infrastructure Committee on 22 May 2026.
-- I found no report of Senate action or an enacted multi-year bill as of 22 Oct 2026.
+**Federal funding (IIJA).** IIJA authorised federal highway programmes through federal fiscal year 2026, which ended on 30 Sep 2026. Current status:
+- Congress extended the programmes to 11 Dec 2026 through the Surface Transportation Extension Act of 2026, which is Division C of H.R. 6500 and became P.L. 119-103 (enrolled bill text, Sec. 3001 and 3002(2); CRS R48845, p. 4). The bill was signed into law on 2 Sep 2026 (White House statement).
+- The House reauthorisation bill, the BUILD America 250 Act (H.R. 8870), was ordered to be reported by the committee in May 2026. CRS says it would raise assured annual highway funding by 7% over the IIJA (CRS R48845, p. 2).
+- I found no Senate bill and no enacted multi-year reauthorisation as of 22 Oct 2026.
+- None of the last five highway acts was replaced on time; each time Congress used short extensions (CRS R48845, p. 4). So a late reauthorisation is the usual pattern, not an unusual one. What hurts contractors is a long gap, when states hold back new work.
 
-**These points are provisional.** The primary sources (FHWA notices N 4520.297 and N 4510.916, and the CRS reports) block automated downloads, so I haven't read them myself yet. Search results and a Union of Concerned Scientists post (24 Sep 2026) are not good enough for the final version. See `data/SOURCES.md`.
+So the base case assumes reauthorisation passes without a long gap, and the downside case covers a gap lasting through FY2027. Sources are in `data/SOURCES.md`.
 
-**Downside case: reauthorisation late.** If the programme runs on short extensions through FY2027, state DOTs tend to hold back new lettings because they can't plan multi-year work. I model this as no Construction growth in FY2027, with the fade path then starting one year later. Materials growth is unchanged in this case, because about half of materials revenue goes to third parties. The exact mechanics are open for review.
+**Downside case: reauthorisation late (agreed 22 Oct).** If the programme runs on short extensions through FY2027, state DOTs tend to hold back new lettings because they can't plan multi-year work. I model this as no Construction growth in FY2027, with the fade path then starting one year later. Materials growth is unchanged in this case, because about half of materials revenue goes to third parties. The exact mechanics are open for review.
 
 ## 6. Margins
 
@@ -106,7 +107,7 @@ Projects below USD 5m aren't disclosed, so this is a partial view.
 
 | Case | Gross margin |
 |---|---|
-| Base | Normalises to about 14.5% from FY2027, slightly below FY2025. This sits between the two adjusted FY2025 figures above and at the bottom of the 14-15% range I had in mind before seeing them. FY2026E uses the 9M actual margin. |
+| Base | 14.5% from FY2027 (agreed 22 Oct), slightly below FY2025 and between the two adjusted FY2025 figures above. FY2026E uses the 9M actual margin. |
 | Upside | 16%, the FY2025 level, held. |
 
 Segment margins follow from the total, with Materials kept above Construction as in every year since FY2021 except FY2024. The exact segment margins are set after Q3.
@@ -133,7 +134,7 @@ My view, from progress-payment work: when a contractor takes on more projects, c
 
 At a 14.5% gross margin these averages imply trade working capital of about **-1.1% of revenue**. That's already less negative than the -2.2% at the end of FY2025.
 
-**Path to 0%.** FY2026E uses the averages. From FY2027 to FY2030 the gap to 0% closes in a straight line through the two lines that match the mechanism above: retention and contract assets. The other days stay at their averages. The split between those two lines is still to be set.
+**Path to 0%.** FY2026E uses the averages. Retention stays at its average 4.5% of revenue: that already ties up more cash every year as revenue grows, so I don't push it higher as well. The rest of the move to 0% goes through contract assets, which is work done ahead of approved progress payments. They rise in a straight line from 25.9 days in FY2026E to 30.0 days in FY2030E (26.9, 27.9, 29.0 in between). All other days stay at their averages. 30 days isn't outside Granite's own range: contract assets were 29.9 days at the end of FY2024.
 
 Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of roughly 1% of revenue in FY2026. The Q3 balance sheet will show whether that is already happening; at 30 June it is distorted by seasonality.
 

@@ -74,16 +74,28 @@ From the Q2 2026 10-Q, Note 9 and Note 14:
 | Q2 2026 earnings release (8-K Exhibit 99.1, filed 2026-07-30, accession 0000861459-26-000027) | EDGAR, saved in `raw/sec/` | FY2026 guidance and revenue from acquired businesses |
 | Q3 2026 results timing announcement (Business Wire, 2026-10-15) | Read on 2026-10-22 via https://www.stocktitan.net/news/GVA/granite-announces-timing-of-earnings-release-and-investor-conference-zivyqtefyhoz.html, because the Business Wire page wasn't reachable | Valuation date only: results before market open on 29 Oct 2026. To be confirmed by the EDGAR filing date |
 
-## Federal highway funding (IIJA): not yet verified from primary sources
+## Federal highway funding (IIJA)
 
-Used only for the downside scenario, not for any number in the base case. The points below come from search results and the Union of Concerned Scientists blog post of 24 Sep 2026 (https://blog.ucs.org/kshen/extra-time-quiet-cuts-surface-transportation-reauthorization-extension/), read on 2026-10-22:
-- Programmes extended from 30 Sep 2026 to 11 Dec 2026, a 72-day extension (Surface Transportation Extension Act of 2026, reported as P.L. 119-103, in continuing resolution H.R. 6500)
-- BUILD America 250 Act (H.R. 8870) approved by the House Transportation and Infrastructure Committee on 22 May 2026; no Senate bill found
+Used only for the downside scenario, not for any number in the base case. The statute is downloaded by script. The other pages block scripted downloads, so they were read in a browser on 2026-10-22 and saved by hand as PDFs in `raw/policy/`.
 
-The primary sources below returned HTTP 403 to automated requests. They need to be downloaded by hand into `raw/policy/` before the memo is final:
-- FHWA Notice N 4520.297 (obligation limitation for the extension): https://highways.dot.gov/laws-regulations/directives/notices/n-4520297
-- FHWA Notice N 4510.916 (apportionment for the extension): https://highways.dot.gov/laws-regulations/directives/notices/n-4510916
-- CRS R48845, Surface Transportation Reauthorization: Federal Highway Programs: https://www.congress.gov/crs-product/R48845
+| Fact | Source |
+|---|---|
+| Division C of H.R. 6500 is the Surface Transportation Extension Act of 2026 (Sec. 3001), with "extension end date" 11 Dec 2026 (Sec. 3002(2)) | Enrolled bill text, govinfo.gov (U.S. Government Publishing Office): https://www.govinfo.gov/content/pkg/BILLS-119hr6500enr/html/BILLS-119hr6500enr.htm, saved as `raw/policy/BILLS-119hr6500enr.htm` by `src/data/download_policy.py`, retrieved 2026-10-22 |
+| H.R. 6500, the Continuing Appropriations and Extensions Act, 2027, signed into law 2 Sep 2026 | White House statement: https://www.whitehouse.gov/briefings-statements/2026/09/congressional-bill-h-r-6500/ |
+| BUILD America 250 Act (H.R. 8870) "ordered to be reported (amended) in May 2026"; would increase assured annual highway funding by 7% over the IIJA | CRS R48845 (published 8 Sep 2026), Summary, p. 2 |
+| IIJA authorizations extended to 11 Dec 2026 by P.L. 119-103 | CRS R48845, notes to Table 1, p. 4 |
+| ISTEA, TEA-21, SAFETEA, MAP-21 and the FAST Act all expired before the next act passed, and Congress extended the programmes each time | CRS R48845, notes to Table 1, p. 4 |
+
+The House committee's own press release on H.R. 8870 wouldn't load in a browser (blank page), so the committee action is cited from CRS.
+
+Files in `raw/policy/`:
+
+| File | Document | URL |
+|---|---|---|
+| `BILLS-119hr6500enr.htm` | H.R. 6500 enrolled bill text (by script) | see table above |
+| `fhwa_n4520297.pdf` | FHWA Notice N 4520.297, obligation limitation for the extension | https://highways.dot.gov/laws-regulations/directives/notices/n-4520297 |
+| `fhwa_n4510916.pdf` | FHWA Notice N 4510.916, apportionment for the extension | https://highways.dot.gov/laws-regulations/directives/notices/n-4510916 |
+| `crs_r48845.pdf` | CRS R48845, Surface Transportation Reauthorization: Federal Highway Programs (8 Sep 2026) | https://www.congress.gov/crs-product/R48845 |
 
 ## Valuation date
 
