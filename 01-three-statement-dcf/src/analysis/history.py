@@ -13,6 +13,7 @@ PROCESSED = ROOT / "data" / "processed"
 TABLES = ROOT / "outputs" / "tables"
 
 YEARS = [f"FY{y}" for y in range(2021, 2026)]
+TAX_RATE = 0.25  # same marginal rate as the forecast (ASSUMPTIONS.md section 8)
 SEGMENT_AXIS = "us-gaap:StatementBusinessSegmentsAxis="
 REVENUE_TAG = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
 
@@ -25,6 +26,11 @@ def ratios(is_: pd.DataFrame, bs: pd.DataFrame, cf: pd.DataFrame, memo: pd.DataF
     trade_nwc = (bs.loc[["Receivables, net", "Contract assets", "Inventories"], YEARS].sum()
                  - bs.loc[["Accounts payable", "Contract liabilities",
                            "Accrued and other current liabilities"], YEARS].sum())
+    # invested capital = equity incl. NCI + debt - cash - marketable securities
+    invested = (bs.loc["Total equity", YEARS] + bs.loc[["Current debt", "Long-term debt"], YEARS].sum()
+                - bs.loc[["Cash and cash equivalents", "Marketable securities, current",
+                          "Marketable securities, long-term"], YEARS].sum())
+    avg_invested = (invested + invested.shift(1)) / 2
     out = {
         "Revenue (USD m)": rev,
         "Revenue growth": rev.pct_change(),
@@ -46,6 +52,8 @@ def ratios(is_: pd.DataFrame, bs: pd.DataFrame, cf: pd.DataFrame, memo: pd.DataF
         "Trade working capital % revenue": trade_nwc / rev,
         "Retention receivable % revenue": memo.loc["Retention receivable", YEARS] / rev,
         "Backlog / revenue": memo.loc["Backlog (RPO)", YEARS] / rev,
+        "Invested capital (USD m)": invested,
+        "ROIC (EBIT after 25% tax / avg invested capital)": ebit * (1 - TAX_RATE) / avg_invested,
     }
     return pd.DataFrame(out).T
 

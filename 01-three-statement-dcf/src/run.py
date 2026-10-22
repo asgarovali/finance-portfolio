@@ -3,12 +3,13 @@
 Later steps get added here as they're built.
 """
 from src.analysis import history, reconcile
-from src.data import clean_statements, download_policy, download_sec
+from src.data import clean_statements, download_market, download_policy, download_sec
 
 
 def main() -> None:
     download_sec.main()
     download_policy.main()
+    download_market.main()
     clean_statements.main()
     reconcile.main()
     history.main()

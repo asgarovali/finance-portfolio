@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 drafted. Sections 5 to 7 are written from my own views (given 22 Oct 2026) and get re-checked against the Q3 2026 results on 29 Oct. Sections 8 and 9 follow.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. Section 8 agreed, including the terminal RONIC. Section 9 sets out the approach; numbers come in step 5.
 
 ## 1. Valuation date and balance sheet
 
@@ -138,10 +138,63 @@ At a 14.5% gross margin these averages imply trade working capital of about **-1
 
 Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of roughly 1% of revenue in FY2026. The Q3 balance sheet will show whether that is already happening; at 30 June it is distorted by seasonality.
 
-## 8. Capex, D&A and tax
+## 8. Capex, D&A and tax (proposed, for review)
 
-To follow once growth is set, since capex and D&A scale with the size of the business.
+**Depreciation and depletion: 3.3% of revenue.** This is the FY2025 level, excluding intangible amortisation. It rose from 2.6% (FY2023) and 2.8% (FY2024) because the 2025 acquisitions added a lot of quarry and plant assets. Net PP&E went from USD 716m to USD 1,261m in one year. An FY2022-25 average would understate depreciation on today's asset base, so I don't use it here. H1 2026 total D&A was 3.8% of revenue, which is consistent with this.
 
-## 9. Cost of capital
+**Intangible amortisation: Granite's own schedule.** The FY2025 10-K gives expected amortisation of USD 21.6m, 13.2m, 13.0m, 13.0m and 13.0m for 2026 to 2030. Kenny Seng (bought in 2026) will add some, so I update this from the Q3 10-Q. It's a non-cash charge with no effect on FCFF apart from tax.
 
-Base case uses Damodaran's bottom-up beta for the relevant industry group(s), relevered at Granite's market debt-to-equity. A regression beta from weekly returns against the S&P 500 is shown only as a cross-check. Details to follow in step 5.
+**Capex**
+- FY2026E: USD 150m, the midpoint of guidance (USD 140m to 160m, including about USD 50m of strategic materials investment). That's 2.8% of USD 5.3bn.
+- FY2027E-30E: 3.5% of revenue, close to the FY2022-25 average of 3.6%.
+
+**Terminal year: reinvestment consistent with growth.** A business can only grow forever at rate g if it reinvests enough to fund that growth. The reinvestment rate, as a share of after-tax operating profit (NOPAT), has to be:
+
+> reinvestment rate = g / RONIC
+
+RONIC is the return earned on new capital. Net reinvestment is capex minus D&A plus the increase in working capital. By FY2030 trade working capital reaches 0% of revenue (section 7), so it doesn't grow after that, and all the reinvestment is net capex. So in the terminal year:
+
+> capex = D&A + (g / RONIC) × NOPAT
+
+Capex in the terminal year therefore comes from this formula, not from a fixed percentage of revenue.
+
+**Base case (agreed): RONIC = the model's own ROIC in the terminal year** (NOPAT over invested capital), so new capital earns what the existing business earns. I'm comfortable with this because it should land close to Granite's FY2022-25 average ROIC of about 9.7% (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). A rough estimate at the base-case margins gives about 9-10%. The exact figure comes out of the model, and I check it against that average.
+
+Sensitivities:
+- **RONIC = WACC (conservative):** growth creates no value.
+- **RONIC = 13% (optimistic):** about Granite's FY2024-25 ROIC. FY2022-23 were much lower, so I don't treat 13% as normal.
+
+A rough check shows why this matters. At the base-case 14.5% gross margin, NOPAT is about 4% of revenue. With g = 4% and RONIC around 10%, the reinvestment rate is about 40%, or roughly 1.6% of revenue. Terminal capex would then be about 4.9% of revenue (3.3% depreciation plus 1.6%), well above the 3.5% used in FY2027-30. If I just carried 3.5% into the terminal year, net capex would be about 0.2% of revenue. That only funds 4% growth if new capital earns around 80%, which isn't realistic, and it would overstate the terminal value. The step-up in FY2030E will be visible in the model rather than hidden.
+
+**Tax rate on operating profit: 25%.** This is the 21% federal rate plus about 4% state tax. In FY2025, state tax was USD 12.3m on USD 288.8m of pre-tax income, or 4.2% (tax rate reconciliation, FY2025 10-K). Several things support it:
+- Guidance is "mid-20s".
+- The FY2025 effective rate was 23.7% on all pre-tax income. On income excluding the non-controlling interests' share (consolidated JV partners, who pay their own tax) it was 26.2%.
+- Damodaran unlevers his betas with a 25% marginal rate, so using 25% keeps the beta and the debt tax shield consistent.
+
+Cash taxes have been below the book charge (USD 49.0m paid against USD 68.5m in FY2025) because of deferred taxes. I don't model that gap past FY2026, which is slightly conservative.
+
+**Non-controlling interests.** Granite consolidates some construction JVs, so its cash flows include the partners' share. FCFF is for the whole consolidated group, and the value of the NCI is deducted in the bridge from enterprise value to equity value. The method (book value of USD 42.5m, or a share of value based on income) is set in step 6.
+
+## 9. Cost of capital (approach, numbers in step 5)
+
+Data downloaded on 2026-10-22: Damodaran `betas.xls` (updated 5 Jan 2026), `histimpl.xls`, `ratings.xls`, `indname.xls`, and FRED DGS10.
+
+**Beta: bottom-up, weighted by segment.** Damodaran classifies Granite under Engineering/Construction. He puts the US aggregates companies (Vulcan, Martin Marietta, Knife River) under Construction Supplies, not Building Materials, so that's the right group for the Materials segment (`indname.xls`).
+
+| Unlevered beta, corrected for cash | Jan 2026 | Average 2022-26 |
+|---|---|---|
+| Engineering/Construction | 1.137 | 0.978 |
+| Construction Supplies | 1.047 | 1.049 |
+
+**Base case: the 2022-26 averages (0.978 and 1.049). Sensitivity: the January 2026 values (1.137 and 1.047).** The 2026 Engineering/Construction beta is above every year from 2022 to 2025 (0.84 to 1.02), and I don't want one year's jump to drive the valuation. Granite's work is mostly public infrastructure, which is less cyclical than private construction. For Construction Supplies the choice hardly matters.
+
+The segment weights should be based on value, not revenue, because aggregates businesses are worth much more per dollar of sales than contractors. The beta is relevered at Granite's market debt-to-equity on the valuation date. A regression beta (weekly returns against the S&P 500) is a cross-check only.
+
+**Risk-free rate:** the 10-year Treasury yield on the valuation date (FRED DGS10). It was 5.12% on 20 Oct 2026.
+
+**Equity risk premium:** Damodaran's implied ERP at the start of 2026 is 4.23% (`histimpl.xls`). There's a timing mismatch: an October risk-free rate with a January ERP. If Damodaran's monthly ERP update for October 2026 is available, I'd use that so both inputs come from the same date. I check this in step 5.
+
+**Cost of debt**
+- Main estimate: the market yield on Granite's 6.375% senior notes due 2034. At 30 Jun 2026 they had a fair value of USD 611.3m against USD 600m principal (Q2 10-Q, Note 9), which points to a yield a bit below the coupon.
+- Cross-check: a synthetic rating from interest coverage, using Damodaran's `ratings.xls`.
+- The convertible notes count as debt at their debt component. The option part goes into the diluted share count, not the cost of debt.

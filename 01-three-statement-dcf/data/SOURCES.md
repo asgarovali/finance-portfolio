@@ -74,6 +74,18 @@ From the Q2 2026 10-Q, Note 9 and Note 14:
 | Q2 2026 earnings release (8-K Exhibit 99.1, filed 2026-07-30, accession 0000861459-26-000027) | EDGAR, saved in `raw/sec/` | FY2026 guidance and revenue from acquired businesses |
 | Q3 2026 results timing announcement (Business Wire, 2026-10-15) | Read on 2026-10-22 via https://www.stocktitan.net/news/GVA/granite-announces-timing-of-earnings-release-and-investor-conference-zivyqtefyhoz.html, because the Business Wire page wasn't reachable | Valuation date only: results before market open on 29 Oct 2026. To be confirmed by the EDGAR filing date |
 
+## Cost of capital inputs
+
+Downloaded by `src/data/download_market.py` on 2026-10-22. Damodaran's data is free to use with attribution (pages.stern.nyu.edu/~adamodar). He overwrites the files when he updates them, so the saved copies are the versions used.
+
+| File | Source | Content | Version |
+|---|---|---|---|
+| `raw/damodaran/betas.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/betas.xls | US industry betas, unlevered and cash-corrected | "Date updated" 2026-01-05 |
+| `raw/damodaran/histimpl.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/histimpl.xls | implied ERP by year | latest row: 2025 (start of 2026), 4.23% |
+| `raw/damodaran/ratings.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/ratings.xls | interest coverage to rating to default spread | |
+| `raw/damodaran/indname.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/indname.xls | companies in each industry | 22 MB, not committed; re-download with the script |
+| `raw/fred/fred_DGS10.json` | FRED API, series DGS10 (10-year Treasury constant maturity) | daily yields | last observation 2026-10-20: 5.12% |
+
 ## Federal highway funding (IIJA)
 
 Used only for the downside scenario, not for any number in the base case. The statute is downloaded by script. The other pages block scripted downloads, so they were read in a browser on 2026-10-22 and saved by hand as PDFs in `raw/policy/`.
