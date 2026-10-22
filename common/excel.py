@@ -5,6 +5,10 @@ inputs and black for formulas, headers as bold text with a thin bottom border.
 """
 from __future__ import annotations
 
+import subprocess
+from pathlib import Path
+
+from openpyxl import load_workbook
 from openpyxl.styles import Border, Font, Side
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -69,3 +73,30 @@ def put_formula(ws: Worksheet, ref: str, formula: str, fmt: str | None = None, b
     cell.font = BOLD if bold else BASE
     if fmt:
         cell.number_format = fmt
+
+
+def recalc_with_excel(path: str | Path) -> None:
+    """Open the workbook in Excel, recalculate everything and save.
+
+    openpyxl writes formulas but never calculates them, so the cached values
+    stay empty until a spreadsheet program has opened the file. Windows only.
+    """
+    path = Path(path).resolve()
+    script = (
+        "$x = New-Object -ComObject Excel.Application; $x.Visible = $false; $x.DisplayAlerts = $false; "
+        f"$wb = $x.Workbooks.Open('{path}'); $x.CalculateFull(); $wb.Save(); $wb.Close($false); $x.Quit(); "
+        "[void][System.Runtime.InteropServices.Marshal]::ReleaseComObject($x)"
+    )
+    subprocess.run(["powershell", "-NoProfile", "-Command", script], check=True)
+
+
+def find_errors(path: str | Path) -> list[str]:
+    """Cells whose calculated value is an Excel error (#REF!, #DIV/0!, ...)."""
+    wb = load_workbook(path, data_only=True)
+    errors = []
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for c in row:
+                if isinstance(c.value, str) and c.value.startswith("#") and c.value.endswith(("!", "?", "A")):
+                    errors.append(f"{ws.title}!{c.coordinate} {c.value}")
+    return errors

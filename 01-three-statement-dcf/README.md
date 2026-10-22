@@ -38,4 +38,4 @@ cd 01-three-statement-dcf
 python -m src.run
 ```
 
-This downloads the filings (needs `SEC_EMAIL` in the repo's `.env`), rebuilds the statements in `data/processed/` and prints the reconciliation.
+This downloads the filings (needs `SEC_EMAIL` and `FRED_API_KEY` in the repo's `.env`), rebuilds the statements in `data/processed/`, prints the reconciliation and writes `model/granite_model.xlsx`. The last step opens the workbook in Excel to recalculate it and check for formula errors, so it needs Excel on Windows.
