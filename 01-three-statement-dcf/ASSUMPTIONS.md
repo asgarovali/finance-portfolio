@@ -112,7 +112,27 @@ Projects below USD 5m aren't disclosed, so this is a partial view.
 
 Segment margins follow from the total, with Materials kept above Construction as in every year since FY2021 except FY2024. The exact segment margins are set after Q3.
 
-**SG&A.** I use guidance for FY2026E: 8.25% to 8.75% of revenue, including about USD 48m of stock-based compensation. After that, SG&A is held as a percentage of revenue.
+**SG&A: 8.75% of revenue in FY2026E, the top of guidance** (8.25% to 8.75%, including about USD 48m of stock-based compensation). Much of SG&A is fixed: offices, management, systems. If revenue comes in at the low end of guidance, as I assume, the same cost base is a larger share of it, so the ratio sits at the high end. That's consistent with the revenue choice, not just extra caution. After FY2026 SG&A is held at 8.75% of revenue.
+
+**Smaller lines.** These are agreed as simple rules; the numbers below are for review before they go into the model.
+
+| Line | FY2022 | FY2023 | FY2024 | FY2025 | Proposed rule |
+|---|---|---|---|---|---|
+| Other costs, net, % revenue | -0.73% | -1.43% | -1.00% | -0.94% | FY2022-25 average, -1.02% |
+| Gain on sale of PP&E, % revenue | 0.38% | 0.81% | 0.22% | 0.46% | FY2022-25 average, 0.47% |
+| Proceeds from PP&E sales, % revenue (cash flow) | 0.79% | 1.09% | 0.35% | 0.74% | FY2022-25 average, 0.74% |
+| Equity income of affiliates, % revenue | 0.41% | 0.73% | 0.42% | 0.34% | FY2022-25 average, 0.48% |
+| Other income, net, % revenue | -0.03% | 0.17% | 0.11% | 0.27% | FY2022-25 average, 0.13% |
+| Interest income / average cash and securities | 1.69% | 4.31% | 4.69% | 4.35% | FY2025 yield, 4.35%, on forecast cash |
+| Interest expense / average debt | 4.02% | 3.92% | 4.19% | 4.54% | not history: contractual rates of the debt at 30 Sep 2026 (Q3 10-Q) |
+| NCI share of pre-tax income | -4.8% | -23.4% | 7.2% | 9.5% | FY2024-25 average, 8.3% |
+
+Notes on the rules:
+- **Gains and proceeds together.** Granite sells used equipment every year, so the gain is part of normal operating income. I model the gain on the income statement and the cash proceeds in investing cash flow, both at their averages. The difference (about 0.27% of revenue) is the book value of what's sold, which comes off PP&E. If I modelled only the gain, operating income and cash flow wouldn't match.
+- **Interest income** uses the FY2025 yield, not the four-year average, because 2022 rates were near zero and don't describe today.
+- **Interest expense.** The 2026 refinancing replaced most of the old debt: 6.375% senior notes, a term loan swapped to a fixed rate, and the settlement of the 2028 convertibles. Past ratios don't describe the new debt, so the rate per instrument comes from the Q3 10-Q debt note.
+- **Non-controlling interests.** The four-year average (-2.9%) is meaningless: in FY2022-23 the consolidated JVs made losses, so the partners' share was negative. FY2024-25 (8.3%) is a better guide. H1 2026 was higher (14.6% excluding the convertible loss), so 8.3% may be on the low side.
+- Equity income of affiliates and other income are non-operating. They stay below operating income and out of FCFF; affiliates are valued separately in the equity bridge (step 6).
 
 **Stock-based compensation is a real cost.** It stays in SG&A and isn't added back to free cash flow. The equity value is then divided by today's diluted share count, without adding shares for future grants. Expensing SBC and also adding future dilution would count the same cost twice.
 
@@ -156,9 +176,11 @@ RONIC is the return earned on new capital. Net reinvestment is capex minus D&A p
 
 > capex = D&A + (g / RONIC) × NOPAT
 
-Capex in the terminal year therefore comes from this formula, not from a fixed percentage of revenue.
+Capex in the terminal year therefore comes from this formula, not from a fixed percentage of revenue. In the model the terminal year is a separate, normalised column after FY2030E (FY2030E NOPAT grown by g), so FY2027E-FY2030E keep capex at 3.5% and the step-up shows in that column. I do it this way because in FY2030E itself working capital is still moving to its target, which would muddle the rule.
 
 **Base case (agreed): RONIC = the model's own ROIC in the terminal year** (NOPAT over invested capital), so new capital earns what the existing business earns. I'm comfortable with this because it should land close to Granite's FY2022-25 average ROIC of about 9.7% (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). A rough estimate at the base-case margins gives about 9-10%. The exact figure comes out of the model, and I check it against that average.
+
+**Open issue, found when the forecast was built (22 Oct):** the model's terminal ROIC comes out at about 15.6%, not 9-10% (Sched, interim inputs, before the smaller lines). The reason is that invested capital barely grows: capex at 3.5% of revenue only just covers D&A (3.3% depreciation plus amortisation), so capital stays around USD 2.1bn while revenue grows 38% from FY2026E to FY2030E. My earlier 9-10% estimate assumed capital would stay at FY2025's 43% of revenue; in the model it falls to about 29%. So "RONIC = model ROIC" no longer means "close to the historical 9.7%". Decision pending.
 
 Sensitivities:
 - **RONIC = WACC (conservative):** growth creates no value.

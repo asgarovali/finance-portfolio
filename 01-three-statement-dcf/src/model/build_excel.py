@@ -70,6 +70,183 @@ def amortisation_schedule(facts: pd.DataFrame) -> list[float]:
     return [vals[f"us-gaap:FiniteLivedIntangibleAssetsAmortizationExpense{k}"] / 1e6 for k in keys]
 
 
+# Revenue from businesses acquired in 2025-26, H1 2026: USD 142m construction + USD 110m
+# materials. Q2 2026 earnings release, 8-K 30 Jul 2026 (0000861459-26-000027), Exhibit 99.1.
+ACQUIRED_REVENUE_H1_2026 = 142 + 110
+
+
+def interim_h1(facts: pd.DataFrame, is_: pd.DataFrame, cf: pd.DataFrame) -> dict[str, float]:
+    """Stand-ins for the inputs that wait for the Q3 10-Q, all from H1 2026 filings."""
+    seg = facts[(facts["accession"] == "0000861459-26-000029")
+                & (facts["tag"] == "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax")
+                & (facts["dims"] == "us-gaap:StatementBusinessSegmentsAxis=gva:MaterialsMember")
+                & (facts["start"] == "2026-01-01") & (facts["end"] == "2026-06-30")]
+    rev, rev_ly = is_.loc["Revenue", "H1 2026"], is_.loc["Revenue", "H1 2025"]
+    return {
+        "materials_share": seg["value"].iloc[0] / 1e6 / rev,
+        "gross_margin": is_.loc["Gross profit", "H1 2026"] / rev,
+        "organic_growth": (rev - rev_ly - ACQUIRED_REVENUE_H1_2026) / rev_ly,
+        "acquisitions": -cf.loc["Acquisitions", "H1 2026"],
+    }
+
+
+def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
+    """Operating forecast: revenue by segment, margins, working capital, capex,
+    invested capital and FCFF, plus a normalised terminal-year column.
+
+    Financing (debt, interest, cash) and the smaller income statement lines are
+    not here yet: the first waits for the Q3 10-Q, the second for sign-off."""
+    ws = wb.create_sheet("Sched")
+    xl.setup_sheet(ws, freeze=f"B{FIRST_ROW}", col_a_width=46)
+    year_header(ws, "Forecast schedules")
+    term = get_column_letter(LAST_COL + 1)
+    ws[f"{term}{HEADER_ROW}"] = "Terminal"
+    ws[f"{term}{HEADER_ROW}"].font = xl.BOLD
+    ws[f"{term}{HEADER_ROW}"].alignment = Alignment(horizontal="right")
+    ws[f"{term}{HEADER_ROW}"].border = xl.THIN_BOTTOM
+    ws.column_dimensions[term].width = 11
+    # only FY2025A is used here (opening balances), so the older history columns are hidden
+    for p_ in HIST[:-1]:
+        ws.column_dimensions[COL[p_]].hidden = True
+
+    f25 = COL["FY2025"]
+    fc = [COL[p] for p in FCST]
+    prev = {c: get_column_letter(FIRST_COL + len(HIST) + i - 1) for i, c in enumerate(fc)}
+    at: dict[str, int] = {}
+    row = FIRST_ROW
+
+    def sec(title):
+        nonlocal row
+        row += 1
+        xl.header(ws, row, title, LAST_COL + 1)
+        row += 1
+
+    def line(key, label, f, fmt=xl.FMT_NUM, hist=None, terminal=None, bold=False, inputs=None):
+        """f(c, p) gives the formula for forecast column c (p = previous column)."""
+        nonlocal row
+        at[key] = row
+        ws.cell(row=row, column=1, value=label).font = xl.BOLD if bold else xl.BASE
+        for c in fc:
+            formula = f(c, prev[c])
+            if formula is None:
+                continue
+            if inputs:  # hard-coded counters are inputs, so they're blue
+                xl.put_input(ws, f"{c}{row}", formula, fmt)
+            else:
+                xl.put_formula(ws, f"{c}{row}", formula, fmt, bold=bold)
+        if hist:
+            xl.put_formula(ws, f"{f25}{row}", hist, fmt, bold=bold)
+        if terminal:
+            xl.put_formula(ws, f"{term}{row}", terminal, fmt, bold=bold)
+        row += 1
+
+    t_start = {c: i for i, c in enumerate(fc)}
+    g = fc[0]
+
+    sec("Revenue")
+    line("t", "Years after FY2026", lambda c, p: t_start[c], "0", inputs=True)
+    line("org", "Organic growth, base path",
+         lambda c, p: f"={I['g26']}" if c == g else
+         f"=${g}{at['org']}+({I['gLR']}-${g}{at['org']})*MIN({c}{at['t']}/{I['fade']},1)", xl.FMT_PCT)
+    line("cg", "Construction growth",
+         lambda c, p: None if c == g else
+         f"=IF({I['scen']}=2,IF({c}{at['t']}=1,{I['down']},{p}{at['org']}),{c}{at['org']})", xl.FMT_PCT)
+    line("mg", "Materials growth", lambda c, p: None if c == g else f"={c}{at['org']}", xl.FMT_PCT)
+    line("crev", "Construction revenue",
+         lambda c, p: f"={I['rev26']}*(1-{I['mshare']})" if c == g else f"={p}{at['crev']}*(1+{c}{at['cg']})")
+    line("mrev", "Materials revenue",
+         lambda c, p: f"={I['rev26']}*{I['mshare']}" if c == g else f"={p}{at['mrev']}*(1+{c}{at['mg']})")
+    line("rev", "Revenue", lambda c, p: f"={c}{at['crev']}+{c}{at['mrev']}",
+         hist=f"=IS!{f25}{is_at['Revenue']}", terminal=f"={COL['FY2030']}{{r}}*(1+{I['gLR']})", bold=True)
+    line("revg", "Revenue growth", lambda c, p: f"={c}{at['rev']}/{p}{at['rev']}-1", xl.FMT_PCT)
+
+    sec("Operating profit")
+    line("gm", "Gross margin",
+         lambda c, p: f"={I['gm26']}" if c == g else f"=IF({I['scen']}=3,{I['gm_up']},{I['gm']})", xl.FMT_PCT,
+         hist=f"=IS!{f25}{is_at['Gross profit']}/IS!{f25}{is_at['Revenue']}")
+    line("gp", "Gross profit", lambda c, p: f"={c}{at['rev']}*{c}{at['gm']}")
+    line("cogs", "Cost of revenue", lambda c, p: f"=-({c}{at['rev']}-{c}{at['gp']})")
+    line("sga", "SG&A", lambda c, p: f"=-{c}{at['rev']}*{I['sga']}")
+    line("ebit", "Operating income (before smaller lines)", lambda c, p: f"={c}{at['gp']}+{c}{at['sga']}",
+         bold=True)
+    line("dep", "Depreciation and depletion", lambda c, p: f"={c}{at['rev']}*{I['dep']}")
+    line("amort", "Intangible amortisation", lambda c, p: f"=Inputs!{c}{I['amort']}")
+    line("da", "D&A", lambda c, p: f"={c}{at['dep']}+{c}{at['amort']}",
+         terminal=f"={COL['FY2030']}{{r}}*(1+{I['gLR']})")
+    line("ebitda", "EBITDA", lambda c, p: f"={c}{at['ebit']}+{c}{at['da']}")
+    line("ebitdam", "EBITDA margin", lambda c, p: f"={c}{at['ebitda']}/{c}{at['rev']}", xl.FMT_PCT)
+    line("taxop", "Tax on operating income", lambda c, p: f"=-{c}{at['ebit']}*{I['tax']}")
+    line("nopat", "NOPAT", lambda c, p: f"={c}{at['ebit']}+{c}{at['taxop']}",
+         terminal=f"={COL['FY2030']}{{r}}*(1+{I['gLR']})", bold=True)
+
+    sec("Working capital (year-end)")
+    line("costr", "Cost of revenue / revenue", lambda c, p: f"=-{c}{at['cogs']}/{c}{at['rev']}", xl.FMT_PCT)
+    line("wcavg", "Trade WC % revenue at average days",
+         lambda c, p: f"=({I['recd']}+{I['cad']})/365+{I['ret']}+({I['invd']}-{I['apd']})/365*{c}{at['costr']}"
+                      f"-({I['cld']}+{I['accd']})/365", xl.FMT_PCT)
+    # contract asset days needed in FY2030E to hit the working-capital target
+    at["catgt"] = row
+    ws.cell(row=row, column=1, value="Contract asset days, FY2030E target").font = xl.BASE
+    xl.put_formula(ws, f"{COL['FY2030']}{row}", f"={I['cad']}+({I['nwc_target']}-{COL['FY2030']}{at['wcavg']})*365", "0.0")
+    row += 1
+    line("cad", "Contract asset days",
+         lambda c, p: f"={I['cad']}+(${COL['FY2030']}${at['catgt']}-{I['cad']})*MIN({c}{at['t']}/{I['fade']},1)", "0.0")
+    line("rec", "Receivables excl. retention", lambda c, p: f"={c}{at['rev']}*{I['recd']}/365")
+    line("ret", "Retention receivable", lambda c, p: f"={c}{at['rev']}*{I['ret']}")
+    line("ca", "Contract assets", lambda c, p: f"={c}{at['rev']}*{c}{at['cad']}/365")
+    line("inv", "Inventories", lambda c, p: f"=-{c}{at['cogs']}*{I['invd']}/365")
+    line("ap", "Accounts payable", lambda c, p: f"=-{c}{at['cogs']}*{I['apd']}/365")
+    line("cl", "Contract liabilities", lambda c, p: f"={c}{at['rev']}*{I['cld']}/365")
+    line("acc", "Accrued and other liabilities", lambda c, p: f"={c}{at['rev']}*{I['accd']}/365")
+    bs = lambda name: f"BS!{f25}{bs_at[name]}"
+    line("twc", "Trade working capital",
+         lambda c, p: f"={c}{at['rec']}+{c}{at['ret']}+{c}{at['ca']}+{c}{at['inv']}-{c}{at['ap']}-{c}{at['cl']}-{c}{at['acc']}",
+         hist=f"={bs('Receivables, net')}+{bs('Contract assets')}+{bs('Inventories')}-{bs('Accounts payable')}"
+              f"-{bs('Contract liabilities')}-{bs('Accrued and other current liabilities')}", bold=True)
+    line("twcp", "Trade working capital % revenue", lambda c, p: f"={c}{at['twc']}/{c}{at['rev']}", xl.FMT_PCT,
+         hist=f"={f25}{{r_twc}}/{f25}{{r_rev}}")
+    line("dwc", "Change in working capital (cash)", lambda c, p: f"=-({c}{at['twc']}-{p}{at['twc']})")
+
+    sec("Capex and invested capital")
+    line("capex", "Capex", lambda c, p: f"=-{I['capex26']}" if c == g else f"=-{c}{at['rev']}*{I['capex']}")
+    line("acq", "Acquisitions (none modelled after FY2026)", lambda c, p: f"=-{I['acq26']}" if c == g else None)
+    eq = (f"=BS!{f25}{bs_at['Total equity']}+BS!{f25}{bs_at['Current debt']}+BS!{f25}{bs_at['Long-term debt']}"
+          f"-BS!{f25}{bs_at['Cash and cash equivalents']}-BS!{f25}{bs_at['Marketable securities, current']}"
+          f"-BS!{f25}{bs_at['Marketable securities, long-term']}")
+    line("ic", "Invested capital (year-end)",
+         lambda c, p: f"={p}{at['ic']}-{c}{at['capex']}-{c}{at['acq']}-{c}{at['da']}-{c}{at['dwc']}", hist=eq)
+    line("roic", "ROIC on opening capital", lambda c, p: f"={c}{at['nopat']}/{p}{at['ic']}", xl.FMT_PCT,
+         terminal=f"={{t}}{{r_nopat}}/{COL['FY2030']}{{r_ic}}")
+
+    sec("Free cash flow to the firm (before smaller lines; acquisitions excluded)")
+    line("fn", "NOPAT", lambda c, p: f"={c}{at['nopat']}", terminal="={t}{r_nopat}")
+    line("fda", "D&A", lambda c, p: f"={c}{at['da']}", terminal="={t}{r_da}")
+    line("fcap", "Capex", lambda c, p: f"={c}{at['capex']}",
+         terminal=f"=-({{t}}{{r_da}}+{I['gLR']}/{{t}}{{r_roic}}*{{t}}{{r_nopat}})")
+    line("fwc", "Change in working capital", lambda c, p: f"={c}{at['dwc']}", terminal="=0")
+    line("fcff", "FCFF", lambda c, p: f"={c}{at['fn']}+{c}{at['fda']}+{c}{at['fcap']}+{c}{at['fwc']}",
+         terminal=f"={{t}}{{r_fn}}+{{t}}{{r_fda}}+{{t}}{{r_fcap}}+{{t}}{{r_fwc}}", bold=True)
+    line("rr", "Reinvestment rate (net investment / NOPAT)",
+         lambda c, p: f"=-({c}{at['fcap']}+{c}{at['fda']}+{c}{at['fwc']})/{c}{at['fn']}", xl.FMT_PCT,
+         terminal=f"=-({{t}}{{r_fcap}}+{{t}}{{r_fda}}+{{t}}{{r_fwc}})/{{t}}{{r_fn}}")
+
+    # fill in the {r}/{t} placeholders now that every row number is known
+    subs = {"t": term, "r_twc": at["twc"], "r_rev": at["rev"], "r_nopat": at["nopat"], "r_ic": at["ic"],
+            "r_da": at["da"], "r_roic": at["roic"], "r_fn": at["fn"], "r_fda": at["fda"], "r_fcap": at["fcap"],
+            "r_fwc": at["fwc"]}
+    for key, r_ in at.items():
+        for col in (f25, term):
+            cell = ws[f"{col}{r_}"]
+            if isinstance(cell.value, str) and "{" in cell.value:
+                cell.value = cell.value.format(r=r_, **subs)
+
+    # check row: working capital lands on its FY2030E target
+    ws["A3"] = "WC check (FY2030E trade WC % - target, should be 0)"
+    ws["A3"].font = xl.BOLD
+    xl.put_formula(ws, f"{COL['FY2030']}3", f"=ROUND({COL['FY2030']}{at['twcp']}-{I['nwc_target']},6)", xl.FMT_PCT)
+    return ws, at
+
+
 def year_header(ws, title: str, inputs: bool = False) -> None:
     """Title, units and the year row. On Inputs, column B holds single values
     and the history columns are left empty, so only the forecast years get headers."""
@@ -147,6 +324,7 @@ def build() -> Path:
     inp.column_dimensions[get_column_letter(note_col)].width = 78
 
     r = FIRST_ROW
+    I: dict[str, str] = {}  # input key -> absolute reference, used by the Sched formulas
 
     def section(title):
         nonlocal r
@@ -154,67 +332,86 @@ def build() -> Path:
         xl.header(inp, r, title, LAST_COL)
         r += 1
 
-    def scalar(label, value, fmt, note):
+    def scalar(key, label, value, fmt, note, status=""):
+        # status "PENDING" leaves the cell empty; "INTERIM" marks a stand-in value
         nonlocal r
         inp.cell(row=r, column=1, value=label).font = xl.BASE
-        if value is None:
-            inp.cell(row=r, column=note_col, value="PENDING: " + note).font = xl.NOTE
-        else:
+        I[key] = f"Inputs!$B${r}"
+        if status != "PENDING":
             xl.put_input(inp, f"B{r}", value, fmt)
-            inp.cell(row=r, column=note_col, value=note).font = xl.NOTE
+        text = f"{status}: {note}" if status else note
+        inp.cell(row=r, column=note_col, value=text).font = xl.NOTE
         r += 1
 
-    def series(label, values, fmt, note):
+    def series(key, label, values, fmt, note):
         nonlocal r
         inp.cell(row=r, column=1, value=label).font = xl.BASE
+        I[key] = r  # row number; Sched picks the column
         for p, v in zip(FCST, values):
             if v is not None:
                 xl.put_input(inp, f"{COL[p]}{r}", v, fmt)
         inp.cell(row=r, column=note_col, value=note).font = xl.NOTE
         r += 1
 
+    h1 = interim_h1(facts, wide["IS"], wide["CF"])
+    interim = "H1 2026 actual (Q2 10-Q); replace with 9M on 29 Oct"
+
+    section("Scenario")
+    scalar("scen", "Scenario (1 base, 2 downside, 3 upside margin)", 1, "0",
+           "2 = reauthorisation gap (memo s.5); 3 = 16% gross margin (memo s.6)")
+
     section("Revenue")
-    scalar("FY2026E revenue", 5300, xl.FMT_NUM, "Low end of guidance (USD 5.3-5.5bn), 8-K 30 Jul 2026; memo s.5")
-    scalar("FY2026E Materials share of revenue", None, xl.FMT_PCT, "from 9M 2026 actuals (Q3 10-Q)")
-    scalar("FY2026E organic growth (start of fade)", None, xl.FMT_PCT, "from 9M 2026 acquired revenue (Q3 release)")
-    scalar("Long-run growth (FY2030E and terminal)", 0.04, xl.FMT_PCT, "Approx. long-run US nominal GDP; source in step 5; memo s.5")
-    scalar("Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
+    scalar("rev26", "FY2026E revenue", 5300, xl.FMT_NUM, "Low end of guidance (USD 5.3-5.5bn), 8-K 30 Jul 2026; memo s.5")
+    scalar("mshare", "FY2026E Materials share of revenue", round(h1["materials_share"], 4), xl.FMT_PCT,
+           interim, "INTERIM")
+    scalar("g26", "FY2026E organic growth (start of fade)", round(h1["organic_growth"], 4), xl.FMT_PCT,
+           "H1 2026 vs H1 2025 excl. USD 252m acquired revenue (8-K 30 Jul 2026); replace with 9M on 29 Oct",
+           "INTERIM")
+    scalar("gLR", "Long-run growth (FY2030E and terminal)", 0.04, xl.FMT_PCT, "Approx. long-run US nominal GDP; source in step 5; memo s.5")
+    scalar("fade", "Years to fade to long-run growth", 4, "0", "FY2026E to FY2030E; memo s.5")
+    scalar("down", "Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
 
     section("Margins")
-    scalar("FY2026E gross margin", None, xl.FMT_PCT, "9M 2026 actual (Q3 10-Q)")
-    scalar("Gross margin from FY2027E, base", 0.145, xl.FMT_PCT, "FY2025 16.1% less claim-driven revisions; memo s.6")
-    scalar("Gross margin from FY2027E, upside", 0.16, xl.FMT_PCT, "FY2025 level held; memo s.6")
-    scalar("SG&A % revenue FY2026E", None, xl.FMT_PCT, "guidance 8.25-8.75% incl. SBC; point in range to confirm")
+    scalar("gm26", "FY2026E gross margin", round(h1["gross_margin"], 4), xl.FMT_PCT, interim, "INTERIM")
+    scalar("gm", "Gross margin from FY2027E, base", 0.145, xl.FMT_PCT, "FY2025 16.1% less claim-driven revisions; memo s.6")
+    scalar("gm_up", "Gross margin from FY2027E, upside", 0.16, xl.FMT_PCT, "FY2025 level held; memo s.6")
+    scalar("sga", "SG&A % revenue", 0.0875, xl.FMT_PCT,
+           "Top of FY2026 guidance (8.25-8.75%, incl. SBC), held; low-end revenue on a largely fixed cost base; memo s.6")
 
     section("Working capital (FY2022-25 averages)")
     wc_start = r
     r += 7  # filled once the IS/BS rows are known
-    scalar("Trade working capital % revenue, FY2030E target", 0.0, xl.FMT_PCT, "Gap closed through contract assets only; memo s.7")
+    scalar("nwc_target", "Trade working capital % revenue, FY2030E target", 0.0, xl.FMT_PCT,
+           "Gap closed through contract assets only; memo s.7")
 
     section("Capex, D&A, tax")
-    scalar("FY2026E capex", 150, xl.FMT_NUM, "Midpoint of guidance USD 140-160m, 8-K 30 Jul 2026")
-    scalar("Capex % revenue FY2027E-FY2029E", 0.035, xl.FMT_PCT, "Near FY2022-25 average 3.6%; FY2030E set by reinvestment rule; memo s.8")
+    scalar("capex26", "FY2026E capex", 150, xl.FMT_NUM, "Midpoint of guidance USD 140-160m, 8-K 30 Jul 2026")
+    scalar("capex", "Capex % revenue FY2027E-FY2030E", 0.035, xl.FMT_PCT,
+           "Near FY2022-25 average 3.6%; terminal year set by reinvestment rule (Sched); memo s.8")
     dep_row = r
+    I["dep"] = f"Inputs!$B${r}"
     r += 1  # formula, filled below
-    series("Intangible amortisation", amortisation_schedule(facts), xl.FMT_NUM,
+    series("amort", "Intangible amortisation", amortisation_schedule(facts), xl.FMT_NUM,
            "FY2025 10-K expected amortisation; Kenny Seng to be added from Q3 10-Q")
-    scalar("Tax rate on operating profit", 0.25, xl.FMT_PCT, "21% federal + ~4% state (FY2025 rate reconciliation); memo s.8")
+    scalar("acq26", "FY2026E acquisitions (cash)", round(h1["acquisitions"], 1), xl.FMT_NUM,
+           "Kenny Seng, H1 2026 cash flow (Q2 10-Q); none modelled after FY2026 (memo s.4); replace with 9M on 29 Oct",
+           "INTERIM")
+    scalar("tax", "Tax rate on operating profit", 0.25, xl.FMT_PCT, "21% federal + ~4% state (FY2025 rate reconciliation); memo s.8")
 
     section("Cost of capital")
-    scalar("Unlevered beta, Eng./Construction, 2022-26 avg", round(dam["beta_ec_avg"], 4), "0.000",
+    scalar("beta_ec", "Unlevered beta, Eng./Construction, 2022-26 avg", round(dam["beta_ec_avg"], 4), "0.000",
            "Damodaran betas.xls (5 Jan 2026), cash-corrected; base case")
-    scalar("Unlevered beta, Eng./Construction, Jan 2026", round(dam["beta_ec_2026"], 4), "0.000",
+    scalar("beta_ec26", "Unlevered beta, Eng./Construction, Jan 2026", round(dam["beta_ec_2026"], 4), "0.000",
            "Damodaran betas.xls; sensitivity")
-    scalar("Unlevered beta, Constr. Supplies, 2022-26 avg", round(dam["beta_cs_avg"], 4), "0.000",
+    scalar("beta_cs", "Unlevered beta, Constr. Supplies, 2022-26 avg", round(dam["beta_cs_avg"], 4), "0.000",
            "Damodaran betas.xls; Materials segment (VMC, MLM, KNF peer group); base case")
-    scalar("Unlevered beta, Constr. Supplies, Jan 2026", round(dam["beta_cs_2026"], 4), "0.000",
+    scalar("beta_cs26", "Unlevered beta, Constr. Supplies, Jan 2026", round(dam["beta_cs_2026"], 4), "0.000",
            "Damodaran betas.xls; sensitivity")
-    scalar("Segment value weight, Materials", None, xl.FMT_PCT, "step 5: value weights by segment")
-    scalar("Equity risk premium", round(dam["erp"], 4), "0.00%",
+    scalar("w_mat", "Segment value weight, Materials", None, xl.FMT_PCT, "step 5: value weights by segment", "PENDING")
+    scalar("erp", "Equity risk premium", round(dam["erp"], 4), "0.00%",
            "Damodaran histimpl.xls, implied ERP start of 2026; check Oct 2026 monthly in step 5")
-    scalar("Risk-free rate (10y Treasury)", None, xl.FMT_PCT, "FRED DGS10 on valuation date")
-    scalar("Pre-tax cost of debt", None, xl.FMT_PCT, "market yield on 6.375% 2034 notes at valuation date")
-    scalar("Terminal RONIC", None, xl.FMT_PCT, "= model terminal-year ROIC (formula, forecast step); memo s.8")
+    scalar("rf", "Risk-free rate (10y Treasury)", None, xl.FMT_PCT, "FRED DGS10 on valuation date", "PENDING")
+    scalar("kd", "Pre-tax cost of debt", None, xl.FMT_PCT, "market yield on 6.375% 2034 notes at valuation date", "PENDING")
 
     # statements
     sheets = {}
@@ -289,9 +486,10 @@ def build() -> Path:
         ("Contract liabilities, days of revenue", days(bs_at["Contract liabilities"], rev), "0.0"),
         ("Accrued and other liabilities, days of revenue", days(bs_at["Accrued and other current liabilities"], rev), "0.0"),
     ]
-    for i, (label, formula, fmt) in enumerate(wc_lines):
+    for i, (key, (label, formula, fmt)) in enumerate(zip(["recd", "ret", "cad", "invd", "apd", "cld", "accd"], wc_lines)):
         inp.cell(row=wc_start + i, column=1, value=label).font = xl.BASE
         xl.put_formula(inp, f"B{wc_start + i}", formula, fmt)
+        I[key] = f"Inputs!$B${wc_start + i}"
     inp.cell(row=wc_start, column=note_col, value="FY2021 excluded (USD 129m legal accrual); memo s.7").font = xl.NOTE
 
     inp.cell(row=dep_row, column=1, value="Depreciation and depletion % revenue").font = xl.BASE
@@ -301,9 +499,12 @@ def build() -> Path:
                    xl.FMT_PCT)
     inp.cell(row=dep_row, column=note_col, value="FY2025 level, excl. amortisation; memo s.8").font = xl.NOTE
 
+    sched_ws, _ = build_sched(wb, I, is_at, bs_at)
+
     # Print areas end in a narrow empty spacer column: the PDF printer clips the last
     # column at its hard margin, and this way it clips the spacer, not FY2030E.
-    for ws, last in ((is_ws, LAST_COL), (bs_ws, LAST_COL), (cf_ws, LAST_COL), (inp, note_col)):
+    for ws, last in ((is_ws, LAST_COL), (bs_ws, LAST_COL), (cf_ws, LAST_COL), (inp, note_col),
+                     (sched_ws, LAST_COL + 1)):
         spacer = get_column_letter(last + 1)
         ws.column_dimensions[spacer].width = 3
         ws.print_area = f"A1:{spacer}{ws.max_row}"
@@ -340,6 +541,10 @@ def check(path: Path) -> None:
             v = ws[f"{COL[r.period]}{rows[r.line]}"].value
             worst = max(worst, abs(v - r.filed_total))
     print(f"BS and CF check rows: 0 in all years; largest gap between workbook totals and filed totals: {worst:.3f} USD m")
+    sched = wb["Sched"]
+    k = COL["FY2030"]
+    assert abs(sched[f"{k}3"].value) < 1e-9, f"WC check = {sched[k + '3'].value}"
+    print("Sched WC check: 0 (FY2030E trade working capital on target)")
 
 
 def main() -> None:
