@@ -1,0 +1,25 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# local-only notes
+INTERVIEW_PREP.md
+CLAUDE.md
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# download cache (raw data that goes into a project is saved under data/raw/)
+.cache/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+~$*.xlsx
+*.egg-info/

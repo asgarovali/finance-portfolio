@@ -1,0 +1,48 @@
+# Finance Portfolio
+
+<!-- ALI: two or three sentences about you and what this portfolio is for -->
+
+Each project is a separate folder with its own README, data sources (`data/SOURCES.md`), code and outputs. All data comes from public sources listed in each project. The construction project-finance model uses a fictional, illustrative case.
+
+## Projects
+
+| # | Project | Skills | Tools | Status |
+|---|---------|--------|-------|--------|
+| 1 | Three-statement model + DCF | Financial modelling, valuation | Excel, Python | planned |
+| 2 | Trading comparables | Relative valuation | Excel, Python | planned |
+| 3 | Equity research report | Equity research writing | PDF | planned |
+| 4 | LBO model | Leveraged finance | Excel | planned |
+| 5 | M&A accretion/dilution | M&A | Excel | planned |
+| 6 | Construction project finance (illustrative case) | Project finance, Monte Carlo | Excel, Python | planned |
+| 7 | Credit analysis | Ratios, Altman Z, Merton model | Python, Excel | planned |
+| 8 | Fama-French factor analysis | Asset pricing, time-series regression | Python | planned |
+| 9 | Fama-MacBeth test | Cross-sectional asset pricing | Python | planned |
+| 10 | Event study | Abnormal returns | Python | planned |
+| 11 | Capital structure panel | Panel econometrics | Python | planned |
+| 12 | Oil and the Azerbaijani economy | Cointegration, VAR/VECM | Python | planned |
+| 13 | Volatility and market risk | GARCH, VaR/ES backtesting | Python | planned |
+| 14 | Inflation forecasting | ARIMA, out-of-sample evaluation | Python | planned |
+| 15 | Taylor rule | Monetary policy | Python | planned |
+| 16 | Portfolio optimisation | Markowitz, Black-Litterman, risk parity | Python | planned |
+| 17 | Factor strategy backtest | Backtesting | Python | planned |
+| 18 | Monte Carlo wealth projection | Simulation | Python | planned |
+| 19 | Option pricing | Black-Scholes, binomial, implied vol | Python | planned |
+| 20 | Yield curve and bond analytics | Nelson-Siegel-Svensson, probit | Python | planned |
+| 21 | Macro and markets dashboard | Data visualisation | Python, Plotly | planned |
+
+## Setup
+
+Python 3.11 or newer.
+
+```
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+Copy `.env.example` to `.env` and fill in a free FRED API key and a contact email for the SEC User-Agent. Each project then runs with `python -m src.run` from its own folder.
+
+## Licence
+
+Code is MIT-licensed (see `LICENSE`). Data belongs to the original providers; see each project's `data/SOURCES.md` for their terms.
