@@ -89,8 +89,8 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     """Operating forecast: revenue by segment, margins, working capital, capex,
     invested capital and FCFF, plus a normalised terminal-year column.
 
-    Financing (debt, interest, cash) and the smaller income statement lines are
-    not here yet: the first waits for the Q3 10-Q, the second for sign-off."""
+    Financing (debt, interest, cash, NCI) is not here yet: it waits for the
+    debt terms in the Q3 10-Q."""
     ws = wb.create_sheet("Sched")
     xl.setup_sheet(ws, freeze=f"B{FIRST_ROW}", col_a_width=46)
     year_header(ws, "Forecast schedules")
@@ -171,8 +171,10 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     line("gp", "Gross profit", lambda c, p: f"={c}{at['rev']}*{c}{at['gm']}")
     line("cogs", "Cost of revenue", lambda c, p: f"=-({c}{at['rev']}-{c}{at['gp']})")
     line("sga", "SG&A", lambda c, p: f"=-{c}{at['rev']}*{I['sga']}")
-    line("ebit", "Operating income (before smaller lines)", lambda c, p: f"={c}{at['gp']}+{c}{at['sga']}",
-         bold=True)
+    line("oc", "Other costs, net", lambda c, p: f"={c}{at['rev']}*{I['oc']}")
+    line("gain", "Gain on sale of PP&E", lambda c, p: f"={c}{at['rev']}*{I['gain']}")
+    line("ebit", "Operating income",
+         lambda c, p: f"={c}{at['gp']}+{c}{at['sga']}+{c}{at['oc']}+{c}{at['gain']}", bold=True)
     line("dep", "Depreciation and depletion", lambda c, p: f"={c}{at['rev']}*{I['dep']}")
     line("amort", "Intangible amortisation", lambda c, p: f"=Inputs!{c}{I['amort']}")
     line("da", "D&A", lambda c, p: f"={c}{at['dep']}+{c}{at['amort']}",
@@ -182,6 +184,10 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     line("taxop", "Tax on operating income", lambda c, p: f"=-{c}{at['ebit']}*{I['tax']}")
     line("nopat", "NOPAT", lambda c, p: f"={c}{at['ebit']}+{c}{at['taxop']}",
          terminal=f"={COL['FY2030']}{{r}}*(1+{I['gLR']})", bold=True)
+
+    sec("Below operating income (not in FCFF; interest and NCI after Q3)")
+    line("aff", "Equity income of affiliates", lambda c, p: f"={c}{at['rev']}*{I['aff']}")
+    line("oth", "Other income, net", lambda c, p: f"={c}{at['rev']}*{I['oth']}")
 
     sec("Working capital (year-end)")
     line("costr", "Cost of revenue / revenue", lambda c, p: f"=-{c}{at['cogs']}/{c}{at['rev']}", xl.FMT_PCT)
@@ -212,11 +218,13 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     line("dwc", "Change in working capital (cash)", lambda c, p: f"=-({c}{at['twc']}-{p}{at['twc']})")
 
     sec("Capex and invested capital")
+    line("proc", "Proceeds from sale of PP&E", lambda c, p: f"={c}{at['rev']}*{I['proc']}")
+    line("nbv", "Book value of PP&E sold", lambda c, p: f"={c}{at['proc']}-{c}{at['gain']}")
     # FY2027E on: net investment (net capex + working capital) = revenue growth / sales-to-capital.
-    # Working capital comes from its own schedule, so capex = depreciation + the rest. Only
-    # depreciation is replaced: the ratio excludes acquired intangibles, which organic growth doesn't renew.
+    # Working capital comes from its own schedule, so capex = depreciation + equipment sold + the rest.
+    # Only depreciation is replaced: the ratio excludes acquired intangibles, which organic growth doesn't renew.
     line("capex", "Capex", lambda c, p: f"=-{I['capex26']}" if c == g else
-         f"=-({c}{at['dep']}+({c}{at['rev']}-{p}{at['rev']})/{I['s2c']}+{c}{at['dwc']})")
+         f"=-({c}{at['dep']}+{c}{at['nbv']}+({c}{at['rev']}-{p}{at['rev']})/{I['s2c']}+{c}{at['dwc']})")
     line("capexp", "Capex % revenue", lambda c, p: f"=-{c}{at['capex']}/{c}{at['rev']}", xl.FMT_PCT,
          terminal="=-{t}{r_fcap}/{t}{r_rev}")
     line("acq", "Acquisitions (none modelled after FY2026)", lambda c, p: f"=-{I['acq26']}" if c == g else None)
@@ -224,27 +232,37 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
           f"-BS!{f25}{bs_at['Cash and cash equivalents']}-BS!{f25}{bs_at['Marketable securities, current']}"
           f"-BS!{f25}{bs_at['Marketable securities, long-term']}")
     line("ic", "Invested capital (year-end)",
-         lambda c, p: f"={p}{at['ic']}-{c}{at['capex']}-{c}{at['acq']}-{c}{at['da']}-{c}{at['dwc']}", hist=eq)
+         lambda c, p: f"={p}{at['ic']}-{c}{at['capex']}-{c}{at['acq']}-{c}{at['da']}-{c}{at['nbv']}-{c}{at['dwc']}",
+         hist=eq)
     line("icr", "Invested capital / revenue", lambda c, p: f"={c}{at['ic']}/{c}{at['rev']}", xl.FMT_PCT,
          hist=f"={f25}{{r_ic}}/{f25}{{r_rev}}")
     line("roic", "ROIC on opening capital", lambda c, p: f"={c}{at['nopat']}/{p}{at['ic']}", xl.FMT_PCT)
 
-    sec("Free cash flow to the firm (before smaller lines; acquisitions excluded)")
+    sec("Free cash flow to the firm (acquisitions excluded)")
+    f30 = COL["FY2030"]
     line("fn", "NOPAT", lambda c, p: f"={c}{at['nopat']}", terminal="={t}{r_nopat}")
     line("fda", "D&A", lambda c, p: f"={c}{at['da']}", terminal="={t}{r_da}")
+    line("fgain", "Gain on sale of PP&E (non-cash)", lambda c, p: f"=-{c}{at['gain']}",
+         terminal=f"=-{f30}{at['gain']}*(1+{I['gLR']})")
+    # terminal capex: replace D&A and the equipment sold, plus g / RONIC of NOPAT
     line("fcap", "Capex", lambda c, p: f"={c}{at['capex']}",
-         terminal=f"=-({{t}}{{r_da}}+{I['gLR']}/{I['ronic']}*{{t}}{{r_nopat}})")
+         terminal=f"=-({{t}}{{r_da}}+{{t}}{{r_fproc}}+{{t}}{{r_fgain}}+{I['gLR']}/{I['ronic']}*{{t}}{{r_nopat}})")
+    line("fproc", "Proceeds from sale of PP&E", lambda c, p: f"={c}{at['proc']}",
+         terminal=f"={f30}{at['proc']}*(1+{I['gLR']})")
     line("fwc", "Change in working capital", lambda c, p: f"={c}{at['dwc']}", terminal="=0")
-    line("fcff", "FCFF", lambda c, p: f"={c}{at['fn']}+{c}{at['fda']}+{c}{at['fcap']}+{c}{at['fwc']}",
-         terminal=f"={{t}}{{r_fn}}+{{t}}{{r_fda}}+{{t}}{{r_fcap}}+{{t}}{{r_fwc}}", bold=True)
+    parts = ("fn", "fda", "fgain", "fcap", "fproc", "fwc")
+    line("fcff", "FCFF", lambda c, p: "=" + "+".join(f"{c}{at[k]}" for k in parts),
+         terminal="=" + "+".join(f"{{t}}{{r_{k}}}" for k in parts), bold=True)
+    # net investment = capex - D&A - book value sold + increase in working capital
+    inv = ("fcap", "fda", "fgain", "fproc", "fwc")
     line("rr", "Reinvestment rate (net investment / NOPAT)",
-         lambda c, p: f"=-({c}{at['fcap']}+{c}{at['fda']}+{c}{at['fwc']})/{c}{at['fn']}", xl.FMT_PCT,
-         terminal=f"=-({{t}}{{r_fcap}}+{{t}}{{r_fda}}+{{t}}{{r_fwc}})/{{t}}{{r_fn}}")
+         lambda c, p: "=-(" + "+".join(f"{c}{at[k]}" for k in inv) + f")/{c}{at['fn']}", xl.FMT_PCT,
+         terminal="=-(" + "+".join(f"{{t}}{{r_{k}}}" for k in inv) + ")/{t}{r_fn}")
 
     # fill in the {r}/{t} placeholders now that every row number is known
     subs = {"t": term, "r_twc": at["twc"], "r_rev": at["rev"], "r_nopat": at["nopat"], "r_ic": at["ic"],
             "r_da": at["da"], "r_roic": at["roic"], "r_fn": at["fn"], "r_fda": at["fda"], "r_fcap": at["fcap"],
-            "r_fwc": at["fwc"]}
+            "r_fwc": at["fwc"], "r_fgain": at["fgain"], "r_fproc": at["fproc"]}
     for key, r_ in at.items():
         for col in (f25, term):
             cell = ws[f"{col}{r_}"]
@@ -417,6 +435,18 @@ def build() -> Path:
     scalar("sga", "SG&A % revenue", 0.0875, xl.FMT_PCT,
            "Top of FY2026 guidance (8.25-8.75%, incl. SBC), held; low-end revenue on a largely fixed cost base; memo s.6")
 
+    section("Smaller lines (memo s.6)")
+    placeholder("oc", "Other costs, net, % revenue", "FY2022-25 average")
+    placeholder("gain", "Gain on sale of PP&E, % revenue", "FY2022-25 average; operating, recurring equipment sales")
+    placeholder("proc", "Proceeds from sale of PP&E, % revenue",
+                "FY2022-25 average (cash flow); proceeds - gain = book value sold")
+    placeholder("aff", "Equity income of affiliates, % revenue",
+                "FY2022-25 average; non-operating, valued in the equity bridge")
+    placeholder("oth", "Other income, net, % revenue", "FY2022-25 average; non-operating")
+    placeholder("yld", "Interest income / average cash and securities", "FY2025 yield; used with the cash forecast after Q3")
+    placeholder("nci", "NCI share of pre-tax income",
+                "FY2024-25 average (FY2022-23 JV losses not representative); used after Q3")
+
     section("Working capital (FY2022-25 averages)")
     wc_start = r
     r += 7  # filled once the IS/BS rows are known
@@ -559,6 +589,19 @@ def build() -> Path:
             f"(IS!{COL[f'FY{y + 1}']}{is_at['memo:Construction segment revenue']}"
             + (f"-{I['acq_c25']}" if y == 2024 else "") + f")/{I[f'cap_s{y % 100}']}"
             for y in (2022, 2023, 2024)) + ")", "0.000"),
+        **{k: ("=AVERAGE(" + ",".join(f"{sh}!{COL[y]}{row_}/IS!{COL[y]}{rev}" for y in yrs) + ")", "0.00%")
+           for k, sh, row_ in (("oc", "IS", is_at["Other costs, net"]), ("gain", "IS", is_at["Gain on sale of PP&E"]),
+                               ("proc", "CF", cf_at["Proceeds from sale of PP&E"]),
+                               ("aff", "IS", is_at["Equity income of affiliates"]),
+                               ("oth", "IS", is_at["Other income, net"]))},
+        "yld": (f"=IS!{f25}{is_at['Interest income']}/AVERAGE(" + ",".join(
+            "SUM(" + ",".join(f"BS!{COL[y]}{bs_at[n]}" for n in ("Cash and cash equivalents",
+                                                              "Marketable securities, current",
+                                                              "Marketable securities, long-term")) + ")"
+            for y in ("FY2024", "FY2025")) + ")", "0.00%"),
+        "nci": ("=AVERAGE(" + ",".join(
+            f"-IS!{COL[y]}{is_at['Non-controlling interests']}/IS!{COL[y]}{is_at['Pre-tax income']}"
+            for y in ("FY2024", "FY2025")) + ")", xl.FMT_PCT),
         "ronic": ("=AVERAGE(" + ",".join(
             f"IS!{COL[y]}{is_at['Operating income']}*(1-{I['tax']})/(({ic(COL[y])}+{ic(COL[HIST[HIST.index(y) - 1]])})/2)"
             for y in yrs) + ")", xl.FMT_PCT),

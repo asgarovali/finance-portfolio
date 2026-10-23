@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 sets out the approach; numbers come in step 5.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 sets out the approach; numbers come in step 5.
 
 ## 1. Valuation date and balance sheet
 
@@ -142,7 +142,7 @@ FY2026E uses the 9M actual margin once it's out (see the note on interim values 
 
 **Why the base case moved from 14.5% to 15.0% (22 Oct).** With 14.5% the base case stacked three conservative choices on top of each other: low-end revenue, the most conservative margin normalisation, and high-end SG&A. Each one is defensible, but together they describe a worse year than any single piece of evidence supports. 15.0% sits in the middle of the range the revision data gives, and 14.5% becomes the downside.
 
-**Upside: management guidance.** Guidance is for adjusted EBITDA margin (12.25-13.25% for FY2026), not gross margin, so it needs translating. Using Granite's own definition (net income after the JV partners' share, plus interest, tax, D&A, stock-based compensation and "other costs, net"), I rebuilt FY2025 adjusted EBITDA from the filed lines at 11.9% of revenue, against a 16.1% gross margin, a gap of 4.2 points. For H1 2026 the same rebuild gives 10.1%, against Granite's reported 10.3%, so the definition matches. Adding the 4.2-point gap to the 12.75% guidance midpoint gives an upside gross margin of about 17.0%. This is approximate: forecast SG&A (8.75%) is lower than FY2025's 9.2%, so guidance could be met with a slightly lower gross margin. Once the smaller lines are in the model, I'll add an adjusted EBITDA row and check the upside against guidance directly.
+**Upside: management guidance.** Guidance is for adjusted EBITDA margin (12.25-13.25% for FY2026), not gross margin, so it needs translating. Using Granite's own definition (net income after the JV partners' share, plus interest, tax, D&A, stock-based compensation and "other costs, net"), I rebuilt FY2025 adjusted EBITDA from the filed lines at 11.9% of revenue, against a 16.1% gross margin, a gap of 4.2 points. For H1 2026 the same rebuild gives 10.1%, against Granite's reported 10.3%, so the definition matches. Adding the 4.2-point gap to the 12.75% guidance midpoint gives an upside gross margin of about 17.0%. This is approximate: forecast SG&A (8.75%) is lower than FY2025's 9.2%, so guidance could be met with a slightly lower gross margin. Adjusted EBITDA starts from net income after the JV partners' share, so it needs interest and NCI, which come with the debt schedule after Q3. Then I'll add an adjusted EBITDA row and check the upside against guidance directly.
 
 **The gap to guidance that remains.** On the same translation, the base case's 15.0% gross margin gives an adjusted EBITDA margin of roughly 10.8%, still 1.5-2.5 points below FY2026 guidance. I keep that gap on purpose, because of Granite's forecasting history. The 2017-2019 restatement came from project forecasts that were too optimistic. FY2025 and H1 2026 margins were helped by claim settlements, which management itself calls out. Until margins without the claim benefits show up in the reported numbers, I don't take guidance as the central case.
 
@@ -152,7 +152,7 @@ Segment margins follow from the total, with Materials kept above Construction as
 
 **SG&A: 8.75% of revenue in FY2026E, the top of guidance** (8.25% to 8.75%, including about USD 48m of stock-based compensation). Much of SG&A is fixed: offices, management, systems. If revenue comes in at the low end of guidance, as I assume, the same cost base is a larger share of it, so the ratio sits at the high end. That's consistent with the revenue choice, not just extra caution. After FY2026 SG&A is held at 8.75% of revenue.
 
-**Smaller lines.** These are agreed as simple rules; the numbers below are for review before they go into the model.
+**Smaller lines (agreed 22 Oct, in the model).** Simple rules, each calculated in the workbook from the filed history. Interest income and the NCI share are used once cash and interest are forecast after Q3.
 
 | Line | FY2022 | FY2023 | FY2024 | FY2025 | Proposed rule |
 |---|---|---|---|---|---|
@@ -208,7 +208,9 @@ Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of 
 
 Each year, net investment = increase in revenue / sales-to-capital. Net investment covers both net capex and the increase in working capital, because the invested capital the ratio is measured on includes working capital. Working capital is already modelled from the days in section 7, so net capex is what's left, and nothing is counted twice:
 
-> capex = depreciation + increase in revenue / sales-to-capital - increase in working capital
+> capex = depreciation + book value of equipment sold + increase in revenue / sales-to-capital - increase in working capital
+
+The book value of equipment sold (proceeds minus gain, section 6) is in there because selling equipment shrinks the capital base, and it has to be replaced for capital to keep growing with revenue. In cash terms it nets out: the sale proceeds come back in investing cash flow.
 
 The ratio comes from Granite's FY2022-25 history (revenue / year-end invested capital). **I use the version excluding goodwill and acquired intangibles (3.87, agreed 22 Oct)**, because organic growth doesn't create goodwill. FY2025 shows why it matters: the 2025 acquisitions added goodwill and intangibles, and the ratio including them fell to 2.32. For the same reason capex replaces depreciation only, not intangible amortisation: amortisation runs off intangibles bought with acquisitions, and organic growth doesn't renew them.
 
@@ -226,12 +228,15 @@ The resulting path in the base case, with FY2027E growth anchored on backlog (se
 | of which increase in working capital | 37 | 11 | 13 | 16 | 18 | 0 |
 | of which net capex | | 134 | 114 | 86 | 51 | |
 | Depreciation | 177 | 196 | 212 | 226 | 235 | |
-| Capex | 150 | 330 | 327 | 311 | 286 | 399 |
-| Capex % revenue | 2.8% | 5.6% | 5.1% | 4.6% | 4.1% | 5.5% |
-| ROIC on opening capital | 12.4% | 13.3% | 13.6% | 13.7% | 13.7% | |
-| FCFF (before smaller lines) | 250 | 143 | 183 | 227 | 272 | 201 |
+| Book value of equipment sold | 15 | 16 | 18 | 19 | 19 | |
+| Capex | 150 | 347 | 344 | 330 | 305 | 407 |
+| Capex % revenue | 2.8% | 5.9% | 5.4% | 4.9% | 4.3% | 5.6% |
+| ROIC on opening capital | 11.3% | 12.2% | 12.5% | 12.6% | 12.6% | |
+| FCFF | 242 | 118 | 157 | 199 | 243 | 183 |
 
-FY2027E capex (5.6% of revenue) is still well above anything in Granite's FY2021-25 history (2.7-4.0%). I haven't smoothed it. It's what 10.6% organic growth costs at Granite's historical capital intensity. Granite's recent growth was partly bought, and an acquisition shows up as an acquisition, not as capex. The real lever is the growth rate, not the capex rule.
+FCFF includes the smaller operating lines from section 6 (other costs, gains and proceeds from equipment sales). Interest, affiliates and other income are outside FCFF. Historical capex is gross too: FY2021-25 proceeds from equipment sales were shown separately in investing cash flow, as here.
+
+FY2027E capex (5.9% of revenue) is still well above anything in Granite's FY2021-25 history (2.7-4.0%). I haven't smoothed it. It's what 10.6% organic growth costs at Granite's historical capital intensity. Granite's recent growth was partly bought, and an acquisition shows up as an acquisition, not as capex. The real lever is the growth rate, not the capex rule.
 
 One consequence to be aware of: because net investment in total is set by the ratio, the working-capital days in section 7 only decide how it splits between capex and working capital. From FY2027E on they don't change FCFF. The alternative would be a ratio on fixed capital only (revenue / invested capital excluding goodwill, intangibles and trade working capital, FY2022-25 average 3.69), with working capital added on top. That would cost about USD 15-20m a year more in reinvestment, so I've kept the simpler version.
 
@@ -247,15 +252,15 @@ Capex in the terminal year therefore comes from this formula, not from a fixed p
 
 **Base case (agreed 22 Oct): RONIC = 9.7%, Granite's FY2022-25 average ROIC**, entered as a formula over the history (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). My first proposal was to use the model's own terminal ROIC, on the expectation that it would land near 9.7%. That expectation was wrong. With capex at 3.5% of revenue the model's ROIC climbed to 15.6%, because capital didn't grow with revenue. So the historical average is now an input in its own right.
 
-With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.5% of revenue. That is a step up from 4.1% in FY2030E.
+With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.6% of revenue. That is a step up from 4.3% in FY2030E.
 
-**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 201m, against USD 272m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
-- In FY2027E-30E, each extra dollar of revenue needs 1/3.87 of a dollar of capital and earns the NOPAT margin of about 4.7%. That's a return on new capital of about 18% (4.7% × 3.87).
-- In the terminal year, new capital earns RONIC, 9.7%. To grow 4% a year at 9.7%, Granite has to reinvest 41% of NOPAT, against 17% in FY2030E.
+**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 183m, against USD 243m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
+- In FY2027E-30E, each extra dollar of revenue needs 1/3.87 of a dollar of capital and earns the NOPAT margin of about 4.3%. That's a return on new capital of about 16-17% (4.3% × 3.87).
+- In the terminal year, new capital earns RONIC, 9.7%. To grow 4% a year at 9.7%, Granite has to reinvest 41% of NOPAT, against 19% in FY2030E.
 
-I think the step down is right. Returns well above the cost of capital attract competition: other contractors bid more aggressively for the same public work, and margins on new contracts get pushed down. Over a long horizon, excess returns on new investment shrink, so the perpetuity shouldn't assume today's 18% on every new dollar. It is still one of the biggest single drivers of the value, so the RONIC sensitivities below matter.
+I think the step down is right. Returns well above the cost of capital attract competition: other contractors bid more aggressively for the same public work, and margins on new contracts get pushed down. Over a long horizon, excess returns on new investment shrink, so the perpetuity shouldn't assume today's 16-17% on every new dollar. It is still one of the biggest single drivers of the value, so the RONIC sensitivities below matter.
 
-During FY2027E-30E the model's ROIC on opening capital runs at about 13-14% (table above), above the 9.7% assumed for new capital in the terminal year. That's deliberate: by then the returns on today's business shouldn't be assumed to carry over to every new dollar invested.
+During FY2027E-30E the model's ROIC on opening capital runs at about 12-13% (table above), above the 9.7% assumed for new capital in the terminal year. That's deliberate: by then the returns on today's business shouldn't be assumed to carry over to every new dollar invested.
 
 Sensitivities:
 - **RONIC = WACC (conservative):** growth creates no value.
