@@ -91,6 +91,12 @@ Downloaded by `src/data/download_market.py` on 2026-10-22. Damodaran's data is f
 | `raw/damodaran/ratings.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/ratings.xls | interest coverage to rating to default spread | |
 | `raw/damodaran/indname.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/indname.xls | companies in each industry | 22 MB, not committed; re-download with the script |
 | `raw/fred/fred_DGS10.json` | FRED API, series DGS10 (10-year Treasury constant maturity) | daily yields | last observation 2026-10-20: 5.12% |
+| `raw/damodaran/psdata.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/psdata.xls | price and EV to sales by industry (segment value weights) | "Date updated" 2026-01-05; downloaded 2026-10-23 |
+| `raw/damodaran/ERPbymonth.xlsx` | https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx | implied ERP at the start of each month since Sep 2008 | latest row: 1 Oct 2026, 4.20% (T12m with sustainable payout); downloaded 2026-10-23 |
+| `raw/fred/fred_GDPC1MDLR.json` | FRED API, series GDPC1MDLR (FOMC longer-run real GDP growth, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
+| `raw/fred/fred_PCECTPIMDLR.json` | FRED API, series PCECTPIMDLR (FOMC longer-run PCE inflation, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
+
+Still to come at the valuation date: DGS10 on the 10-Q filing date (refreshed with the same script), and the market yield on the 6.375% 2034 notes from FINRA TRACE (https://www.finra.org/finra-data/fixed-income). FINRA's bond-level data is only available through its browser search, so that yield is read there by hand and recorded here with the date, CUSIP and trade.
 
 ## Federal highway funding (IIJA)
 

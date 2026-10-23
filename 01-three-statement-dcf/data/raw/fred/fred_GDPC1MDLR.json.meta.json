@@ -1,0 +1,8 @@
+{
+  "url": "https://api.stlouisfed.org/fred/series/observations",
+  "params": {
+    "series_id": "GDPC1MDLR",
+    "file_type": "json"
+  },
+  "retrieved_utc": "2026-10-23 07:40:16"
+}

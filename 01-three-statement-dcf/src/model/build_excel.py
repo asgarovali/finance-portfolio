@@ -10,6 +10,7 @@ Run from the project folder:  python -m src.model.build_excel
 """
 from __future__ import annotations
 
+import json
 from datetime import date
 from pathlib import Path
 
@@ -40,18 +41,33 @@ BOLD_TOTALS = {"Gross profit", "Operating income", "Pre-tax income", "Net income
                "Cash from operations", "Cash from investing", "Cash from financing", "Net change in cash"}
 
 
-def damodaran_inputs() -> dict[str, float]:
-    """Betas and ERP read from the saved Damodaran files, not typed in."""
+def damodaran_inputs() -> dict:
+    """Betas, ERP and sales multiples read from the saved Damodaran files, not typed in."""
     b = pd.read_excel(RAW / "damodaran" / "betas.xls", sheet_name="Industry Averages", header=None)
     b = b.set_index(0)
     h = pd.read_excel(RAW / "damodaran" / "histimpl.xls", sheet_name=0, header=6)
-    erp = h.loc[h["Year"] == 2025, "Implied ERP (FCFE)"].iloc[0]
-    # column 7 = unlevered beta corrected for cash (current), 15 = average 2022-2026
+    # monthly implied ERP: the headline series on his home page is the T12m one with sustainable payout
+    m = pd.read_excel(RAW / "damodaran" / "ERPbymonth.xlsx", header=0)
+    m = m.dropna(subset=["ERP (T12 m with sustainable payout)"]).iloc[-1]
+    ps = pd.read_excel(RAW / "damodaran" / "psdata.xls", sheet_name="Industry Averages", header=7).set_index(
+        "Industry Name")
+    ec, cs = "Engineering/Construction", "Construction Supplies"
+    # betas.xls column 3 = D/E, 7 = unlevered beta corrected for cash (current), 15 = average 2022-2026
     return {
-        "beta_ec_avg": b.loc["Engineering/Construction", 15], "beta_ec_2026": b.loc["Engineering/Construction", 7],
-        "beta_cs_avg": b.loc["Construction Supplies", 15], "beta_cs_2026": b.loc["Construction Supplies", 7],
-        "erp": erp,
+        "beta_ec_avg": b.loc[ec, 15], "beta_ec_2026": b.loc[ec, 7],
+        "beta_cs_avg": b.loc[cs, 15], "beta_cs_2026": b.loc[cs, 7],
+        "de_ec": b.loc[ec, 3], "de_cs": b.loc[cs, 3],
+        "erp_jan": h.loc[h["Year"] == 2025, "Implied ERP (FCFE)"].iloc[0],
+        "erp": m["ERP (T12 m with sustainable payout)"], "erp_date": m["Start of month"],
+        "evs_ec": ps.loc[ec, "EV/Sales"], "evs_cs": ps.loc[cs, "EV/Sales"],
     }
+
+
+def fred_latest(series: str) -> tuple[float, str]:
+    """Latest observation of a saved FRED series (value in %, date)."""
+    obs = [o for o in json.loads((RAW / "fred" / f"fred_{series}.json").read_text())["observations"]
+           if o["value"] != "."]
+    return float(obs[-1]["value"]) / 100, obs[-1]["date"]
 
 
 def amortisation_history(facts: pd.DataFrame) -> dict[str, float]:
@@ -276,6 +292,92 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     return ws, at
 
 
+def build_wacc(wb, I: dict, is_at: dict):
+    """WACC from a bottom-up beta. Market inputs (risk-free rate, cost of debt,
+    share price, shares, debt) wait for the valuation date and stay blank until then,
+    so every formula that needs them returns blank instead of an error."""
+    ws = wb.create_sheet("WACC")
+    xl.setup_sheet(ws, freeze=None, col_a_width=50, landscape=False)
+    ws["A1"] = "WACC"
+    ws["A1"].font = xl.BOLD
+    ws["A2"] = "USD m unless stated"
+    ws["A2"].font = xl.NOTE
+    ws.column_dimensions["B"].width = 12
+    ws.column_dimensions["C"].width = 70
+    at: dict[str, str] = {}
+    row = 4
+
+    def sec(title):
+        nonlocal row
+        row += 1
+        xl.header(ws, row, title, 3)
+        row += 1
+
+    def line(key, label, formula, fmt, note=None, bold=False):
+        nonlocal row
+        ws.cell(row=row, column=1, value=label).font = xl.BOLD if bold else xl.BASE
+        xl.put_formula(ws, f"B{row}", formula, fmt, bold=bold)
+        if note:
+            ws.cell(row=row, column=3, value=note).font = xl.NOTE
+        at[key] = f"B{row}"
+        row += 1
+
+    def blank_if(*refs):  # condition that any market input is still missing
+        return "OR(" + ",".join(f'{r}=""' for r in refs) + ")"
+
+    f25 = COL["FY2025"]
+    sec("Unlevered beta: Construction and Materials weighted by estimated value")
+    line("bu_c", "Unlevered beta, Construction (Eng./Construction)",
+         f"=CHOOSE({I['beta_basis']},{I['beta_ec']},{I['beta_ec26']})", "0.000")
+    line("bu_m", "Unlevered beta, Materials (Construction Supplies)",
+         f"=CHOOSE({I['beta_basis']},{I['beta_cs']},{I['beta_cs26']})", "0.000")
+    line("rev_c", "FY2025 Construction revenue", f"=IS!{f25}{is_at['memo:Construction segment revenue']}", xl.FMT_NUM)
+    line("rev_m", "FY2025 Materials revenue (external)",
+         f"=IS!{f25}{is_at['Revenue']}-{{rev_c}}", xl.FMT_NUM,
+         "Sales to Granite's own projects excluded: they're already inside Construction revenue")
+    line("v_c", "Estimated value, Construction", f"={{rev_c}}*{I['evs_ec']}", xl.FMT_NUM, "Revenue x industry EV/Sales")
+    line("v_m", "Estimated value, Materials", f"={{rev_m}}*{I['evs_cs']}", xl.FMT_NUM, "Revenue x industry EV/Sales")
+    line("w_m", "Value weight, Materials", "={v_m}/({v_c}+{v_m})", xl.FMT_PCT)
+    line("bu", "Unlevered beta, Granite", "={bu_c}*(1-{w_m})+{bu_m}*{w_m}", "0.000", bold=True)
+
+    sec("Capital structure (market values at the valuation date)")
+    line("e", "Equity market value", f"=IF({blank_if(I['price'], I['shares'])},\"\",{I['price']}*{I['shares']})",
+         xl.FMT_NUM, "Share price x diluted shares")
+    line("d", "Debt market value", f"=IF({I['debt_mv']}=\"\",\"\",{I['debt_mv']})", xl.FMT_NUM,
+         "Leases excluded: lease costs stay in operating costs and FCFF")
+    line("de", "Debt / equity", '=IF(OR({e}="",{d}=""),"",{d}/{e})', xl.FMT_PCT)
+    line("de_ind", "Industry D/E, value-weighted (cross-check)",
+         f"={I['de_ec']}*(1-{{w_m}})+{I['de_cs']}*{{w_m}}", xl.FMT_PCT, "Damodaran betas.xls")
+    line("we", "Equity weight, E / (D + E)", '=IF({de}="","",{e}/({d}+{e}))', xl.FMT_PCT)
+    line("wd", "Debt weight, D / (D + E)", '=IF({de}="","",{d}/({d}+{e}))', xl.FMT_PCT)
+
+    sec("Cost of equity")
+    line("bl", "Levered beta", f'=IF({{de}}="","",{{bu}}*(1+(1-{I["tax"]})*{{de}}))', "0.000",
+         "Unlevered x (1 + (1 - tax) x D/E)")
+    line("rf", "Risk-free rate", f"=IF({I['rf']}=\"\",\"\",{I['rf']})", xl.FMT_PCT)
+    line("erp", "Equity risk premium", f"={I['erp']}", "0.00%")
+    line("ke", "Cost of equity", '=IF(OR({rf}="",{bl}=""),"",{rf}+{bl}*{erp})', "0.00%", bold=True)
+
+    sec("Cost of debt")
+    line("kd", "Pre-tax cost of debt", f"=IF({I['kd']}=\"\",\"\",{I['kd']})", "0.00%")
+    line("kd_at", "After-tax cost of debt", f'=IF({{kd}}="","",{{kd}}*(1-{I["tax"]}))', "0.00%")
+
+    sec("Weighted average cost of capital")
+    line("wacc", "WACC", '=IF(OR({ke}="",{kd_at}="",{we}=""),"",{we}*{ke}+{wd}*{kd_at})', "0.00%", bold=True)
+
+    # resolve {key} references between lines
+    refs = {k: v for k, v in at.items()}
+    for r in range(1, row):
+        c = ws[f"B{r}"]
+        if isinstance(c.value, str) and "{" in c.value:
+            c.value = c.value.format(**refs)
+
+    ws["A3"] = "Check: terminal growth below risk-free rate (0 = OK)"
+    ws["A3"].font = xl.BOLD
+    xl.put_formula(ws, "B3", f'=IF({I["rf"]}="","pending",IF({I["gLR"]}<{I["rf"]},0,1))', "0")
+    return ws
+
+
 def year_header(ws, title: str, inputs: bool = False) -> None:
     """Title, units and the year row. On Inputs, column B holds single values
     and the history columns are left empty, so only the forecast years get headers."""
@@ -415,7 +517,15 @@ def build() -> Path:
     d = cap.iloc[-1]
     scalar("cap_now", "CAP at latest quarter-end", d["cap"], xl.FMT_NUM,
            f"{d['date']:%d %b %Y}, {d['form']} {d['accession']}; replace with 30 Sep 2026 on 29 Oct", "INTERIM")
-    scalar("gLR", "Long-run growth (FY2030E and terminal)", 0.04, xl.FMT_PCT, "Approx. long-run US nominal GDP; source in step 5; memo s.5")
+    g_real, d_real = fred_latest("GDPC1MDLR")
+    g_infl, d_infl = fred_latest("PCECTPIMDLR")
+    scalar("g_real", "FOMC longer-run real GDP growth (median)", g_real, xl.FMT_PCT,
+           f"FRED GDPC1MDLR, Summary of Economic Projections {d_real}")
+    scalar("g_infl", "FOMC longer-run PCE inflation (median)", g_infl, xl.FMT_PCT,
+           f"FRED PCECTPIMDLR, Summary of Economic Projections {d_infl}")
+    placeholder("g_nom", "Implied long-run nominal growth", "(1 + real) x (1 + inflation) - 1; source for the 4% below")
+    scalar("gLR", "Long-run growth (FY2030E and terminal)", 0.04, xl.FMT_PCT,
+           "Implied nominal growth above, rounded; must stay below the risk-free rate (WACC check); memo s.5, s.9")
     scalar("gfade", "Years to fade growth to long-run rate", 3, "0", "FY2027E (CAP-anchored) to FY2030E; memo s.5")
     scalar("down", "Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
 
@@ -477,11 +587,26 @@ def build() -> Path:
            "Damodaran betas.xls; Materials segment (VMC, MLM, KNF peer group); base case")
     scalar("beta_cs26", "Unlevered beta, Constr. Supplies, Jan 2026", round(dam["beta_cs_2026"], 4), "0.000",
            "Damodaran betas.xls; sensitivity")
-    scalar("w_mat", "Segment value weight, Materials", None, xl.FMT_PCT, "step 5: value weights by segment", "PENDING")
+    scalar("beta_basis", "Beta basis (1 = 2022-26 average, 2 = Jan 2026)", 1, "0", "Base case 1; 2 is the sensitivity; memo s.9")
+    scalar("evs_ec", "EV/Sales, Eng./Construction", round(dam["evs_ec"], 4), "0.00x",
+           "Damodaran psdata.xls (Jan 2026); segment value weights")
+    scalar("evs_cs", "EV/Sales, Construction Supplies", round(dam["evs_cs"], 4), "0.00x",
+           "Damodaran psdata.xls (Jan 2026); segment value weights")
+    scalar("de_ec", "Industry D/E, Eng./Construction", round(dam["de_ec"], 4), xl.FMT_PCT,
+           "Damodaran betas.xls; cross-check on Granite's D/E only")
+    scalar("de_cs", "Industry D/E, Construction Supplies", round(dam["de_cs"], 4), xl.FMT_PCT,
+           "Damodaran betas.xls; cross-check on Granite's D/E only")
     scalar("erp", "Equity risk premium", round(dam["erp"], 4), "0.00%",
-           "Damodaran histimpl.xls, implied ERP start of 2026; check Oct 2026 monthly in step 5")
-    scalar("rf", "Risk-free rate (10y Treasury)", None, xl.FMT_PCT, "FRED DGS10 on valuation date", "PENDING")
-    scalar("kd", "Pre-tax cost of debt", None, xl.FMT_PCT, "market yield on 6.375% 2034 notes at valuation date", "PENDING")
+           f"Damodaran ERPbymonth.xlsx, implied ERP {dam['erp_date']:%d %b %Y} (start of 2026: {dam['erp_jan']:.2%})")
+    scalar("rf", "Risk-free rate (10y Treasury)", None, xl.FMT_PCT,
+           "FRED DGS10 on the valuation date (same day as the share price)", "PENDING")
+    scalar("kd", "Pre-tax cost of debt", None, xl.FMT_PCT,
+           "Market yield on the 6.375% 2034 notes at the valuation date (FINRA TRACE)", "PENDING")
+    scalar("price", "Share price (USD)", None, "0.00", "NYSE close on the 10-Q filing date", "PENDING")
+    scalar("shares", "Diluted shares (m)", None, "0.0",
+           "Q3 10-Q: shares outstanding + dilution incl. 2030 convertibles above par; memo s.9", "PENDING")
+    scalar("debt_mv", "Debt at market value (USD m)", None, xl.FMT_NUM,
+           "Q3 10-Q debt note: senior notes and convertibles' debt component at market, term loan at book", "PENDING")
     placeholder("ronic", "Terminal RONIC, base (FY2022-25 average ROIC)",
                 "EBIT after 25% tax / average invested capital; sensitivities WACC and 13%; memo s.8")
 
@@ -602,6 +727,7 @@ def build() -> Path:
         "nci": ("=AVERAGE(" + ",".join(
             f"-IS!{COL[y]}{is_at['Non-controlling interests']}/IS!{COL[y]}{is_at['Pre-tax income']}"
             for y in ("FY2024", "FY2025")) + ")", xl.FMT_PCT),
+        "g_nom": (f"=(1+{I['g_real']})*(1+{I['g_infl']})-1", "0.00%"),
         "ronic": ("=AVERAGE(" + ",".join(
             f"IS!{COL[y]}{is_at['Operating income']}*(1-{I['tax']})/(({ic(COL[y])}+{ic(COL[HIST[HIST.index(y) - 1]])})/2)"
             for y in yrs) + ")", xl.FMT_PCT),
@@ -616,17 +742,18 @@ def build() -> Path:
         xl.put_formula(inp, f"B{later[key]}", formula, fmt)
 
     sched_ws, _ = build_sched(wb, I, is_at, bs_at)
+    wacc_ws = build_wacc(wb, I, is_at)
 
     # Print areas end in a narrow empty spacer column: the PDF printer clips the last
     # column at its hard margin, and this way it clips the spacer, not FY2030E.
     for ws, last in ((is_ws, LAST_COL), (bs_ws, LAST_COL), (cf_ws, LAST_COL), (inp, note_col),
-                     (sched_ws, LAST_COL + 1)):
+                     (sched_ws, LAST_COL + 1), (wacc_ws, 2)):
         spacer = get_column_letter(last + 1)
         ws.column_dimensions[spacer].width = 3
         ws.print_area = f"A1:{spacer}{ws.max_row}"
         # a fixed scale prints more reliably than Excel's fit-to-width, which left
         # FY2030E half off the page in the PDF export
-        if ws is inp:
+        if ws in (inp, wacc_ws):
             ws.page_setup.fitToHeight = 1  # fit-to-page works here and keeps it on one sheet
         else:
             ws.sheet_properties.pageSetUpPr.fitToPage = False
@@ -661,6 +788,9 @@ def check(path: Path) -> None:
     k = COL["FY2030"]
     assert abs(sched[f"{k}3"].value) < 1e-9, f"WC check = {sched[k + '3'].value}"
     print("Sched WC check: 0 (FY2030E trade working capital on target)")
+    g_check = wb["WACC"]["B3"].value
+    assert g_check in ("pending", 0), f"terminal growth is not below the risk-free rate ({g_check})"
+    print(f"WACC check (terminal growth < risk-free rate): {g_check}")
 
 
 def main() -> None:

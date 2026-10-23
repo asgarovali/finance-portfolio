@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 sets out the approach; numbers come in step 5.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 (cost of capital) is built; the risk-free rate, cost of debt, share price, diluted shares and debt are pending until the valuation date.
 
 ## 1. Valuation date and balance sheet
 
@@ -75,7 +75,7 @@ I forecast Construction and Materials separately, because their margins differ a
 
 **FY2026E: USD 5.3bn, the low end of guidance.** Granite raised its range in July, but the restatement came from optimistic project forecasts, so I take the bottom of the range rather than the midpoint. That is still growth of 19.8% over FY2025, and it includes the acquisitions closed in 2025 and 2026. I re-check this against 9M 2026 actuals on 29 Oct. The segment split also waits for the 9M figures. In H1 2026 Materials was 16.7% of revenue, but H1 is the weak season for materials.
 
-**FY2027E to FY2030E: organic growth only, fading to 4% by FY2030.** After FY2026 there are no further acquisitions unless I model one explicitly, with its price (section 4). I chose 4% as a rough long-run US nominal GDP growth rate, and it will be sourced in step 5 alongside the terminal growth rate.
+**FY2027E to FY2030E: organic growth only, fading to 4% by FY2030.** After FY2026 there are no further acquisitions unless I model one explicitly, with its price (section 4). 4% is long-run US nominal GDP growth: the Fed's September 2026 projections put longer-run real growth at 2.0% and inflation at 2.0%, which gives 4.04% (section 9).
 
 **FY2027E starting point: backlog, not H1 growth (proposed 22 Oct).** My first version started the fade from H1 2026 organic growth (15.9%). That's one half-year in a strong period. Backlog is a better anchor for a contractor, because most of next year's construction revenue is work already won.
 
@@ -275,9 +275,9 @@ Cash taxes have been below the book charge (USD 49.0m paid against USD 68.5m in 
 
 **Non-controlling interests.** Granite consolidates some construction JVs, so its cash flows include the partners' share. FCFF is for the whole consolidated group, and the value of the NCI is deducted in the bridge from enterprise value to equity value. The method (book value of USD 42.5m, or a share of value based on income) is set in step 6.
 
-## 9. Cost of capital (approach, numbers in step 5)
+## 9. Cost of capital
 
-Data downloaded on 2026-10-22: Damodaran `betas.xls` (updated 5 Jan 2026), `histimpl.xls`, `ratings.xls`, `indname.xls`, and FRED DGS10.
+Data downloaded on 2026-10-22 and 23: Damodaran `betas.xls` and `psdata.xls` (updated 5 Jan 2026), `histimpl.xls`, `ERPbymonth.xlsx`, `ratings.xls`, `indname.xls`, and FRED DGS10, GDPC1MDLR and PCECTPIMDLR. The calculation is on the WACC sheet.
 
 **Beta: bottom-up, weighted by segment.** Damodaran classifies Granite under Engineering/Construction. He puts the US aggregates companies (Vulcan, Martin Marietta, Knife River) under Construction Supplies, not Building Materials, so that's the right group for the Materials segment (`indname.xls`).
 
@@ -288,13 +288,29 @@ Data downloaded on 2026-10-22: Damodaran `betas.xls` (updated 5 Jan 2026), `hist
 
 **Base case: the 2022-26 averages (0.978 and 1.049). Sensitivity: the January 2026 values (1.137 and 1.047).** The 2026 Engineering/Construction beta is above every year from 2022 to 2025 (0.84 to 1.02), and I don't want one year's jump to drive the valuation. Granite's work is mostly public infrastructure, which is less cyclical than private construction. For Construction Supplies the choice hardly matters.
 
-The segment weights should be based on value, not revenue, because aggregates businesses are worth much more per dollar of sales than contractors. The beta is relevered at Granite's market debt-to-equity on the valuation date. A regression beta (weekly returns against the S&P 500) is a cross-check only.
+**Segment weights by estimated value, not revenue.** Aggregates businesses are worth much more per dollar of sales than contractors, so a revenue weighting would understate Materials. I estimate each segment's value as its FY2025 revenue × Damodaran's industry EV/Sales (`psdata.xls`, Jan 2026):
 
-**Risk-free rate:** the 10-year Treasury yield on the valuation date (FRED DGS10). It was 5.12% on 20 Oct 2026.
+| | FY2025 revenue | EV/Sales | Estimated value | Weight | Unlevered beta (base) |
+|---|---|---|---|---|---|
+| Construction (Eng./Construction) | 3,655 | 1.74x | 6,341 | 71.8% | 0.978 |
+| Materials (Construction Supplies) | 769 | 3.23x | 2,487 | 28.2% | 1.049 |
+| Granite | | | | | **0.998** |
 
-**Equity risk premium:** Damodaran's implied ERP at the start of 2026 is 4.23% (`histimpl.xls`). There's a timing mismatch: an October risk-free rate with a January ERP. If Damodaran's monthly ERP update for October 2026 is available, I'd use that so both inputs come from the same date. I check this in step 5.
+With the January 2026 betas (the sensitivity) Granite's unlevered beta is 1.111.
+
+Materials revenue here is external revenue only. The USD 275m of materials Granite used on its own projects in FY2025 is already inside Construction revenue (it's eliminated on consolidation, Note 21), so counting it again in Materials would value the same sales twice.
+
+**Relevering.** Levered beta = unlevered beta × (1 + (1 - 25%) × D/E), with D/E at market values on the valuation date. Damodaran's cash-corrected unlevered beta is the beta of the operating business, so I relever with gross debt and add cash separately in the equity bridge. Damodaran's industry D/E ratios (14.0% Eng./Construction, 17.6% Construction Supplies, 15.0% value-weighted) are a cross-check on Granite's own D/E, not an input. A regression beta (weekly returns against the S&P 500) is a cross-check only.
+
+**Risk-free rate:** the 10-year Treasury yield (FRED DGS10) on the valuation date, the same day as the share price. It was 5.12% on 20 Oct 2026.
+
+**Long-run growth below the risk-free rate.** A firm can't grow faster than the economy forever, and the risk-free rate is a rough ceiling for long-run nominal growth. The WACC sheet has a check row: it shows 0 if terminal growth (4%) is below the risk-free rate, 1 if not, and the build stops on 1. The source for 4%: the FOMC's median longer-run projections in the September 2026 Summary of Economic Projections are 2.0% real GDP growth and 2.0% PCE inflation (FRED GDPC1MDLR and PCECTPIMDLR), so (1.02 × 1.02) - 1 = 4.04%, rounded to 4.0%.
+
+**Equity risk premium: 4.20%, Damodaran's implied ERP on 1 Oct 2026** (`ERPbymonth.xlsx`, the trailing-12-month series with sustainable payout, which is the one he quotes on his home page). At the start of 2026 it was 4.23% (`histimpl.xls`). I use the monthly figure so the ERP and the risk-free rate are both from October. His next update is on 1 Nov, after the valuation date, so 1 Oct is the latest available on 29 Oct.
 
 **Cost of debt**
-- Main estimate: the market yield on Granite's 6.375% senior notes due 2034. At 30 Jun 2026 they had a fair value of USD 611.3m against USD 600m principal (Q2 10-Q, Note 9), which points to a yield a bit below the coupon.
+- Main estimate: the market yield on Granite's 6.375% senior notes due 2034 on the valuation date, from FINRA's TRACE bond data. FINRA's bond search only runs in a browser, so I read the yield there and enter it by hand, with the date and the trade in the source note. At 30 Jun 2026 the notes had a fair value of USD 611.3m against USD 600m principal (Q2 10-Q, Note 9), which points to a yield a bit below the coupon.
 - Cross-check: a synthetic rating from interest coverage, using Damodaran's `ratings.xls`.
 - The convertible notes count as debt at their debt component. The option part goes into the diluted share count, not the cost of debt.
+
+**Capital structure weights: Granite's own market values on the valuation date.** Equity = share price × diluted shares. Debt = senior notes and the convertibles' debt component at market value, plus the term loan at book value (it's floating-rate, swapped to fixed, so book is close to market). Lease liabilities are left out because lease costs stay in operating costs and so in FCFF; including them would count them twice. All of these come from the Q3 10-Q.
