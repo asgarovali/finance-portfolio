@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. Section 8 agreed, including the terminal RONIC (9.7%); the sales-to-capital basis is still open. The smaller-lines table in section 6 is awaiting review. Section 9 sets out the approach; numbers come in step 5.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 sets out the approach; numbers come in step 5.
 
 ## 1. Valuation date and balance sheet
 
@@ -75,7 +75,34 @@ I forecast Construction and Materials separately, because their margins differ a
 
 **FY2026E: USD 5.3bn, the low end of guidance.** Granite raised its range in July, but the restatement came from optimistic project forecasts, so I take the bottom of the range rather than the midpoint. That is still growth of 19.8% over FY2025, and it includes the acquisitions closed in 2025 and 2026. I re-check this against 9M 2026 actuals on 29 Oct. The segment split also waits for the 9M figures. In H1 2026 Materials was 16.7% of revenue, but H1 is the weak season for materials.
 
-**FY2027E to FY2030E: organic growth only, fading to 4% by FY2030.** After FY2026 there are no further acquisitions unless I model one explicitly, with its price (section 4). Growth fades in a straight line from the FY2026 organic rate to 4% in FY2030. I chose 4% as a rough long-run US nominal GDP growth rate, and it will be sourced in step 5 alongside the terminal growth rate. The FY2026 organic rate needs the acquired-revenue figure for 9M 2026, which comes with the Q3 release. In H1 2026 organic growth was about 16%.
+**FY2027E to FY2030E: organic growth only, fading to 4% by FY2030.** After FY2026 there are no further acquisitions unless I model one explicitly, with its price (section 4). I chose 4% as a rough long-run US nominal GDP growth rate, and it will be sourced in step 5 alongside the terminal growth rate.
+
+**FY2027E starting point: backlog, not H1 growth (proposed 22 Oct).** My first version started the fade from H1 2026 organic growth (15.9%). That's one half-year in a strong period. Backlog is a better anchor for a contractor, because most of next year's construction revenue is work already won.
+
+Granite's backlog measure is CAP (committed and awarded projects): signed contracts not yet performed (unearned revenue, the GAAP backlog) plus contracts awarded but not yet signed (other awards). All of it is in the Construction segment. Source: the MD&A of each 10-K and 10-Q, read by `src/data/extract_cap.py`.
+
+| USD m | FY2021 | FY2022 | FY2023 | FY2024 | FY2025 | 30 Jun 2026 |
+|---|---|---|---|---|---|---|
+| CAP at year-end | 4,010 | 4,485 | 5,546 | 5,296 | 6,969 | 7,419 |
+| Growth | | 11.8% | 23.6% | -4.5% | 31.6% | 6.5% (6 months) |
+| of which unearned revenue | 2,595 | 2,877 | 3,597 | 3,584 | 4,123 | 5,056 |
+| CAP at 30 Sep | 4,328 | 4,078 | 5,585 | 5,620 | 6,338 | |
+| Construction revenue | 3,076 | 2,804 | 2,992 | 3,415 | 3,655 | |
+| Next year's Construction revenue / CAP at 30 Sep | 0.648 | 0.734 | 0.612 | 0.650 | 0.697 (FY2026E) | |
+| Same, excluding revenue from businesses acquired that year | | 0.734 | 0.612 | 0.630 | | |
+
+How I use it: FY2027E Construction revenue = CAP at 30 Sep 2026 × the average share of September CAP that turned into the next year's Construction revenue over FY2023-25 (0.659, using the second ratio row). September is used because it's the last backlog figure before the valuation date, and the ratio is measured on the same date each year. FY2022 is left out because the Inliner business (USD 199m of CAP) was sold in Q1 2022. Until the Q3 10-Q is out, the model uses CAP at 30 June 2026 (USD 7,419m). In past years September CAP was within about 5% of June CAP.
+
+With the June figure this gives FY2027E Construction growth of **10.6%** (USD 7,419m × 0.659 = USD 4,885m, against USD 4,417m in FY2026E). Growth then fades in a straight line to 4% in FY2030E (8.4%, 6.2%, 4.0%).
+
+**Acquired revenue taken out of the ratio (agreed 22 Oct).** FY2025 Construction revenue includes USD 112.1m from Warren Paving and Papich, bought in 2025 (FY2025 10-K, MD&A). That work was never in Granite's September 2024 backlog, so it inflates the FY2025 ratio (0.650 instead of 0.630). FY2027E has no acquisitions, so the ratio should describe backlog Granite already holds turning into revenue. FY2023 and FY2024 also had smaller acquisitions (Lehman-Roberts and Memphis Stone, November 2023; Dickerson & Bowen, 2024). I haven't found a construction revenue figure for them in the filings, so those years aren't adjusted. I'd still rather remove the one distortion I can measure than keep it because the others can't be fixed. Without the adjustment the ratio would be 0.665 and growth 11.7%.
+
+**Materials follows the same path.** Materials has no backlog of its own, and part of its output goes into Granite's own construction projects. Per the segment note (FY2025 10-K, Note 21), intersegment sales to Construction were USD 200.5m, 246.8m and 275.2m in FY2023-25, or 28%, 29% and 26% of total Materials output. So about a quarter of Materials volume moves directly with Construction. The rest goes to third parties, mostly other contractors and builders whose demand depends on the same public and private construction spending. Using one path for both segments is a simplification, but not an unreasonable one.
+
+What this says and doesn't say:
+- Backlog supports double-digit growth in FY2027. CAP has risen 40% since the end of FY2024, faster than revenue, so the anchor comes out only about 2 points below the old 12.9%. The data doesn't support a much lower base case.
+- The ratio moves a lot from year to year (0.61 to 0.73). Each 0.01 changes FY2027E growth by about 1.7 points, so the full historical range gives 3% to 23%. The average is the only defensible single number, but it's a weak anchor.
+- IIJA risk sits mostly outside CAP. Work in CAP is already awarded, with funding judged probable. What a reauthorisation gap hits is new lettings, including work that is won and built in the same year. That's why the downside case (0% Construction growth in FY2027) still makes sense on top of this anchor.
 
 **Federal funding (IIJA).** IIJA authorised federal highway programmes through federal fiscal year 2026, which ended on 30 Sep 2026. Current status:
 - Congress extended the programmes to 11 Dec 2026 through the Surface Transportation Extension Act of 2026, which is Division C of H.R. 6500 and became P.L. 119-103 (enrolled bill text, Sec. 3001 and 3002(2); CRS R48845, p. 4). The bill was signed into law on 2 Sep 2026 (White House statement).
@@ -85,7 +112,7 @@ I forecast Construction and Materials separately, because their margins differ a
 
 So the base case assumes reauthorisation passes without a long gap, and the downside case covers a gap lasting through FY2027. Sources are in `data/SOURCES.md`.
 
-**Downside case: reauthorisation late (agreed 22 Oct).** If the programme runs on short extensions through FY2027, state DOTs tend to hold back new lettings because they can't plan multi-year work. I model this as no Construction growth in FY2027, with the fade path then starting one year later. Materials growth is unchanged in this case, because about half of materials revenue goes to third parties. The exact mechanics are open for review.
+**Downside case: reauthorisation late (agreed 22 Oct).** If the programme runs on short extensions through FY2027, state DOTs tend to hold back new lettings because they can't plan multi-year work. I model this as no Construction growth in FY2027, with the fade path then starting one year later. Materials growth is unchanged in this case, because about three quarters of Materials output goes to third parties (intersegment sales were 26-29% of Materials output in FY2023-25, FY2025 10-K Note 21). The exact mechanics are open for review.
 
 ## 6. Margins
 
@@ -121,7 +148,7 @@ FY2026E uses the 9M actual margin once it's out (see the note on interim values 
 
 Segment margins follow from the total, with Materials kept above Construction as in every year since FY2021 except FY2024. The exact segment margins are set after Q3.
 
-**Interim values until Q3.** The FY2026E gross margin (14.7%), Materials share (16.7%) and organic growth (15.9%) in the model are H1 2026 actuals, used as placeholders until the 9M figures come out on 29 Oct. H1 margins are seasonally low for road construction: paving and highway work is concentrated in the warmer months. The filings show this. H1 2026 gross margin was 14.7%, but Q2 alone was 16.4%; H1 2025 was 15.5%, against 16.1% for the full year 2025. So the FY2026E placeholder understates the full year.
+**Interim values until Q3.** The FY2026E gross margin (14.7%) and Materials share (16.7%) in the model are H1 2026 actuals, and CAP is the 30 June figure, used as placeholders until the 9M figures come out on 29 Oct. H1 margins are seasonally low for road construction: paving and highway work is concentrated in the warmer months. The filings show this. H1 2026 gross margin was 14.7%, but Q2 alone was 16.4%; H1 2025 was 15.5%, against 16.1% for the full year 2025. So the FY2026E placeholder understates the full year.
 
 **SG&A: 8.75% of revenue in FY2026E, the top of guidance** (8.25% to 8.75%, including about USD 48m of stock-based compensation). Much of SG&A is fixed: offices, management, systems. If revenue comes in at the low end of guidance, as I assume, the same cost base is a larger share of it, so the ratio sits at the high end. That's consistent with the revenue choice, not just extra caution. After FY2026 SG&A is held at 8.75% of revenue.
 
@@ -179,25 +206,34 @@ Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of 
 - FY2026E: USD 150m, the midpoint of guidance (USD 140m to 160m, including about USD 50m of strategic materials investment). That's 2.8% of USD 5.3bn.
 - FY2027E-30E: driven by a sales-to-capital ratio, so invested capital grows with revenue (agreed 22 Oct). My first version (3.5% of revenue) let revenue grow 38% while capital stayed flat, which only works if the new revenue needs no new capital.
 
-Each year, net investment (capex minus D&A plus the increase in working capital) = increase in revenue / sales-to-capital. Working capital is already modelled from the days in section 7, so capex is what's left: D&A + net investment - increase in working capital.
+Each year, net investment = increase in revenue / sales-to-capital. Net investment covers both net capex and the increase in working capital, because the invested capital the ratio is measured on includes working capital. Working capital is already modelled from the days in section 7, so net capex is what's left, and nothing is counted twice:
 
-The ratio comes from Granite's FY2022-25 history (revenue / year-end invested capital). One choice is still open: whether to include goodwill and acquired intangibles in invested capital.
+> capex = depreciation + increase in revenue / sales-to-capital - increase in working capital
+
+The ratio comes from Granite's FY2022-25 history (revenue / year-end invested capital). **I use the version excluding goodwill and acquired intangibles (3.87, agreed 22 Oct)**, because organic growth doesn't create goodwill. FY2025 shows why it matters: the 2025 acquisitions added goodwill and intangibles, and the ratio including them fell to 2.32. For the same reason capex replaces depreciation only, not intangible amortisation: amortisation runs off intangibles bought with acquisitions, and organic growth doesn't renew them.
 
 | Sales-to-capital | FY2022 | FY2023 | FY2024 | FY2025 | Average |
 |---|---|---|---|---|---|
 | Including goodwill and intangibles | 3.61 | 2.86 | 3.25 | 2.32 | 3.01 |
 | Excluding goodwill and intangibles | 3.97 | 3.67 | 4.50 | 3.33 | 3.87 |
 
-The resulting path, in the base case:
+The resulting path in the base case, with FY2027E growth anchored on backlog (section 5). USD m:
 
 | | FY2026E | FY2027E | FY2028E | FY2029E | FY2030E | Terminal |
 |---|---|---|---|---|---|---|
-| Capex % revenue, ratio 3.01 | 2.8% | 7.2% | 6.4% | 5.5% | 4.5% | 5.5% |
-| ROIC on opening capital, ratio 3.01 | 12.4% | 13.6% | 13.5% | 13.3% | 13.0% | |
-| Capex % revenue, ratio 3.87 | 2.8% | 6.4% | 5.7% | 5.0% | 4.3% | 5.5% |
-| ROIC on opening capital, ratio 3.87 | 12.4% | 13.6% | 13.8% | 13.8% | 13.7% | |
+| Increase in revenue | | 563 | 493 | 395 | 270 | |
+| Net investment (÷ 3.87) | | 146 | 128 | 102 | 70 | |
+| of which increase in working capital | 37 | 11 | 13 | 16 | 18 | 0 |
+| of which net capex | | 134 | 114 | 86 | 51 | |
+| Depreciation | 177 | 196 | 212 | 226 | 235 | |
+| Capex | 150 | 330 | 327 | 311 | 286 | 399 |
+| Capex % revenue | 2.8% | 5.6% | 5.1% | 4.6% | 4.1% | 5.5% |
+| ROIC on opening capital | 12.4% | 13.3% | 13.6% | 13.7% | 13.7% | |
+| FCFF (before smaller lines) | 250 | 143 | 183 | 227 | 272 | 201 |
 
-Either way, capex in FY2027E is about twice anything in Granite's FY2021-25 history (2.7-4.0% of revenue). That's what 12.9% organic growth costs if it needs capital at the historical rate. Granite's own recent growth didn't work like that: it came largely from acquisitions and from working capital being released, and both are excluded here by design.
+FY2027E capex (5.6% of revenue) is still well above anything in Granite's FY2021-25 history (2.7-4.0%). I haven't smoothed it. It's what 10.6% organic growth costs at Granite's historical capital intensity. Granite's recent growth was partly bought, and an acquisition shows up as an acquisition, not as capex. The real lever is the growth rate, not the capex rule.
+
+One consequence to be aware of: because net investment in total is set by the ratio, the working-capital days in section 7 only decide how it splits between capex and working capital. From FY2027E on they don't change FCFF. The alternative would be a ratio on fixed capital only (revenue / invested capital excluding goodwill, intangibles and trade working capital, FY2022-25 average 3.69), with working capital added on top. That would cost about USD 15-20m a year more in reinvestment, so I've kept the simpler version.
 
 **Terminal year: reinvestment consistent with growth.** A business can only grow forever at rate g if it reinvests enough to fund that growth. The reinvestment rate, as a share of after-tax operating profit (NOPAT), has to be:
 
@@ -211,7 +247,13 @@ Capex in the terminal year therefore comes from this formula, not from a fixed p
 
 **Base case (agreed 22 Oct): RONIC = 9.7%, Granite's FY2022-25 average ROIC**, entered as a formula over the history (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). My first proposal was to use the model's own terminal ROIC, on the expectation that it would land near 9.7%. That expectation was wrong. With capex at 3.5% of revenue the model's ROIC climbed to 15.6%, because capital didn't grow with revenue. So the historical average is now an input in its own right.
 
-With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.5% of revenue.
+With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.5% of revenue. That is a step up from 4.1% in FY2030E.
+
+**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 201m, against USD 272m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
+- In FY2027E-30E, each extra dollar of revenue needs 1/3.87 of a dollar of capital and earns the NOPAT margin of about 4.7%. That's a return on new capital of about 18% (4.7% × 3.87).
+- In the terminal year, new capital earns RONIC, 9.7%. To grow 4% a year at 9.7%, Granite has to reinvest 41% of NOPAT, against 17% in FY2030E.
+
+I think the step down is right. Returns well above the cost of capital attract competition: other contractors bid more aggressively for the same public work, and margins on new contracts get pushed down. Over a long horizon, excess returns on new investment shrink, so the perpetuity shouldn't assume today's 18% on every new dollar. It is still one of the biggest single drivers of the value, so the RONIC sensitivities below matter.
 
 During FY2027E-30E the model's ROIC on opening capital runs at about 13-14% (table above), above the 9.7% assumed for new capital in the terminal year. That's deliberate: by then the returns on today's business shouldn't be assumed to carry over to every new dollar invested.
 

@@ -59,6 +59,12 @@ Processed files:
 
 The one visible recast: FY2021 revenue was first filed as USD 3,010.1m, with WMS in discontinued operations. The figure I use is USD 3,501.9m from the FY2023 10-K, after WMS moved back into continuing operations. FY2021 net income, total assets and CFO are unchanged (`outputs/tables/recast_fy2021_fy2022.csv`).
 
+## Backlog (Committed and Awarded Projects)
+
+Granite's own backlog measure, CAP, is in the MD&A of every 10-K and 10-Q but isn't tagged in XBRL. `src/data/extract_cap.py` reads the "unearned revenue / other awards / total" table from the text of each filing saved in `raw/sec/` (FY2021 10-K onwards) and writes `processed/cap.csv`, one row per quarter-end, taking each date from the latest filing that shows it. Two checks run every time: the parts add up to the total, and unearned revenue equals the XBRL tag for remaining performance obligations (`RevenueRemainingPerformanceObligation`) at all six dates where both exist. Other awards (contracts awarded but not yet signed, plus probable options) is management's number and has no GAAP equivalent.
+
+From the FY2021 10-K on, all CAP sits in the Construction segment. Earlier filings split it across the old operating segments, so they aren't used. CAP at 31 Dec 2021 excludes USD 252.7m held for sale (FY2022 10-K, MD&A footnote).
+
 ## Events after the last annual report that matter for valuation
 
 From the Q2 2026 10-Q, Note 9 and Note 14:

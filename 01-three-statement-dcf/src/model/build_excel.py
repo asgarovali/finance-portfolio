@@ -19,6 +19,7 @@ from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 
 from common import excel as xl
+from src.analysis.history import segments
 from src.data.clean_statements import BS_ROWS, CF_ROWS, IS_ROWS
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -70,22 +71,16 @@ def amortisation_schedule(facts: pd.DataFrame) -> list[float]:
     return [vals[f"us-gaap:FiniteLivedIntangibleAssetsAmortizationExpense{k}"] / 1e6 for k in keys]
 
 
-# Revenue from businesses acquired in 2025-26, H1 2026: USD 142m construction + USD 110m
-# materials. Q2 2026 earnings release, 8-K 30 Jul 2026 (0000861459-26-000027), Exhibit 99.1.
-ACQUIRED_REVENUE_H1_2026 = 142 + 110
-
-
 def interim_h1(facts: pd.DataFrame, is_: pd.DataFrame, cf: pd.DataFrame) -> dict[str, float]:
     """Stand-ins for the inputs that wait for the Q3 10-Q, all from H1 2026 filings."""
     seg = facts[(facts["accession"] == "0000861459-26-000029")
                 & (facts["tag"] == "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax")
                 & (facts["dims"] == "us-gaap:StatementBusinessSegmentsAxis=gva:MaterialsMember")
                 & (facts["start"] == "2026-01-01") & (facts["end"] == "2026-06-30")]
-    rev, rev_ly = is_.loc["Revenue", "H1 2026"], is_.loc["Revenue", "H1 2025"]
+    rev = is_.loc["Revenue", "H1 2026"]
     return {
         "materials_share": seg["value"].iloc[0] / 1e6 / rev,
         "gross_margin": is_.loc["Gross profit", "H1 2026"] / rev,
-        "organic_growth": (rev - rev_ly - ACQUIRED_REVENUE_H1_2026) / rev_ly,
         "acquisitions": -cf.loc["Acquisitions", "H1 2026"],
     }
 
@@ -144,10 +139,16 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     g = fc[0]
 
     sec("Revenue")
+    g27 = fc[1]
     line("t", "Years after FY2026", lambda c, p: t_start[c], "0", inputs=True)
+    line("t27", "Years after FY2027", lambda c, p: None if c == g else t_start[c] - 1, "0", inputs=True)
+    # FY2027E Construction revenue = latest CAP x the historical conversion of CAP into next-year revenue
+    line("capg", "Construction growth implied by CAP",
+         lambda c, p: f"={I['cap_now']}*{I['burn']}/({I['rev26']}*(1-{I['mshare']}))-1" if c == g27 else None,
+         xl.FMT_PCT)
     line("org", "Organic growth, base path",
-         lambda c, p: f"={I['g26']}" if c == g else
-         f"=${g}{at['org']}+({I['gLR']}-${g}{at['org']})*MIN({c}{at['t']}/{I['fade']},1)", xl.FMT_PCT)
+         lambda c, p: None if c == g else f"={c}{at['capg']}" if c == g27 else
+         f"=${g27}{at['org']}+({I['gLR']}-${g27}{at['org']})*MIN({c}{at['t27']}/{I['gfade']},1)", xl.FMT_PCT)
     line("cg", "Construction growth",
          lambda c, p: None if c == g else
          f"=IF({I['scen']}=2,IF({c}{at['t']}=1,{I['down']},{p}{at['org']}),{c}{at['org']})", xl.FMT_PCT)
@@ -156,6 +157,9 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
          lambda c, p: f"={I['rev26']}*(1-{I['mshare']})" if c == g else f"={p}{at['crev']}*(1+{c}{at['cg']})")
     line("mrev", "Materials revenue",
          lambda c, p: f"={I['rev26']}*{I['mshare']}" if c == g else f"={p}{at['mrev']}*(1+{c}{at['mg']})")
+    line("burn", "Construction revenue / CAP at prior 30 Sep",
+         lambda c, p: f"={c}{at['crev']}/{I['cap_s25']}" if c == g else
+         f"={c}{at['crev']}/{I['cap_now']}" if c == g27 else None, "0.000")
     line("rev", "Revenue", lambda c, p: f"={c}{at['crev']}+{c}{at['mrev']}",
          hist=f"=IS!{f25}{is_at['Revenue']}", terminal=f"={COL['FY2030']}{{r}}*(1+{I['gLR']})", bold=True)
     line("revg", "Revenue growth", lambda c, p: f"={c}{at['rev']}/{p}{at['rev']}-1", xl.FMT_PCT)
@@ -208,10 +212,11 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     line("dwc", "Change in working capital (cash)", lambda c, p: f"=-({c}{at['twc']}-{p}{at['twc']})")
 
     sec("Capex and invested capital")
-    # FY2027E on: net investment = revenue growth / sales-to-capital, so capital grows with revenue;
-    # capex = D&A + net investment - the part of it that goes into working capital
+    # FY2027E on: net investment (net capex + working capital) = revenue growth / sales-to-capital.
+    # Working capital comes from its own schedule, so capex = depreciation + the rest. Only
+    # depreciation is replaced: the ratio excludes acquired intangibles, which organic growth doesn't renew.
     line("capex", "Capex", lambda c, p: f"=-{I['capex26']}" if c == g else
-         f"=-({c}{at['da']}+({c}{at['rev']}-{p}{at['rev']})/{I['s2c']}+{c}{at['dwc']})")
+         f"=-({c}{at['dep']}+({c}{at['rev']}-{p}{at['rev']})/{I['s2c']}+{c}{at['dwc']})")
     line("capexp", "Capex % revenue", lambda c, p: f"=-{c}{at['capex']}/{c}{at['rev']}", xl.FMT_PCT,
          terminal="=-{t}{r_fcap}/{t}{r_rev}")
     line("acq", "Acquisitions (none modelled after FY2026)", lambda c, p: f"=-{I['acq26']}" if c == g else None)
@@ -305,6 +310,7 @@ def build() -> Path:
     wide = {s: long[long["statement"] == s].pivot(index="line", columns="period", values="value")
             for s in ("IS", "BS", "CF", "Memo")}
     dam = damodaran_inputs()
+    cap = pd.read_csv(PROCESSED / "cap.csv", parse_dates=["date"])
 
     wb = Workbook()
     cover = wb.active
@@ -380,11 +386,19 @@ def build() -> Path:
     scalar("rev26", "FY2026E revenue", 5300, xl.FMT_NUM, "Low end of guidance (USD 5.3-5.5bn), 8-K 30 Jul 2026; memo s.5")
     scalar("mshare", "FY2026E Materials share of revenue", round(h1["materials_share"], 4), xl.FMT_PCT,
            interim, "INTERIM")
-    scalar("g26", "FY2026E organic growth (start of fade)", round(h1["organic_growth"], 4), xl.FMT_PCT,
-           "H1 2026 vs H1 2025 excl. USD 252m acquired revenue (8-K 30 Jul 2026); replace with 9M on 29 Oct",
-           "INTERIM")
+    for y in (2022, 2023, 2024, 2025):
+        d = cap.loc[cap["date"] == f"{y}-09-30"].iloc[0]
+        scalar(f"cap_s{y % 100}", f"CAP at 30 Sep {y}", d["cap"], xl.FMT_NUM,
+               f"Committed and awarded projects, {d['form']} {d['accession']}, MD&A")
+    scalar("acq_c25", "FY2025 Construction revenue from 2025 acquisitions", 112.1, xl.FMT_NUM,
+           "Warren Paving and Papich, not in Sep 2024 CAP; FY2025 10-K, MD&A (Construction revenue)")
+    placeholder("burn", "Construction revenue next FY / CAP at 30 Sep, FY2023-25 avg",
+                "Share of September backlog that becomes next year's Construction revenue, FY2025 excl. acquisitions; memo s.5")
+    d = cap.iloc[-1]
+    scalar("cap_now", "CAP at latest quarter-end", d["cap"], xl.FMT_NUM,
+           f"{d['date']:%d %b %Y}, {d['form']} {d['accession']}; replace with 30 Sep 2026 on 29 Oct", "INTERIM")
     scalar("gLR", "Long-run growth (FY2030E and terminal)", 0.04, xl.FMT_PCT, "Approx. long-run US nominal GDP; source in step 5; memo s.5")
-    scalar("fade", "Years to fade to long-run growth", 4, "0", "FY2026E to FY2030E; memo s.5")
+    scalar("gfade", "Years to fade growth to long-run rate", 3, "0", "FY2027E (CAP-anchored) to FY2030E; memo s.5")
     scalar("down", "Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
 
     section("Margins")
@@ -408,11 +422,12 @@ def build() -> Path:
     r += 7  # filled once the IS/BS rows are known
     scalar("nwc_target", "Trade working capital % revenue, FY2030E target", 0.0, xl.FMT_PCT,
            "Gap closed through contract assets only; memo s.7")
+    scalar("fade", "Years for contract asset days to reach target", 4, "0", "FY2026E to FY2030E; memo s.7")
 
     section("Capex, D&A, tax")
     scalar("capex26", "FY2026E capex", 150, xl.FMT_NUM, "Midpoint of guidance USD 140-160m, 8-K 30 Jul 2026")
-    placeholder("s2c", "Sales-to-capital ratio, FY2022-25 average",
-                "Revenue / year-end invested capital; drives FY2027E-30E reinvestment; memo s.8")
+    placeholder("s2c", "Sales-to-capital, FY2022-25 avg, excl. goodwill/intangibles",
+                "Revenue / year-end invested capital excl. goodwill and intangibles; drives FY2027E-30E reinvestment; memo s.8")
     dep_row = r
     I["dep"] = f"Inputs!$B${r}"
     r += 1  # formula, filled below
@@ -478,6 +493,7 @@ def build() -> Path:
     memo_row(is_ws, is_at, "EBITDA (operating income + D&A)",
              formula=lambda c: f"={c}{is_at['Operating income']}+{c}{is_at['memo:D&A (from CF)']}")
     memo_row(is_ws, is_at, "Diluted shares (m)", wide["Memo"].loc["Diluted shares (m)"])
+    memo_row(is_ws, is_at, "Construction segment revenue", segments(facts).loc[("Construction", "revenue")])
 
     # check rows at the top of BS and CF
     bs_ws["A3"] = "BS check (assets - L&E, should be 0)"
@@ -534,7 +550,15 @@ def build() -> Path:
                 f"-{b('Marketable securities, current')}-{b('Marketable securities, long-term')})")
 
     fills = {
-        "s2c": ("=AVERAGE(" + ",".join(f"IS!{COL[y]}{rev}/{ic(COL[y])}" for y in yrs) + ")", "0.00"),
+        "s2c": ("=AVERAGE(" + ",".join(
+            f"IS!{COL[y]}{rev}/({ic(COL[y])}-BS!{COL[y]}{bs_at['Goodwill']}-BS!{COL[y]}{bs_at['Intangible assets']})"
+            for y in yrs) + ")", "0.00"),
+        # September CAP of one year against Construction revenue of the next; FY2025 revenue
+        # from businesses bought in 2025 was never in the September 2024 backlog, so it's taken out
+        "burn": ("=AVERAGE(" + ",".join(
+            f"(IS!{COL[f'FY{y + 1}']}{is_at['memo:Construction segment revenue']}"
+            + (f"-{I['acq_c25']}" if y == 2024 else "") + f")/{I[f'cap_s{y % 100}']}"
+            for y in (2022, 2023, 2024)) + ")", "0.000"),
         "ronic": ("=AVERAGE(" + ",".join(
             f"IS!{COL[y]}{is_at['Operating income']}*(1-{I['tax']})/(({ic(COL[y])}+{ic(COL[HIST[HIST.index(y) - 1]])})/2)"
             for y in yrs) + ")", xl.FMT_PCT),
