@@ -17,12 +17,11 @@ def test_workbook_layout(tmp_path, monkeypatch):
     assert revenue.font.color.rgb.endswith("0000FF")  # reported history is a blue input
     assert gross.value.startswith("=")                # subtotals are formulas
     assert str(wb["BS"]["B3"].value).startswith("=ROUND(")  # balance check row
-    # pending inputs stay empty instead of being guessed
+    # after the Q3 10-Q nothing is left pending or interim, and every input row has a value
     inp = wb["Inputs"]
-    pending = [r for r in range(1, inp.max_row + 1)
-               if str(inp.cell(row=r, column=13).value or "").startswith("PENDING")]
-    assert pending and all(inp.cell(row=r, column=2).value is None for r in pending)
-    # interim stand-ins are filled and labelled
-    interim = [r for r in range(1, inp.max_row + 1)
-               if str(inp.cell(row=r, column=13).value or "").startswith("INTERIM")]
-    assert interim and all(inp.cell(row=r, column=2).value is not None for r in interim)
+    notes = [str(inp.cell(row=r, column=13).value or "") for r in range(1, inp.max_row + 1)]
+    assert not [n for n in notes if n.startswith(("PENDING", "INTERIM"))]
+    labels = {inp.cell(row=r, column=1).value: r for r in range(1, inp.max_row + 1)}
+    for key in ("Valuation date", "Share price (USD)", "Diluted shares (m)", "Debt at market value (USD m)",
+                "Risk-free rate (10y Treasury)", "Cash and marketable securities, 30 Sep 2026"):
+        assert inp.cell(row=labels[key], column=2).value is not None, key

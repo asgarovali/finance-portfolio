@@ -32,6 +32,8 @@ FORMS = ("10-K", "10-K/A", "10-Q", "10-Q/A")
 EXTRA_DOCS = [
     ("0000861459-26-000027", "gva-20260630xexx991.htm"),  # Q2 2026 earnings release, FY2026 guidance
     ("0000861459-26-000036", "gva-20260811.htm"),          # settlement of the 2028 convertible notes
+    ("0000861459-26-000040", "gva-20260930xexx991.htm"),   # Q3 2026 earnings release, guidance, 2029 targets
+    ("0001437749-26-019166", "ex_970386.htm"),             # indenture, 6.375% senior notes due 2034
 ]
 
 

@@ -70,7 +70,8 @@ def main() -> pd.DataFrame:
     assert ((cap["unearned_revenue"] + cap["other_awards"] - cap["cap"]).abs() < 0.002).all()
     memo = pd.read_csv(PROCESSED / "memo.csv", index_col=0).loc["Backlog (RPO)"].dropna()
     ends = {"FY2021": "2021-12-31", "FY2022": "2022-12-31", "FY2023": "2023-12-31", "FY2024": "2024-12-31",
-            "FY2025": "2025-12-31", "H1 2026": "2026-06-30"}
+            "FY2025": "2025-12-31", "H1 2026": "2026-06-30",
+            "9M 2026": "2026-09-30"}
     for period, rpo in memo.items():
         u = cap.loc[cap["date"] == ends[period], "unearned_revenue"].iloc[0]
         assert abs(u - rpo) < 0.002, f"{period}: CAP unearned revenue {u} vs RPO {rpo}"

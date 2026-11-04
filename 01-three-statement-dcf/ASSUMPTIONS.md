@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 (cost of capital) and section 10 (DCF) are built. The valuation date (29 Oct 2026), the risk-free rate and the cost of debt are set; the share price, diluted shares, debt, cash and the other Q3 balances are still pending.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026) and updated for the Q3 2026 results (10-Q filed 29 Oct). The FY2027 growth anchor on backlog (section 5) now uses CAP at 30 Sep 2026. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Sections 9 (cost of capital) and 10 (DCF) are built with all valuation-date inputs (29 Oct 2026). The first results are at the end of section 10; the interpretation is still open.
 
 ## 1. Valuation date and balance sheet
 
@@ -64,17 +64,26 @@ From the Q2 2026 earnings release (8-K, 30 Jul 2026, accession 0000861459-26-000
 - Effective tax rate on adjusted net income "in the mid-20s".
 - Capex about USD 140m to 160m, including about USD 50m of strategic materials investments.
 
+**Q3 update (8-K, 29 Oct 2026, accession 0000861459-26-000040, Exhibit 99.1).** Revenue guidance went up to USD 5.4bn to 5.5bn; everything else is unchanged, including SG&A at 8.25% to 8.75% with about USD 48m of SBC. The release also introduced **2029 targets**:
+- organic revenue growth of 10% to 12% a year;
+- adjusted EBITDA margin of 14% to 16%;
+- SG&A of about 7.5% of revenue;
+- operating cash flow of about 13% of revenue and capex of about 3%, so free cash flow of about 10% of revenue;
+- continued M&A with a 2.5x net leverage target.
+
+These targets are well above my base case (sections 5, 6 and 10). They're management targets, not guidance, and Granite gives no reconciliation of the adjusted EBITDA target to GAAP.
+
 Adjusted EBITDA is Granite's own non-GAAP measure, so it isn't directly comparable with my EBIT + D&A margin (10.1% in FY2025). Before using the guidance I'll reconcile the two from the non-GAAP tables in the release.
 
 ## 4. Treatment of acquisitions
 
-The forecast includes acquisitions that have closed by the valuation date: Kenny Seng was bought in H1 2026, and its results will be in the Q3 10-Q. It does not include future, unannounced acquisitions. Bought growth costs cash, and if I modelled the growth without the purchase price the valuation would be too high. If Granite keeps buying, that's upside or downside depending on the price paid, not something the DCF should assume.
+The forecast includes acquisitions that have closed by the valuation date. In 2026 these are Kenny Seng (23 Apr, USD 164.1m) and the remaining 50% of the Asphalt Terminal Entity (9 Sep, USD 38.3m). Together with closing adjustments, 9M 2026 cash paid for acquisitions was USD 184.3m (Q3 10-Q). It does not include future, unannounced acquisitions. Bought growth costs cash, and if I modelled the growth without the purchase price the valuation would be too high. If Granite keeps buying, that's upside or downside depending on the price paid, not something the DCF should assume.
 
 ## 5. Revenue growth
 
 I forecast Construction and Materials separately, because their margins differ and Materials has grown from 12% to 17% of revenue.
 
-**FY2026E: USD 5.3bn, the low end of guidance.** Granite raised its range in July, but the restatement came from optimistic project forecasts, so I take the bottom of the range rather than the midpoint. That is still growth of 19.8% over FY2025, and it includes the acquisitions closed in 2025 and 2026. I re-check this against 9M 2026 actuals on 29 Oct. The segment split also waits for the 9M figures. In H1 2026 Materials was 16.7% of revenue, but H1 is the weak season for materials.
+**FY2026E: USD 5.4bn, the low end of guidance.** Granite raised the bottom of its range from 5.3bn to 5.4bn on 29 Oct. The restatement came from optimistic project forecasts, so I keep taking the bottom of the range rather than the midpoint. That is growth of 22.1% over FY2025, including the acquisitions closed in 2025 and 2026. 9M 2026 revenue was USD 4,135m, so the low end implies USD 1,265m in Q4, against USD 1,165m in Q4 2025. Materials was 16.6% of 9M 2026 revenue, and the model uses that share for FY2026E.
 
 **FY2027E to FY2030E: organic growth only, fading to 4% by FY2030.** After FY2026 there are no further acquisitions unless I model one explicitly, with its price (section 4). 4% is long-run US nominal GDP growth: the Fed's September 2026 projections put longer-run real growth at 2.0% and inflation at 2.0%, which gives 4.04% (section 9).
 
@@ -82,26 +91,26 @@ I forecast Construction and Materials separately, because their margins differ a
 
 Granite's backlog measure is CAP (committed and awarded projects): signed contracts not yet performed (unearned revenue, the GAAP backlog) plus contracts awarded but not yet signed (other awards). All of it is in the Construction segment. Source: the MD&A of each 10-K and 10-Q, read by `src/data/extract_cap.py`.
 
-| USD m | FY2021 | FY2022 | FY2023 | FY2024 | FY2025 | 30 Jun 2026 |
+| USD m | FY2021 | FY2022 | FY2023 | FY2024 | FY2025 | 30 Sep 2026 |
 |---|---|---|---|---|---|---|
-| CAP at year-end | 4,010 | 4,485 | 5,546 | 5,296 | 6,969 | 7,419 |
-| Growth | | 11.8% | 23.6% | -4.5% | 31.6% | 6.5% (6 months) |
-| of which unearned revenue | 2,595 | 2,877 | 3,597 | 3,584 | 4,123 | 5,056 |
-| CAP at 30 Sep | 4,328 | 4,078 | 5,585 | 5,620 | 6,338 | |
+| CAP at year-end | 4,010 | 4,485 | 5,546 | 5,296 | 6,969 | 7,455 |
+| Growth | | 11.8% | 23.6% | -4.5% | 31.6% | 7.0% (9 months) |
+| of which unearned revenue | 2,595 | 2,877 | 3,597 | 3,584 | 4,123 | 4,853 |
+| CAP at 30 Sep | 4,328 | 4,078 | 5,585 | 5,620 | 6,338 | 7,455 |
 | Construction revenue | 3,076 | 2,804 | 2,992 | 3,415 | 3,655 | |
 | Next year's Construction revenue / CAP at 30 Sep | 0.648 | 0.734 | 0.612 | 0.650 | 0.697 (FY2026E) | |
 | Same, excluding revenue from businesses acquired that year | | 0.734 | 0.612 | 0.630 | | |
 
-How I use it: FY2027E Construction revenue = CAP at 30 Sep 2026 × the average share of September CAP that turned into the next year's Construction revenue over FY2023-25 (0.659, using the second ratio row). September is used because it's the last backlog figure before the valuation date, and the ratio is measured on the same date each year. FY2022 is left out because the Inliner business (USD 199m of CAP) was sold in Q1 2022. Until the Q3 10-Q is out, the model uses CAP at 30 June 2026 (USD 7,419m). In past years September CAP was within about 5% of June CAP.
+How I use it: FY2027E Construction revenue = CAP at 30 Sep 2026 × the average share of September CAP that turned into the next year's Construction revenue over FY2023-25 (0.659, using the second ratio row). September is used because it's the last backlog figure before the valuation date, and the ratio is measured on the same date each year. FY2022 is left out because the Inliner business (USD 199m of CAP) was sold in Q1 2022. CAP at 30 Sep 2026 was USD 7,455m (Q3 10-Q), only 0.5% above June.
 
-With the June figure this gives FY2027E Construction growth of **10.6%** (USD 7,419m × 0.659 = USD 4,885m, against USD 4,417m in FY2026E). Growth then fades in a straight line to 4% in FY2030E (8.4%, 6.2%, 4.0%).
+This gives FY2027E Construction growth of **9.0%** (USD 7,455m × 0.659 = USD 4,910m, against USD 4,503m in FY2026E). Growth then fades in a straight line to 4% in FY2030E (7.4%, 5.7%, 4.0%). With the June CAP it was 10.6%; it fell because FY2026E revenue went up to USD 5.4bn while CAP was flat in Q3. FY2026E itself implies a ratio of 0.710 on September 2025 CAP, above every year in the table, partly because of the 2026 acquisitions.
 
 **Acquired revenue taken out of the ratio (agreed 22 Oct).** FY2025 Construction revenue includes USD 112.1m from Warren Paving and Papich, bought in 2025 (FY2025 10-K, MD&A). That work was never in Granite's September 2024 backlog, so it inflates the FY2025 ratio (0.650 instead of 0.630). FY2027E has no acquisitions, so the ratio should describe backlog Granite already holds turning into revenue. FY2023 and FY2024 also had smaller acquisitions (Lehman-Roberts and Memphis Stone, November 2023; Dickerson & Bowen, 2024). I haven't found a construction revenue figure for them in the filings, so those years aren't adjusted. I'd still rather remove the one distortion I can measure than keep it because the others can't be fixed. Without the adjustment the ratio would be 0.665 and growth 11.7%.
 
 **Materials follows the same path.** Materials has no backlog of its own, and part of its output goes into Granite's own construction projects. Per the segment note (FY2025 10-K, Note 21), intersegment sales to Construction were USD 200.5m, 246.8m and 275.2m in FY2023-25, or 28%, 29% and 26% of total Materials output. So about a quarter of Materials volume moves directly with Construction. The rest goes to third parties, mostly other contractors and builders whose demand depends on the same public and private construction spending. Using one path for both segments is a simplification, but not an unreasonable one.
 
 What this says and doesn't say:
-- Backlog supports double-digit growth in FY2027. CAP has risen 40% since the end of FY2024, faster than revenue, so the anchor comes out only about 2 points below the old 12.9%. The data doesn't support a much lower base case.
+- Backlog supports growth of about 9% in FY2027. CAP has risen 41% since the end of FY2024, faster than revenue, but the anchor is now about 4 points below the old 12.9%. It's also below the 10% to 12% organic growth in Granite's 2029 targets (section 3).
 - The ratio moves a lot from year to year (0.61 to 0.73). Each 0.01 changes FY2027E growth by about 1.7 points, so the full historical range gives 3% to 23%. The average is the only defensible single number, but it's a weak anchor.
 - IIJA risk sits mostly outside CAP. Work in CAP is already awarded, with funding judged probable. What a reauthorisation gap hits is new lettings, including work that is won and built in the same year. That's why the downside case (0% Construction growth in FY2027) still makes sense on top of this anchor.
 
@@ -119,11 +128,11 @@ So the base case assumes reauthorisation passes without a long gap, and the down
 
 **Gross margin.** Part of the FY2025 margin was one-off. Granite's Note 3 lists projects where estimate revisions moved gross profit by USD 5m or more. It doesn't separate claim settlements from other upward revisions, but it gives a range:
 
-| | FY2023 | FY2024 | FY2025 |
-|---|---|---|---|
-| Upward revisions (USD m) | 8.1 | 25.6 | 64.9 |
-| Downward revisions (USD m) | -96.9 | -50.2 | -33.5 |
-| Net, % of revenue | -2.5% | -0.6% | +0.7% |
+| | FY2023 | FY2024 | FY2025 | 9M 2026 |
+|---|---|---|---|---|
+| Upward revisions (USD m) | 8.1 | 25.6 | 64.9 | 58.3 |
+| Downward revisions (USD m) | -96.9 | -50.2 | -33.5 | -18.5 |
+| Net, % of revenue | -2.5% | -0.6% | +0.7% | +1.0% |
 
 - FY2025 gross margin was 16.1%.
 - Removing the net revisions gives 15.4%.
@@ -132,6 +141,17 @@ So the base case assumes reauthorisation passes without a long gap, and the down
 - The Q2 2026 10-Q says H1 2026 margin fell year on year "primarily due to a reduction in the favorable impact of claim settlements".
 
 Projects below USD 5m aren't disclosed, so this is a partial view.
+
+**9M 2026 check (Q3 10-Q, Note 3).** Five projects had upward revisions of USD 58.3m and one had a downward revision of USD 18.5m (USD 5m threshold). Only USD 10.6m of the upward revisions came in Q3. Granite gives the reasons as lower estimated costs from mitigated risks, contract modifications, changes in the probable recovery on outstanding claims, faster production and acceleration. Unlike 9M 2025, it doesn't list claim settlements. On the same method as FY2025:
+- 9M 2026 gross margin was 16.55%;
+- removing the net revisions gives 15.59%;
+- removing all upward revisions gives 15.14%.
+
+For Construction alone the range is 15.0% to 15.5% (reported 16.7%). So the normalised range is 15.1-15.6% for 9M 2026, against 14.6-15.4% for FY2025. The 15.0% base sits just below the 9M range and at the midpoint of the FY2025 range; across both periods the range is 14.6-15.6%. Two other points from the 10-Q:
+- Materials gross margin fell to 15.9% in 9M 2026 (20.6% in 9M 2025), below Construction's 16.7%. Granite puts this down to energy surcharges offsetting higher diesel costs.
+- Q3 alone was 19.0%. That's the seasonal peak, so 9M is a better basis than the quarter.
+
+<!-- ALI: keep 15.0% as the base, or move it up towards the 9M 2026 range (for example 15.25-15.5%)? Each 0.5 point of gross margin from FY2027E is worth about USD 7 per share in the Gordon value (section 10). -->
 
 | Case | Gross margin from FY2027E |
 |---|---|
@@ -149,7 +169,7 @@ FY2026E uses the 9M actual margin once it's out (see the note on interim values 
 
 Segment margins follow from the total, with Materials kept above Construction as in every year since FY2021 except FY2024. The exact segment margins are set after Q3.
 
-**Interim values until Q3.** The FY2026E gross margin (14.7%) and Materials share (16.7%) in the model are H1 2026 actuals, and CAP is the 30 June figure, used as placeholders until the 9M figures come out on 29 Oct. H1 margins are seasonally low for road construction: paving and highway work is concentrated in the warmer months. The filings show this. H1 2026 gross margin was 14.7%, but Q2 alone was 16.4%; H1 2025 was 15.5%, against 16.1% for the full year 2025. So the FY2026E placeholder understates the full year.
+**FY2026E uses 9M 2026 actuals:** gross margin 16.55% and Materials share 16.6% (until 29 Oct the H1 figures, 14.7% and 16.7%, were placeholders). Margins are seasonal: paving and highway work is concentrated in the warmer months. FY2025 was 16.1% for the full year against 16.7% for 9M 2025, so a Q4 below the 9M average is normal. 9M may slightly overstate FY2026E.
 
 **SG&A: 8.75% of revenue in FY2026E, the top of guidance** (8.25% to 8.75%, including about USD 48m of stock-based compensation). Much of SG&A is fixed: offices, management, systems. If revenue comes in at the low end of guidance, as I assume, the same cost base is a larger share of it, so the ratio sits at the high end. That's consistent with the revenue choice, not just extra caution. After FY2026 SG&A is held at 8.75% of revenue.
 
@@ -201,10 +221,10 @@ Moving from -2.2% (FY2025 actual) to about -1.1% (FY2026E) is a cash outflow of 
 
 **Depreciation and depletion: 3.3% of revenue.** This is the FY2025 level, excluding intangible amortisation. It rose from 2.6% (FY2023) and 2.8% (FY2024) because the 2025 acquisitions added a lot of quarry and plant assets. Net PP&E went from USD 716m to USD 1,261m in one year. An FY2022-25 average would understate depreciation on today's asset base, so I don't use it here. H1 2026 total D&A was 3.8% of revenue, which is consistent with this.
 
-**Intangible amortisation: Granite's own schedule.** The FY2025 10-K gives expected amortisation of USD 21.6m, 13.2m, 13.0m, 13.0m and 13.0m for 2026 to 2030. Kenny Seng (bought in 2026) will add some, so I update this from the Q3 10-Q. It's a non-cash charge with no effect on FCFF apart from tax.
+**Intangible amortisation: Granite's own schedule.** The FY2025 10-K gives expected amortisation of USD 21.6m, 13.2m, 13.0m, 13.0m and 13.0m for 2026 to 2030. The 2026 acquisitions add more: Kenny Seng brought USD 43.4m of identifiable intangibles (backlog, trade name, water rights and customer relationships). The Q3 10-Q gives no useful lives or amortisation schedule, and the purchase price allocation is still preliminary, so I leave it out until the FY2026 10-K. It's a non-cash charge, so the only effect on FCFF is the tax saving: 25% of whatever share of the USD 43.4m is amortised each year, a few USD m at most.
 
 **Capex**
-- FY2026E: USD 150m, the midpoint of guidance (USD 140m to 160m, including about USD 50m of strategic materials investment). That's 2.8% of USD 5.3bn.
+- FY2026E: USD 150m, the midpoint of guidance (USD 140m to 160m, including about USD 50m of strategic materials investment). That's 2.8% of USD 5.4bn.
 - FY2027E-30E: driven by a sales-to-capital ratio, so invested capital grows with revenue (agreed 22 Oct). My first version (3.5% of revenue) let revenue grow 38% while capital stayed flat, which only works if the new revenue needs no new capital.
 
 Each year, net investment = increase in revenue / sales-to-capital. Net investment covers both net capex and the increase in working capital, because the invested capital the ratio is measured on includes working capital. Working capital is already modelled from the days in section 7, so net capex is what's left, and nothing is counted twice:
@@ -224,20 +244,20 @@ The resulting path in the base case, with FY2027E growth anchored on backlog (se
 
 | | FY2026E | FY2027E | FY2028E | FY2029E | FY2030E | Terminal |
 |---|---|---|---|---|---|---|
-| Increase in revenue | | 563 | 493 | 395 | 270 | |
-| Net investment (÷ 3.87) | | 146 | 128 | 102 | 70 | |
-| of which increase in working capital | 37 | 11 | 13 | 16 | 18 | 0 |
-| of which net capex | | 134 | 114 | 86 | 51 | |
-| Depreciation | 177 | 196 | 212 | 226 | 235 | |
-| Book value of equipment sold | 15 | 16 | 18 | 19 | 19 | |
-| Capex | 150 | 347 | 344 | 330 | 305 | 407 |
-| Capex % revenue | 2.8% | 5.9% | 5.4% | 4.9% | 4.3% | 5.6% |
-| ROIC on opening capital | 11.3% | 12.2% | 12.5% | 12.6% | 12.6% | |
-| FCFF | 242 | 118 | 157 | 199 | 243 | 183 |
+| Increase in revenue | | 488 | 434 | 359 | 267 | |
+| Net investment (÷ 3.87) | | 126 | 112 | 93 | 69 | |
+| of which increase in working capital | 44 | 3 | 14 | 16 | 18 | 0 |
+| of which net capex | | 123 | 98 | 77 | 51 | |
+| Depreciation | 180 | 197 | 211 | 223 | 232 | |
+| Book value of equipment sold | 15 | 16 | 17 | 18 | 19 | |
+| Capex | 150 | 336 | 327 | 318 | 302 | 402 |
+| Capex % revenue | 2.8% | 5.7% | 5.2% | 4.8% | 4.3% | 5.6% |
+| ROIC on opening capital | 15.4% | 12.1% | 12.4% | 12.5% | 12.5% | |
+| FCFF | 316 | 138 | 171 | 205 | 241 | 181 |
 
 FCFF includes the smaller operating lines from section 6 (other costs, gains and proceeds from equipment sales). Interest, affiliates and other income are outside FCFF. Historical capex is gross too: FY2021-25 proceeds from equipment sales were shown separately in investing cash flow, as here.
 
-FY2027E capex (5.9% of revenue) is still well above anything in Granite's FY2021-25 history (2.7-4.0%). I haven't smoothed it. It's what 10.6% organic growth costs at Granite's historical capital intensity. Granite's recent growth was partly bought, and an acquisition shows up as an acquisition, not as capex. The real lever is the growth rate, not the capex rule.
+FY2027E capex (5.7% of revenue) is still well above anything in Granite's FY2021-25 history (2.7-4.0%). I haven't smoothed it. It's what 9.0% organic growth costs at Granite's historical capital intensity. Granite's recent growth was partly bought, and an acquisition shows up as an acquisition, not as capex. The real lever is the growth rate, not the capex rule.
 
 One consequence to be aware of: because net investment in total is set by the ratio, the working-capital days in section 7 only decide how it splits between capex and working capital. From FY2027E on they don't change FCFF. The alternative would be a ratio on fixed capital only (revenue / invested capital excluding goodwill, intangibles and trade working capital, FY2022-25 average 3.69), with working capital added on top. That would cost about USD 15-20m a year more in reinvestment, so I've kept the simpler version.
 
@@ -255,7 +275,7 @@ Capex in the terminal year therefore comes from this formula, not from a fixed p
 
 With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.6% of revenue. That is a step up from 4.3% in FY2030E.
 
-**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 183m, against USD 243m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
+**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 181m, against USD 241m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
 - In FY2027E-30E, each extra dollar of revenue needs 1/3.87 of a dollar of capital and earns the NOPAT margin of about 4.3%. That's a return on new capital of about 16-17% (4.3% × 3.87).
 - In the terminal year, new capital earns RONIC, 9.7%. To grow 4% a year at 9.7%, Granite has to reinvest 41% of NOPAT, against 19% in FY2030E.
 
@@ -320,19 +340,38 @@ Materials revenue here is external revenue only. The USD 275m of materials Grani
   - It's a promised yield. For a bond priced in the BB range, the expected return is a bit lower because of default risk. Like Damodaran, I don't adjust for this.
 - At 30 Jun 2026 the notes had a fair value of USD 611.3m (Q2 10-Q), above par, so the price fell over the third quarter.
 - Fallback and cross-check: a synthetic rating from interest coverage, using Damodaran's `ratings.xls`. Coverage is EBIT / interest expense. Damodaran has one table for firms above USD 5bn market cap and a stricter one for smaller firms, and the WACC sheet picks the table from Granite's equity value on the valuation date. The synthetic cost of debt is the risk-free rate plus the default spread for that rating. An input switch (1 = bond yield, 2 = synthetic) sets which one goes into the WACC; the base case is the bond yield.
-- For now coverage uses FY2025 (operating income USD 282.4m / interest expense USD 47.2m = 6.0x). That understates the current interest bill: H1 2026 interest expense was already USD 38.1m (Q2 10-Q). At Q3 I switch to the last twelve months to September 2026, which will give lower coverage.
-- The WACC sheet shows the synthetic result under both of Damodaran's tables, so the comparison is visible before the market cap is set. At 6.0x coverage it's A1/A+ (0.70%) on the large-firm table and A3/A- (0.89%) on the smaller-firm one. The bond market's 1.65% sits between Damodaran's Ba1/BB+ (1.38%) and Ba2/BB (1.84%) spreads. So the market prices Granite's debt in Damodaran's BB range, while FY2025 coverage gives an A rating. Part of the gap is that FY2025 interest expense flatters coverage (see above). The market spread is direct evidence on Granite's own debt, so it stays the base case.
+- **Coverage: last twelve months to September 2026.** Operating income is FY2025 + 9M 2026 − 9M 2025 = USD 395.0m. Interest expense on the same basis is USD 73.9m, after taking out USD 273.7m. That amount is the non-cash amortisation of the debt discount on the 3.75% convertibles, which were settled in August 2026 (Q3 10-Q, MD&A and Note 14). It's an accounting charge from the conversion and won't recur. Coverage is 5.3x, against 6.0x on FY2025.
+- Equity value is USD 5.44bn, above Damodaran's USD 5bn cut-off, so the large-firm table applies: A2/A, spread 0.78%, synthetic cost of debt 5.76%. The smaller-firm table would give A3/A- (0.89%). The WACC sheet shows both. The bond market's 1.65% sits between Damodaran's Ba1/BB+ (1.38%) and Ba2/BB (1.84%) spreads. So the market prices Granite's debt in Damodaran's BB range, while coverage gives an A rating. The market-based cost of debt (6.63%) is 0.88 points above the synthetic one. The market spread is direct evidence on Granite's own debt, so it stays the base case.
 - The convertible notes count as debt at their debt component. The option part goes into the diluted share count, not the cost of debt.
 
-**Capital structure weights: Granite's own market values on the valuation date.** Equity = share price × diluted shares. Debt = senior notes and the convertibles' debt component at market value, plus the term loan at book value (it's floating-rate, swapped to fixed, so book is close to market). Lease liabilities are left out because lease costs stay in operating costs and so in FCFF; including them would count them twice. All of these come from the Q3 10-Q.
+**Capital structure weights: Granite's own market values on the valuation date.** Equity = share price × diluted shares = USD 121.69 × 44.70m = USD 5,440m. Debt = USD 1,565m:
+- 6.375% notes USD 591m. That's the 600m principal priced at the 29 Oct market-based cost of debt (6.63%), using Excel's ODDFPRICE: 98.47, clean. Accrued interest is in accrued liabilities, which are already in working capital.
+- 2030 convertibles at their USD 373.75m principal. The principal is settled in cash, and the value above par is in the share count (section 10).
+- Term loan at its USD 600m book value. It's floating-rate and swapped to fixed; its Level 3 fair value is USD 604.4m.
+
+The balance sheet carries USD 1,556m, USD 17.7m below principal (unamortised issuance costs and discounts). Lease liabilities are left out, because lease costs stay in operating costs and so in FCFF; including them would count them twice. D/E is 28.8% (industry 15.0%), the levered beta 1.213, the cost of equity 10.07% and the **WACC 8.93%**.
 
 ## 10. DCF and terminal value
 
-The calculation is on the DCF sheet. Everything that needs a valuation-date input stays blank until the Q3 10-Q.
+The calculation is on the DCF sheet. All inputs are from the Q3 10-Q and the valuation date (29 Oct 2026).
 
 **Timing.** The balance sheet is at 30 Sep 2026, so the DCF values FCFF from 1 Oct onwards: a Q4 2026 stub, then FY2027E to FY2030E. Cash flows are discounted from the valuation date (the 10-Q filing date) with a mid-year convention: the stub at the middle of Q4, each full year at its midpoint.
 
-**Q4 stub = FY2026E FCFF × 25.2% (92/365 days).** This ignores seasonality. Granite's operating cash flow comes mostly in the second half: in FY2025 it was USD 5.4m in H1 out of USD 468.9m for the year (Q2 2025 10-Q, FY2025 10-K). So a straight share probably understates Q4. The alternative is FY2026E FCFF minus 9M 2026 actual FCFF from the 10-Q. That needs the 9M cash flow rebuilt on the same basis as the model (with SBC as a cost and interest taken out), which I can do at Q3. <!-- ALI: keep the straight share, or switch to FY2026E minus 9M actual at Q3? -->
+**Q4 stub = FY2026E FCFF minus 9M 2026 actual FCFF on the model's basis (agreed 4 Nov).** A straight 25% share would ignore seasonality: in FY2025 operating cash flow was USD 5.4m in H1 out of USD 468.9m for the year. 9M 2026 FCFF is rebuilt from the Q3 10-Q the way the model defines it:
+- operating income USD 320.0m × (1 − 25%);
+- \+ D&A 139.8m;
+- − gain on equipment sales 3.9m;
+- − capex 89.9m;
+- \+ proceeds from equipment sales 16.6m;
+- − the trade working capital build of 22.1m (receivables, contract assets, inventories, payables and accrued liabilities, from the cash flow statement).
+
+That gives USD 280.5m. SBC stays a cost, and interest and acquisitions are left out. FY2026E FCFF is USD 316.4m, so Q4 2026E is USD 35.9m. That's low against the cash flow pattern above, because of what the full-year assumptions leave for Q4:
+- operating income of USD 71m (FY2026E 391m − 9M 320m);
+- capex of USD 60m (the USD 150m guidance midpoint − 89.9m spent);
+- equipment-sale gains of USD 22m, taken out as non-cash;
+- a further USD 22m working capital build.
+
+If Q4 capex comes in lower or working capital releases at year-end, as it often has, Q4 FCFF will be higher. At about 1% of EV, it doesn't change the result.
 
 **Terminal value, main method: Gordon growth.** TV = terminal FCFF / (WACC − g), with g = 4% and terminal FCFF = FY2030E NOPAT × 1.04 × (1 − g / RONIC) (section 8). The formula values the FY2031E+ cash flows one year before the first of them. With mid-year timing the first one lands in mid-2031, so the value sits at mid-2030 and I discount it with the FY2030E mid-year factor. Applying the end-of-year factor instead would understate the value by about half a year of discounting.
 
@@ -356,8 +395,47 @@ The implied growth uses the same terminal rule as the model, FCFF = NOPAT × (1 
 − non-controlling interests at book value
 = equity value, divided by diluted shares.
 
-Equity in construction joint ventures is not added: that income is in revenue and gross profit, so it's already in FCFF. Before finalising I'll re-check the convertible treatment against the settlement terms in the Q3 10-Q.
+Equity in construction joint ventures is not added: that income is in revenue and gross profit, so it's already in FCFF. **Diluted shares: 44.70m.**
+- 44.13m shares outstanding at 23 Oct 2026 (10-Q cover page).
+- \+ 0.50m unvested RSUs, all counted, since they have no exercise price.
+- \+ 0.07m from the 2030 convertibles.
+
+Settlement terms (Q3 10-Q, debt note): the principal is paid in cash and the conversion premium in cash, shares or both. The conversion rate is 12.8398 shares per USD 1,000, a conversion price of USD 77.88, on USD 373.75m of principal, which is 4.80m underlying shares. At USD 121.69 the value above par is worth 1.73m shares. The 2024 capped call covers the premium up to its cap price of USD 119.82, and it's Granite's asset, so only the part above the cap dilutes: 0.07m shares. The workbook recalculates this from the share price, so if the price moves further above the cap the dilution grows.
 
 A small timing gap remains: balances are at 30 Sep and discounting starts at the filing date about a month later. I leave it, because rolling the balance sheet forward a month would mean estimating October cash flows.
 
 Sensitivity tables (WACC × g and WACC × exit multiple) come next, on a separate sheet.
+
+## 11. First results (29 Oct 2026)
+
+| | Gordon growth (main) | Exit multiple (cross-check) |
+|---|---|---|
+| PV of FCFF, Q4 2026E-FY2030E | 654 | 654 |
+| PV of terminal value | 2,678 | 7,481 |
+| Enterprise value | 3,331 | 8,135 |
+| Terminal value % of EV | 80% | 92% |
+| + cash and securities, + affiliates, − debt, − NCI | -1,003 | -1,003 |
+| Equity value | 2,328 | 7,131 |
+| Value per share (USD) | **52.07** | 159.52 |
+| vs share price USD 121.69 | **-57%** | +31% |
+
+WACC 8.93%; terminal growth 4%; terminal RONIC 9.7%.
+
+Cross-check between the methods:
+- The Gordon value implies 6.4x FY2030E EBITDA, leases added back. Damodaran's industry multiple is 17.1x.
+- The exit multiple implies perpetual growth of 8.6%, on the model's own reinvestment rule.
+- The market price gives Granite an enterprise value of USD 6,444m, about 10.9x FY2026E EBITDA of USD 593m. The Gordon value is 5.6x.
+
+How much a few single changes move the Gordon value per share (each change on its own, everything else at base; scratch runs, not in the model):
+
+| Change | Value per share (USD) |
+|---|---|
+| Base | 52.07 |
+| Gross margin from FY2027E 15.5% (base 15.0%) | 59.13 |
+| Gross margin from FY2027E 16.5% | 73.25 |
+| Upside case: gross margin implied by FY2026 guidance (about 17%) | 79.78 |
+| Terminal RONIC 13% (base 9.7%) | 62.88 |
+
+None of these single changes closes the gap to the share price. The gap comes from the combination of: growth fading to 4% by FY2030 (Granite's 2029 target is 10-12% organic growth a year); an EBITDA margin of about 9.2% from FY2027E (2029 target: 14-16% adjusted EBITDA, which also excludes SBC); and terminal returns on new capital falling to 9.7%. The checks all pass (balance sheet and cash flow history, working capital, g < risk-free rate, Gordon value implies 4.0%), so the gap is about assumptions, not arithmetic.
+
+<!-- ALI: interpretation. What explains the gap between the DCF value and the share price, and does any base-case assumption change in light of the Q3 results and the 2029 targets? -->

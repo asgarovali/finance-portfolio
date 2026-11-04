@@ -137,3 +137,16 @@ Files in `raw/policy/`:
 Balance sheet at 30 Sep 2026 from the Q3 2026 10-Q, and share price at the close on the day that 10-Q is filed on EDGAR (expected 29 Oct 2026).
 
 Definitions used to match the exit multiple: Damodaran's variable definitions page (https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/variable.htm), where EBITDA is operating income plus D&A, and his post "Data Update 7 for 2020: Debt Delusions and Reality" (https://aswathdamodaran.blogspot.com/2020/03/data-update-7-for-2020-debt-delusions.html), which says lease commitments are counted as debt in his data. Operating lease liabilities at 31 Dec 2025 (USD 158.5m) are the XBRL tag us-gaap:OperatingLeaseLiability in the FY2025 10-K.
+
+**Share price.** `raw/market/gva_yfinance.csv`, downloaded by `src/data/download_market.py` on 2026-11-04 with yfinance (`Ticker("GVA").history`, 1 Oct 2025 to 3 Nov 2026, unadjusted). yfinance is an unofficial wrapper around Yahoo Finance's data, so it's not a primary source. The close used is USD 121.69 on 29 Oct 2026. I checked it by hand on the Yahoo Finance historical prices page, which is the same underlying source as yfinance, so this is a transcription check rather than an independent one. Stooq, the planned second source, now blocks scripted downloads.
+
+**Q3 2026 inputs** (10-Q 0000861459-26-000042 and earnings release 8-K 0000861459-26-000040, Exhibit 99.1):
+- 9M 2025 and 9M 2026 statements: added to `data/processed/` by `clean_statements.py` (columns "9M 2025", "9M 2026"), and they reconcile to the filed subtotals.
+- Two cash flow tags are new in this 10-Q: gva:GainLossOnRemeasurementOfEquityMethodInvestment (Asphalt Terminal Entity) and gva:ProceedsFromUnwindOfCappedCall.
+- CAP at 30 Sep 2026: USD 7,455.5m (`extract_cap.py`).
+- 3.75% convertibles discount amortisation: USD 273.7m (XBRL InterestExpenseNonoperating on the 3.75% notes member; MD&A).
+- 2030 convertibles: conversion rate 12.8398 per USD 1,000 and capped call cap price USD 119.82 (debt note, text). 3.25% principal and term loan: XBRL LongTermDebt by instrument.
+- Unvested RSUs, 0.501m: EPS note, text.
+- Shares outstanding, 44,130,293 at 23 Oct 2026: XBRL dei:EntityCommonStockSharesOutstanding.
+- Revisions in estimates for 9M 2026: Note 3, text.
+- FY2026 guidance and 2029 targets: Exhibit 99.1.

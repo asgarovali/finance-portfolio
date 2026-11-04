@@ -1,4 +1,4 @@
-"""Build condensed IS, BS and CF for FY2021-FY2025 and H1 2025/H1 2026.
+"""Build condensed IS, BS and CF for FY2021-FY2025, H1 2025/H1 2026 and 9M 2025/9M 2026.
 
 Values come from the iXBRL facts in each filing. For every period I take all
 numbers from the single latest filing that presents that period on its face
@@ -26,6 +26,8 @@ PROCESSED = ROOT / "data" / "processed"
 FIRST_FY, LAST_FY = 2021, 2025
 H1_YEARS = (2025, 2026)
 H1_10Q_PERIOD = "2026-06-30"
+NINE_M_YEARS = (2025, 2026)
+Q3_10Q_PERIOD = "2026-09-30"
 
 
 @dataclass
@@ -143,6 +145,8 @@ CF_ROWS = [
     item("Income from affiliates", [G + "IncomeLossFromEquityMethodInvestments",
                                     C + "CompanyOwnedLifeInsuranceNetIncomeLoss"], -1),
     item("Other non-cash items", G + "OtherNoncashIncomeExpense", -1),
+    # Q3 2026: gain on taking full control of the Asphalt Terminal Entity (previously equity method)
+    item("Remeasurement gain on equity investment", C + "GainLossOnRemeasurementOfEquityMethodInvestment", -1),
     item("Change in receivables", G + "IncreaseDecreaseInReceivables", -1),
     item("Change in contract assets", G + "IncreaseDecreaseInContractWithCustomerAsset", -1),
     item("Change in inventories", G + "IncreaseDecreaseInInventories", -1),
@@ -159,7 +163,8 @@ CF_ROWS = [
                                    "Non-cash loss on debt extinguishment", "Loss on conversion option derivative",
                                    "Convertible inducement expense",
                                    "Impairment charges", "Construction JV (income) loss",
-                                   "Income from affiliates", "Other non-cash items", "Change in receivables",
+                                   "Income from affiliates", "Other non-cash items",
+                                   "Remeasurement gain on equity investment", "Change in receivables",
                                    "Change in contract assets", "Change in inventories",
                                    "Contributions to construction JVs", "Distributions from construction JVs",
                                    "Change in other assets", "Change in accounts payable",
@@ -188,7 +193,8 @@ CF_ROWS = [
     item("Other debt issued", [G + "ProceedsFromLongTermLinesOfCredit", G + "ProceedsFromIssuanceOfLongTermDebt"]),
     item("Debt repaid", G + "RepaymentsOfLongTermDebt", -1),
     item("Capped calls", C + "PaymentsForCappedCallTransaction", -1),
-    item("Capped call unwind", C + "ProceedsFromPartialUnwindOfCappedCall"),
+    # Q2 2026 10-Q tags the partial unwind, Q3 2026 the full one
+    item("Capped call unwind", [C + "ProceedsFromPartialUnwindOfCappedCall", C + "ProceedsFromUnwindOfCappedCall"]),
     item("Warrants redeemed", G + "PaymentsForRepurchaseOfWarrants", -1),
     item("Debt issuance costs", G + "PaymentsOfDebtIssuanceCosts", -1),
     item("Dividends paid", G + "PaymentsOfDividendsCommonStock", -1),
@@ -224,13 +230,14 @@ def periods() -> dict[str, tuple[str | None, str]]:
     """Column label -> (start, end). start is None for balance sheet dates."""
     out = {f"FY{y}": (f"{y}-01-01", f"{y}-12-31") for y in range(FIRST_FY, LAST_FY + 1)}
     out.update({f"H1 {y}": (f"{y}-01-01", f"{y}-06-30") for y in H1_YEARS})
+    out.update({f"9M {y}": (f"{y}-01-01", f"{y}-09-30") for y in NINE_M_YEARS})
     return out
 
 
 def load_facts(index: pd.DataFrame) -> pd.DataFrame:
-    """Facts from the 10-Ks for FY2021 onwards and the Q2 2026 10-Q."""
+    """Facts from the 10-Ks for FY2021 onwards and the Q2 and Q3 2026 10-Qs."""
     keep = index[((index["form"] == "10-K") & (index["reportDate"] >= f"{FIRST_FY}-12-31"))
-                 | ((index["form"] == "10-Q") & (index["reportDate"] == H1_10Q_PERIOD))]
+                 | ((index["form"] == "10-Q") & index["reportDate"].isin([H1_10Q_PERIOD, Q3_10Q_PERIOD]))]
     frames = []
     for f in keep.itertuples():
         df = read_facts(SEC_DIR / f"{f.accessionNumber}_{f.primaryDocument}")

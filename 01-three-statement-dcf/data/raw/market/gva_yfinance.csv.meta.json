@@ -1,0 +1,8 @@
+{
+  "source": "yfinance Ticker.history",
+  "ticker": "GVA",
+  "start": "2025-10-01",
+  "end": "2026-11-04",
+  "auto_adjust": false,
+  "retrieved_utc": "2026-11-04 13:22:16"
+}

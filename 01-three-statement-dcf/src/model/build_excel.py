@@ -125,18 +125,34 @@ def amortisation_schedule(facts: pd.DataFrame) -> list[float]:
     return [vals[f"us-gaap:FiniteLivedIntangibleAssetsAmortizationExpense{k}"] / 1e6 for k in keys]
 
 
-def interim_h1(facts: pd.DataFrame, is_: pd.DataFrame, cf: pd.DataFrame) -> dict[str, float]:
-    """Stand-ins for the inputs that wait for the Q3 10-Q, all from H1 2026 filings."""
-    seg = facts[(facts["accession"] == "0000861459-26-000029")
-                & (facts["tag"] == "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax")
-                & (facts["dims"] == "us-gaap:StatementBusinessSegmentsAxis=gva:MaterialsMember")
-                & (facts["start"] == "2026-01-01") & (facts["end"] == "2026-06-30")]
-    rev = is_.loc["Revenue", "H1 2026"]
+def q3_facts() -> dict[str, float]:
+    """Q3 2026 10-Q items that aren't on the condensed statements (USD m unless stated)."""
+    f = read_facts(RAW / "sec" / f"{Q3_10Q}_gva-20260930.htm")
+    f["dims"] = f["dims"].fillna("")
+
+    def one(tag, dims="", start=None, end="2026-09-30"):
+        x = f[(f["tag"] == tag) & (f["dims"] == dims) & (f["end"] == end)]
+        x = x[x["start"].isna()] if start is None else x[x["start"] == start]
+        assert len(x["value"].unique()) == 1, (tag, dims)
+        return x["value"].iloc[0]
+
+    debt = "us-gaap:DebtInstrumentAxis=gva:"
     return {
-        "materials_share": seg["value"].iloc[0] / 1e6 / rev,
-        "gross_margin": is_.loc["Gross profit", "H1 2026"] / rev,
-        "acquisitions": -cf.loc["Acquisitions", "H1 2026"],
+        "materials_rev": one("us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                             "us-gaap:StatementBusinessSegmentsAxis=gva:MaterialsMember", "2026-01-01") / 1e6,
+        "cvt_amort": one("us-gaap:InterestExpenseNonoperating", debt + "A375ConvertibleNotesMember", "2026-01-01") / 1e6,
+        "term_loan": one("us-gaap:LongTermDebt", debt + "TermLoanMember;us-gaap:LongtermDebtTypeAxis=us-gaap:LineOfCreditMember") / 1e6,
+        "cv30": one("us-gaap:LongTermDebt", debt + "A3.25ConvertibleNotesMember;us-gaap:LongtermDebtTypeAxis=us-gaap:ConvertibleDebtMember") / 1e6,
+        "cv30_price": one("us-gaap:DebtInstrumentConvertibleConversionPrice1", debt + "A3.25ConvertibleNotesMember",
+                          end="2024-06-11"),
+        "shares_out": one("dei:EntityCommonStockSharesOutstanding", end="2026-10-23") / 1e6,
     }
+
+
+def close_on(day: str) -> float:
+    """GVA closing price on one date, from the saved yfinance file."""
+    px = pd.read_csv(RAW / "market" / "gva_yfinance.csv", index_col="Date")
+    return round(float(px.loc[day, "Close"]), 2)
 
 
 def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
@@ -482,11 +498,11 @@ def build_dcf(wb, I: dict, s: dict, w: dict):
 
     sec("Free cash flow to the firm")
     line("n", "Years after FY2026", {c: i + 1 for i, c in enumerate(cols[1:5])}, "0", inputs=True)
-    line("frac", "Share of FY2026E after the balance sheet date",
-         {"B": f"=({I['fy_end']}-{I['bs_date']})/365"}, xl.FMT_PCT, "Q4 stub: 1 Oct to 31 Dec")
-    fcff = {"B": f"=Sched!{src[0]}{s['fcff']}*B{{frac}}"}
+    line("f26", "FY2026E FCFF", {"B": f"=Sched!{src[0]}{s['fcff']}"}, xl.FMT_NUM, "Sched")
+    line("f9", "Less: 9M 2026 actual, model basis", {"B": f"=-{I['fcff9']}"}, xl.FMT_NUM, "Inputs, from the Q3 10-Q")
+    fcff = {"B": "=B{f26}+B{f9}"}
     fcff.update({c: f"=Sched!{sc}{s['fcff']}" for c, sc in zip(cols[1:], src[1:])})
-    line("fcff", "FCFF", fcff, xl.FMT_NUM, "Sched; Q4 = FY2026E x stub share (no seasonality)", bold=True)
+    line("fcff", "FCFF", fcff, xl.FMT_NUM, "Q4 2026E = FY2026E - 9M actual; later years from Sched", bold=True)
 
     sec("Discounting from the valuation date")
     line("wacc", "WACC", {"B": f'=IF({wacc}="","",{wacc})'}, "0.00%", "WACC sheet")
@@ -642,7 +658,7 @@ def build() -> Path:
     lines = [
         ("Granite Construction (NYSE: GVA): three-statement model and DCF", xl.BOLD),
         ("Ali Asgarov", xl.BASE),
-        (f"Draft, {date.today():%d %b %Y}. Valuation inputs pending the Q3 2026 10-Q (29 Oct 2026).", xl.BASE),
+        (f"Draft, {date.today():%d %b %Y}. Valuation date 29 Oct 2026 (Q3 2026 10-Q).", xl.BASE),
         ("", xl.BASE),
         ("Sources: Granite 10-K and 10-Q filings (SEC EDGAR, inline XBRL); Damodaran datasets (Jan 2026);", xl.NOTE),
         ("FRED (DGS10, FOMC projections). Full list with accession numbers in data/SOURCES.md.", xl.NOTE),
@@ -698,17 +714,43 @@ def build() -> Path:
         later[key] = r
         r += 1
 
-    h1 = interim_h1(facts, wide["IS"], wide["CF"])
-    interim = "H1 2026 actual (Q2 10-Q); replace with 9M on 29 Oct"
+    q3 = q3_facts()
+    nine = lambda stmt, line, period="9M 2026": round(float(wide[stmt].loc[line, period]), 3)
+    src9 = f"Q3 2026 10-Q ({Q3_10Q})"
+
+    section("9M actuals (Q3 2026 10-Q)")
+    scalar("r9", "Revenue, 9M 2026", nine("IS", "Revenue"), xl.FMT_NUM, src9)
+    scalar("m9", "Materials revenue, 9M 2026", round(q3["materials_rev"], 3), xl.FMT_NUM, src9 + ", segment note")
+    scalar("gp9", "Gross profit, 9M 2026", nine("IS", "Gross profit"), xl.FMT_NUM, src9)
+    scalar("op9", "Operating income, 9M 2026", nine("IS", "Operating income"), xl.FMT_NUM, src9)
+    scalar("op9p", "Operating income, 9M 2025", nine("IS", "Operating income", "9M 2025"), xl.FMT_NUM, src9)
+    scalar("int9", "Interest expense, 9M 2026", -nine("IS", "Interest expense"), xl.FMT_NUM, src9)
+    scalar("int9p", "Interest expense, 9M 2025", -nine("IS", "Interest expense", "9M 2025"), xl.FMT_NUM, src9)
+    scalar("cvt9", "of which: non-cash discount amortisation, 3.75% convertibles", round(q3["cvt_amort"], 3),
+           xl.FMT_NUM, src9 + ", Note 14; settled Aug 2026, not recurring")
+    scalar("da9", "D&A, 9M 2026", nine("CF", "D&A"), xl.FMT_NUM, src9 + ", cash flow statement")
+    scalar("gain9", "Gain on sale of PP&E, 9M 2026", nine("IS", "Gain on sale of PP&E"), xl.FMT_NUM, src9)
+    scalar("capex9", "Capex, 9M 2026", nine("CF", "Capex"), xl.FMT_NUM, src9 + ", cash flow statement")
+    scalar("proc9", "Proceeds from sale of PP&E, 9M 2026", nine("CF", "Proceeds from sale of PP&E"), xl.FMT_NUM,
+           src9 + ", cash flow statement")
+    wc_lines = ("Change in receivables", "Change in contract assets", "Change in inventories",
+                "Change in accounts payable", "Change in accrued and other liabilities")
+    scalar("wc9", "Change in trade working capital, 9M 2026", round(sum(nine("CF", x) for x in wc_lines), 3),
+           xl.FMT_NUM, "Cash flow lines for receivables, contract assets, inventories, payables, accrued "
+           f"({', '.join(f'{nine('CF', x):.1f}' for x in wc_lines)})")
+    scalar("acq9", "Acquisitions (cash), 9M 2026", nine("CF", "Acquisitions"), xl.FMT_NUM,
+           src9 + ": Kenny Seng (Apr) and the Asphalt Terminal Entity (Sep)")
+    placeholder("fcff9", "FCFF, 9M 2026, on the model's basis",
+                "EBIT x (1 - tax) + D&A - gain + capex + proceeds + WC change; Q4 stub = FY2026E - this; memo s.10")
 
     section("Scenario")
     scalar("scen", "Scenario (1 base, 2 downside, 3 upside)", 1, "0",
            "2 = reauthorisation gap + 14.5% gross margin; 3 = gross margin implied by FY2026 guidance; memo s.5-6")
 
     section("Revenue")
-    scalar("rev26", "FY2026E revenue", 5300, xl.FMT_NUM, "Low end of guidance (USD 5.3-5.5bn), 8-K 30 Jul 2026; memo s.5")
-    scalar("mshare", "FY2026E Materials share of revenue", round(h1["materials_share"], 4), xl.FMT_PCT,
-           interim, "INTERIM")
+    scalar("rev26", "FY2026E revenue", 5400, xl.FMT_NUM,
+           "Low end of guidance (USD 5.4-5.5bn, raised from 5.3-5.5bn), 8-K 29 Oct 2026; memo s.3, s.5")
+    placeholder("mshare", "FY2026E Materials share of revenue", "9M 2026 actual")
     for y in (2022, 2023, 2024, 2025):
         d = cap.loc[cap["date"] == f"{y}-09-30"].iloc[0]
         scalar(f"cap_s{y % 100}", f"CAP at 30 Sep {y}", d["cap"], xl.FMT_NUM,
@@ -718,8 +760,9 @@ def build() -> Path:
     placeholder("burn", "Construction revenue next FY / CAP at 30 Sep, FY2023-25 avg",
                 "Share of September backlog that becomes next year's Construction revenue, FY2025 excl. acquisitions; memo s.5")
     d = cap.iloc[-1]
+    assert f"{d['date']:%Y-%m-%d}" == "2026-09-30", "CAP should be at the Q3 balance sheet date"
     scalar("cap_now", "CAP at latest quarter-end", d["cap"], xl.FMT_NUM,
-           f"{d['date']:%d %b %Y}, {d['form']} {d['accession']}; replace with 30 Sep 2026 on 29 Oct", "INTERIM")
+           f"{d['date']:%d %b %Y}, {d['form']} {d['accession']}, MD&A")
     scalar("g_real", "FOMC longer-run real GDP growth (median)", fred_on("GDPC1MDLR", SEP_DATE), xl.FMT_PCT,
            f"FRED GDPC1MDLR, Summary of Economic Projections {SEP_DATE}")
     scalar("g_infl", "FOMC longer-run PCE inflation (median)", fred_on("PCECTPIMDLR", SEP_DATE), xl.FMT_PCT,
@@ -731,8 +774,7 @@ def build() -> Path:
     scalar("down", "Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
 
     section("Margins")
-    scalar("gm26", "FY2026E gross margin", round(h1["gross_margin"], 4), xl.FMT_PCT,
-           "H1 2026 actual (Q2 10-Q), seasonally low; replace with 9M on 29 Oct", "INTERIM")
+    placeholder("gm26", "FY2026E gross margin", "9M 2026 actual; memo s.6")
     scalar("gm", "Gross margin from FY2027E, base", 0.15, xl.FMT_PCT,
            "Midpoint of the 14.6-15.4% FY2025 normalisation range; memo s.6")
     scalar("gm_down", "Gross margin from FY2027E, downside", 0.145, xl.FMT_PCT,
@@ -773,10 +815,8 @@ def build() -> Path:
     I["dep"] = f"Inputs!$B${r}"
     r += 1  # formula, filled below
     series("amort", "Intangible amortisation", amortisation_schedule(facts), xl.FMT_NUM,
-           "FY2025 10-K expected amortisation; Kenny Seng to be added from Q3 10-Q")
-    scalar("acq26", "FY2026E acquisitions (cash)", round(h1["acquisitions"], 1), xl.FMT_NUM,
-           "Kenny Seng, H1 2026 cash flow (Q2 10-Q); none modelled after FY2026 (memo s.4); replace with 9M on 29 Oct",
-           "INTERIM")
+           "FY2025 10-K expected amortisation; excludes 2026 acquisitions (no lives disclosed yet); memo s.8")
+    placeholder("acq26", "FY2026E acquisitions (cash)", "9M 2026 actual; none modelled after FY2026; memo s.4")
     scalar("tax", "Tax rate on operating profit", 0.25, xl.FMT_PCT, "21% federal + ~4% state (FY2025 rate reconciliation); memo s.8")
 
     section("Cost of capital")
@@ -801,11 +841,8 @@ def build() -> Path:
            f"Damodaran ERPbymonth.xlsx, implied ERP {dam['erp_date']:%d %b %Y} (start of 2026: {dam['erp_jan']:.2%})")
     scalar("rf", "Risk-free rate (10y Treasury)", fred_on("DGS10", VAL_DATE), "0.00%",
            f"FRED DGS10 on the valuation date, {VAL_DATE} (same day as the share price)")
-    scalar("price", "Share price (USD)", None, "0.00", "NYSE close on the 10-Q filing date", "PENDING")
-    scalar("shares", "Diluted shares (m)", None, "0.0",
-           "Q3 10-Q: shares outstanding + dilution incl. 2030 convertibles above par; memo s.9", "PENDING")
-    scalar("debt_mv", "Debt at market value (USD m)", None, xl.FMT_NUM,
-           "Q3 10-Q debt note: senior notes and convertibles' debt component at market, term loan at book", "PENDING")
+    scalar("price", "Share price (USD)", close_on(VAL_DATE), "0.00",
+           f"NYSE close {VAL_DATE}, yfinance (raw/market/gva_yfinance.csv); checked on Yahoo Finance")
     carrying, fair = notes_2034_fair_value()
     scalar("nt_fv", "6.375% notes due 2034: fair value, 30 Sep 2026", round(fair, 3), xl.FMT_NUM,
            f"Q3 10-Q ({Q3_10Q}) fair value table: Level 2, median price in an active market")
@@ -825,12 +862,35 @@ def build() -> Path:
     placeholder("nt_spread", "Credit spread over the 10y Treasury", "Yield to maturity - DGS10, both 30 Sep 2026")
     placeholder("kd", "Pre-tax cost of debt, market-based",
                 "DGS10 on the valuation date + 30 Sep spread; memo s.9")
+    placeholder("nt_mv", "6.375% notes at the valuation date", "ODDFPRICE at the market-based cost of debt x principal")
+    scalar("cv30", "3.25% convertible notes due 2030, principal", round(q3["cv30"], 3), xl.FMT_NUM,
+           src9 + ", debt note; principal settles in cash, so it counts as debt")
+    scalar("tl", "Term loan", round(q3["term_loan"], 3), xl.FMT_NUM,
+           src9 + ", debt note; at book (floating, swapped; Level 3 fair value 604.4)")
+    placeholder("debt_mv", "Debt at market value (USD m)", "Notes at market + convertibles at principal + term loan")
     scalar("kd_basis", "Cost of debt basis (1 = market-based, 2 = synthetic rating)", 1, "0",
            "Base case 1 (notes' spread); 2 is the cross-check; memo s.9")
     scalar("mcap_cut", "Synthetic rating: large-firm table above market cap of", 5000, xl.FMT_NUM,
            "Damodaran ratings.xls: large-firm table for market cap above USD 5bn")
-    placeholder("cov_ebit", "Synthetic rating: EBIT", "INTERIM: FY2025 operating income; LTM to Sep 2026 after Q3")
-    placeholder("cov_int", "Synthetic rating: interest expense", "INTERIM: FY2025 interest expense; LTM to Sep 2026 after Q3")
+    placeholder("cov_ebit", "Synthetic rating: EBIT, LTM to Sep 2026", "FY2025 + 9M 2026 - 9M 2025")
+    placeholder("cov_int", "Synthetic rating: interest expense, LTM to Sep 2026",
+                "FY2025 + 9M 2026 - 9M 2025, excl. the non-cash convertible discount amortisation")
+
+    section("Diluted shares (valuation date)")
+    scalar("sh_out", "Shares outstanding (m)", round(q3["shares_out"], 3), "0.000", src9 + " cover page, 23 Oct 2026")
+    scalar("rsu", "Unvested RSUs (m)", 0.501, "0.000",
+           src9 + ", EPS note (excluded from 9M diluted EPS as anti-dilutive); all counted, no exercise price")
+    scalar("cv_rate", "2030 convertibles: conversion rate (shares per USD 1,000)", 12.8398, "0.0000",
+           src9 + ", debt note; conversion price about USD 77.88")
+    assert abs(1000 / 12.8398 - q3["cv30_price"]) < 0.01  # rate and price in the debt note agree
+    scalar("cv_cap", "2030 convertibles: capped call cap price (USD)", 119.82, "0.00", src9 + ", debt note (2024 capped call)")
+    placeholder("cv_k", "Conversion price (USD)", "1,000 / conversion rate")
+    placeholder("cv_sh", "Shares underlying the 2030 convertibles (m)", "Principal x conversion rate")
+    placeholder("dil_g", "Dilution above par, before the capped call (m)", "Shares x (price - conversion price) / price")
+    placeholder("dil_cc", "Less: covered by the capped call (m)",
+                "Shares x (min(price, cap) - conversion price) / price; Granite's asset, so netted")
+    placeholder("dil", "Net dilution from the 2030 convertibles (m)", "Only the part above the cap price; recalculates with the price")
+    placeholder("shares", "Diluted shares (m)", "Outstanding + RSUs + net convertible dilution; memo s.10")
     placeholder("ronic", "Terminal RONIC, base (FY2022-25 average ROIC)",
                 "EBIT after 25% tax / average invested capital; sensitivities WACC and 13%; memo s.8")
 
@@ -840,12 +900,17 @@ def build() -> Path:
            "Q3 2026 10-Q; FCFF from 1 Oct onwards is valued; memo s.1")
     scalar("val_date", "Valuation date", datetime.strptime(VAL_DATE, "%Y-%m-%d"), "dd mmm yyyy",
            "Q3 10-Q filing date; the 8-K with the 30 Sep balance sheet came out before the open; memo s.1")
-    scalar("cash_q3", "Cash and marketable securities, 30 Sep 2026", None, xl.FMT_NUM,
-           "Q3 10-Q balance sheet: cash + current and long-term marketable securities", "PENDING")
-    scalar("aff_q3", "Investments in affiliates, 30 Sep 2026", None, xl.FMT_NUM,
-           "Q3 10-Q; equity-method income is outside FCFF, so the investment is added at book", "PENDING")
-    scalar("nci_q3", "Non-controlling interests, 30 Sep 2026", None, xl.FMT_NUM,
-           "Q3 10-Q, at book value", "PENDING")
+    scalar("cash9", "Cash and cash equivalents, 30 Sep 2026", nine("BS", "Cash and cash equivalents"), xl.FMT_NUM,
+           src9 + "; includes cash held by consolidated construction JVs")
+    scalar("ms9", "Marketable securities, current + long-term, 30 Sep 2026",
+           round(nine("BS", "Marketable securities, current") + nine("BS", "Marketable securities, long-term"), 3),
+           xl.FMT_NUM, src9 + f" ({nine('BS', 'Marketable securities, current'):.1f} + "
+                             f"{nine('BS', 'Marketable securities, long-term'):.1f})")
+    placeholder("cash_q3", "Cash and marketable securities, 30 Sep 2026", "Sum of the two lines above")
+    scalar("aff_q3", "Investments in affiliates, 30 Sep 2026", nine("BS", "Investments in affiliates"), xl.FMT_NUM,
+           src9 + "; equity-method income is outside FCFF, so the investment is added at book")
+    scalar("nci_q3", "Non-controlling interests, 30 Sep 2026", nine("BS", "Non-controlling interests"), xl.FMT_NUM,
+           src9 + ", at book value")
     scalar("evm_ec", "EV/EBITDA, Eng./Construction", round(dam["evm_ec"], 4), "0.00x",
            "Damodaran vebitda.xls (5 Jan 2026), positive-EBITDA firms; EV includes lease debt")
     scalar("evm_cs", "EV/EBITDA, Construction Supplies", round(dam["evm_cs"], 4), "0.00x",
@@ -996,8 +1061,23 @@ def build() -> Path:
                    f"{I['nt_px']},100,2,0)", "0.00%"),
         "nt_spread": (f"={I['nt_ytm']}-{I['rf_fv']}", "0.00%"),
         "kd": (f"={I['rf']}+{I['nt_spread']}", "0.00%"),
-        "cov_ebit": (f"=IS!{f25}{is_at['Operating income']}", xl.FMT_NUM),
-        "cov_int": (f"=-IS!{f25}{is_at['Interest expense']}", xl.FMT_NUM),
+        "cov_ebit": (f"=IS!{f25}{is_at['Operating income']}+{I['op9']}-{I['op9p']}", xl.FMT_NUM),
+        "cov_int": (f"=-IS!{f25}{is_at['Interest expense']}+{I['int9']}-{I['int9p']}-{I['cvt9']}", xl.FMT_NUM),
+        "fcff9": (f"={I['op9']}*(1-{I['tax']})+{I['da9']}-{I['gain9']}+{I['capex9']}+{I['proc9']}+{I['wc9']}",
+                  xl.FMT_NUM),
+        "mshare": (f"={I['m9']}/{I['r9']}", xl.FMT_PCT),
+        "gm26": (f"={I['gp9']}/{I['r9']}", "0.00%"),
+        "acq26": (f"=-{I['acq9']}", xl.FMT_NUM),
+        "nt_mv": (f"=ODDFPRICE({I['val_date']},{I['nt_mat']},{I['nt_issue']},{I['nt_first']},{I['nt_cpn']},"
+                  f"{I['kd']},100,2,0)/100*{I['nt_par']}", xl.FMT_NUM),
+        "debt_mv": (f"={I['nt_mv']}+{I['cv30']}+{I['tl']}", xl.FMT_NUM),
+        "cash_q3": (f"={I['cash9']}+{I['ms9']}", xl.FMT_NUM),
+        "cv_k": (f"=1000/{I['cv_rate']}", "0.00"),
+        "cv_sh": (f"={I['cv30']}*{I['cv_rate']}/1000", "0.000"),
+        "dil_g": (f"={I['cv_sh']}*MAX({I['price']}-{I['cv_k']},0)/{I['price']}", "0.000"),
+        "dil_cc": (f"=-{I['cv_sh']}*(MIN(MAX({I['price']},{I['cv_k']}),{I['cv_cap']})-{I['cv_k']})/{I['price']}", "0.000"),
+        "dil": (f"={I['dil_g']}+{I['dil_cc']}", "0.000"),
+        "shares": (f"={I['sh_out']}+{I['rsu']}+{I['dil']}", "0.000"),
         "lease_pct": (f"={I['lease25']}/IS!{f25}{rev}", "0.00%"),
         "ronic": ("=AVERAGE(" + ",".join(
             f"IS!{COL[y]}{is_at['Operating income']}*(1-{I['tax']})/(({ic(COL[y])}+{ic(COL[HIST[HIST.index(y) - 1]])})/2)"
