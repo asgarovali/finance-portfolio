@@ -1,4 +1,4 @@
-"""Build the Excel model: Cover, Inputs, IS, BS, CF.
+"""Build the Excel model: Cover, Inputs, IS, BS, CF, Sched, WACC, DCF.
 
 History (FY2021-FY2025) is written as hard-coded blue inputs from
 data/processed/statements_long.csv; every subtotal is an Excel formula, so the
@@ -11,7 +11,7 @@ Run from the project folder:  python -m src.model.build_excel
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -51,7 +51,9 @@ def damodaran_inputs() -> dict:
     m = m.dropna(subset=["ERP (T12 m with sustainable payout)"]).iloc[-1]
     ps = pd.read_excel(RAW / "damodaran" / "psdata.xls", sheet_name="Industry Averages", header=7).set_index(
         "Industry Name")
+    ev = pd.read_excel(RAW / "damodaran" / "vebitda.xls", sheet_name="Industry Averages", header=None).set_index(0)
     ec, cs = "Engineering/Construction", "Construction Supplies"
+    # vebitda.xls column 3 = EV/EBITDA, positive-EBITDA firms only (Granite's EBITDA is positive)
     # betas.xls column 3 = D/E, 7 = unlevered beta corrected for cash (current), 15 = average 2022-2026
     return {
         "beta_ec_avg": b.loc[ec, 15], "beta_ec_2026": b.loc[ec, 7],
@@ -60,7 +62,25 @@ def damodaran_inputs() -> dict:
         "erp_jan": h.loc[h["Year"] == 2025, "Implied ERP (FCFE)"].iloc[0],
         "erp": m["ERP (T12 m with sustainable payout)"], "erp_date": m["Start of month"],
         "evs_ec": ps.loc[ec, "EV/Sales"], "evs_cs": ps.loc[cs, "EV/Sales"],
+        "evm_ec": ev.loc[ec, 3], "evm_cs": ev.loc[cs, 3],
     }
+
+
+def rating_table() -> pd.DataFrame:
+    """Damodaran's coverage -> rating -> spread tables for large (> USD 5bn market cap) and
+    smaller non-financial firms. The two tables share ratings and spreads; only the bounds differ."""
+    x = pd.read_excel(RAW / "damodaran" / "ratings.xls", sheet_name="Start here Ratings sheet", header=None)
+    large, small = x.iloc[18:33, [0, 2, 3]], x.iloc[37:52, [0, 2, 3]]
+    assert (large[2].values == small[2].values).all() and (large[3].values == small[3].values).all()
+    return pd.DataFrame({"rating": large[2].values, "large": large[0].values.astype(float),
+                         "small": small[0].values.astype(float), "spread": large[3].values.astype(float)})
+
+
+def lease_liability(facts: pd.DataFrame) -> float:
+    """Operating lease liabilities (current + non-current) at 31 Dec 2025, FY2025 10-K."""
+    f = facts[(facts["tag"] == "us-gaap:OperatingLeaseLiability") & (facts["dims"] == "")
+              & (facts["end"] == "2025-12-31") & (facts["form"] == "10-K")]
+    return f["value"].iloc[-1] / 1e6
 
 
 def fred_latest(series: str) -> tuple[float, str]:
@@ -359,7 +379,19 @@ def build_wacc(wb, I: dict, is_at: dict):
     line("ke", "Cost of equity", '=IF(OR({rf}="",{bl}=""),"",{rf}+{bl}*{erp})', "0.00%", bold=True)
 
     sec("Cost of debt")
-    line("kd", "Pre-tax cost of debt", f"=IF({I['kd']}=\"\",\"\",{I['kd']})", "0.00%")
+    line("kd_mkt", "Market yield, 6.375% 2034 notes", f"=IF({I['kd']}=\"\",\"\",{I['kd']})", "0.00%", "FINRA TRACE")
+    line("cov", "Interest coverage (EBIT / interest expense)", f"={I['cov_ebit']}/{I['cov_int']}", "0.00x",
+         "Synthetic rating cross-check from here")
+    line("tbl", "Damodaran table (1 = large firm, 2 = smaller firm)",
+         f'=IF({{e}}="","",IF({{e}}>{I["mcap_cut"]},1,2))', "0", "By equity market value")
+    lk = lambda out: (f'=IF({{tbl}}="","",IF({{tbl}}=1,LOOKUP({{cov}},{I["rt_large"]},{I[out]}),'
+                      f'LOOKUP({{cov}},{I["rt_small"]},{I[out]})))')
+    line("rating", "Synthetic rating", lk("rt_rating"), None)
+    line("spread", "Default spread", lk("rt_spread"), "0.00%")
+    line("kd_syn", "Synthetic cost of debt", '=IF(OR({rf}="",{spread}=""),"",{rf}+{spread})', "0.00%",
+         "Risk-free rate + default spread")
+    line("kd", "Pre-tax cost of debt used", f"=CHOOSE({I['kd_basis']},{{kd_mkt}},{{kd_syn}})", "0.00%",
+         "Inputs: cost of debt basis", bold=True)
     line("kd_at", "After-tax cost of debt", f'=IF({{kd}}="","",{{kd}}*(1-{I["tax"]}))', "0.00%")
 
     sec("Weighted average cost of capital")
@@ -375,6 +407,153 @@ def build_wacc(wb, I: dict, is_at: dict):
     ws["A3"] = "Check: terminal growth below risk-free rate (0 = OK)"
     ws["A3"].font = xl.BOLD
     xl.put_formula(ws, "B3", f'=IF({I["rf"]}="","pending",IF({I["gLR"]}<{I["rf"]},0,1))', "0")
+    return ws, {k: "WACC!$B$" + v[1:] for k, v in at.items()}
+
+
+def build_dcf(wb, I: dict, s: dict, w: dict):
+    """FCFF discounted from the valuation date with a mid-year convention. Gordon growth is the
+    main terminal value; the exit multiple is a cross-check. Blank until the valuation inputs arrive."""
+    ws = wb.create_sheet("DCF")
+    xl.setup_sheet(ws, freeze=None, col_a_width=56, landscape=False)
+    ws["A1"] = "DCF"
+    ws["A1"].font = xl.BOLD
+    ws["A2"] = "USD m unless stated"
+    ws["A2"].font = xl.NOTE
+    term = get_column_letter(LAST_COL + 1)  # Sched terminal column
+    cols = ["B", "C", "D", "E", "F", "G"]
+    heads = ["Q4 2026E", "FY2027E", "FY2028E", "FY2029E", "FY2030E", "Terminal"]
+    src = [COL["FY2026"], COL["FY2027"], COL["FY2028"], COL["FY2029"], COL["FY2030"], term]
+    for c, h in zip(cols, heads):
+        ws.column_dimensions[c].width = 11
+        cell = ws[f"{c}5"]
+        cell.value = h
+        cell.font = xl.BOLD
+        cell.alignment = Alignment(horizontal="right")
+        cell.border = xl.THIN_BOTTOM
+    ws["A5"].border = xl.THIN_BOTTOM
+    ws.column_dimensions["H"].width = 60
+    at: dict[str, int] = {}
+    row = 6
+    val, wacc = I["val_date"], w["wacc"]
+
+    def sec(title):
+        nonlocal row
+        row += 1
+        xl.header(ws, row, title, 7)
+        row += 1
+
+    def line(key, label, fs, fmt, note=None, bold=False, inputs=False):
+        """fs: {column: formula}; formulas may use {key} for rows of this sheet."""
+        nonlocal row
+        at[key] = row
+        ws.cell(row=row, column=1, value=label).font = xl.BOLD if bold else xl.BASE
+        for c, f in fs.items():
+            if inputs:
+                xl.put_input(ws, f"{c}{row}", f, fmt)
+            else:
+                xl.put_formula(ws, f"{c}{row}", f, fmt, bold=bold)
+        if note:
+            ws.cell(row=row, column=8, value=note).font = xl.NOTE
+        row += 1
+
+    sec("Free cash flow to the firm")
+    line("n", "Years after FY2026", {c: i + 1 for i, c in enumerate(cols[1:5])}, "0", inputs=True)
+    line("frac", "Share of FY2026E after the balance sheet date",
+         {"B": f"=({I['fy_end']}-{I['bs_date']})/365"}, xl.FMT_PCT, "Q4 stub: 1 Oct to 31 Dec")
+    fcff = {"B": f"=Sched!{src[0]}{s['fcff']}*B{{frac}}"}
+    fcff.update({c: f"=Sched!{sc}{s['fcff']}" for c, sc in zip(cols[1:], src[1:])})
+    line("fcff", "FCFF", fcff, xl.FMT_NUM, "Sched; Q4 = FY2026E x stub share (no seasonality)", bold=True)
+
+    sec("Discounting from the valuation date")
+    line("wacc", "WACC", {"B": f'=IF({wacc}="","",{wacc})'}, "0.00%", "WACC sheet")
+    line("tm", "Years to mid-period",
+         {"B": f'=IF({val}="","",(({I["bs_date"]}+{I["fy_end"]})/2-{val})/365)',
+          **{c: f'=IF({val}="","",({I["fy_end"]}-{val})/365+{c}{{n}}-0.5)' for c in cols[1:5]}}, "0.00")
+    line("dfm", "Discount factor, mid-period",
+         {c: f'=IF(OR({c}{{tm}}="",$B{{wacc}}=""),"",1/(1+$B{{wacc}})^{c}{{tm}})' for c in cols[:5]}, "0.0000")
+    line("pv", "PV of FCFF", {c: f'=IF({c}{{dfm}}="","",{c}{{fcff}}*{c}{{dfm}})' for c in cols[:5]}, xl.FMT_NUM)
+    line("te", "Years to end of FY2030E",
+         {"F": f'=IF({val}="","",({I["fy_end"]}-{val})/365+F{{n}})'}, "0.00")
+    line("dfe", "Discount factor, end of FY2030E",
+         {"F": '=IF(OR(F{te}="",$B{wacc}=""),"",1/(1+$B{wacc})^F{te})'}, "0.0000")
+
+    sec("Terminal value: Gordon growth (main method)")
+    line("g", "Long-run growth", {"B": f"={I['gLR']}"}, xl.FMT_PCT)
+    # FCFF/(WACC - g) values the FY2031E+ flows one year before the first one, i.e. at mid-FY2030E
+    line("tvg", "Value at mid-FY2030E of FCFF from FY2031E", {"B": '=IF($B{wacc}="","",G{fcff}/($B{wacc}-B{g}))'},
+         xl.FMT_NUM, "Terminal FCFF / (WACC - g); first flow is mid-FY2031E")
+    line("pvg", "PV of terminal value", {"B": '=IF(B{tvg}="","",B{tvg}*F{dfm})'}, xl.FMT_NUM,
+         "Discounted with the FY2030E mid-period factor")
+    line("tvg_e", "Same value at end of FY2030E", {"B": '=IF(B{pvg}="","",B{pvg}/F{dfe})'}, xl.FMT_NUM,
+         "For the cross-check against the exit multiple")
+
+    sec("Terminal value: exit multiple (cross-check)")
+    line("wm", "Value weight, Materials", {"B": f"={w['w_m']}"}, xl.FMT_PCT, "WACC sheet, as for the beta")
+    line("evm", "EV/EBITDA, value-weighted",
+         {"B": f"=1/((1-B{{wm}})/{I['evm_ec']}+B{{wm}}/{I['evm_cs']})"}, "0.00x",
+         "Harmonic mean: value weights apply to EBITDA / EV, not to EV / EBITDA")
+    line("ebitda", "FY2030E EBITDA", {"B": f"=Sched!{src[4]}{s['ebitda']}"}, xl.FMT_NUM,
+         "Operating income + D&A, after SBC and lease costs, as in Damodaran")
+    line("lease", "FY2030E lease liabilities", {"B": f"=Sched!{src[4]}{s['rev']}*{I['lease_pct']}"}, xl.FMT_NUM,
+         "Damodaran's EV includes lease debt; my FCFF keeps lease costs in")
+    line("tvx", "Terminal value at end of FY2030E, excl. leases", {"B": "=B{evm}*B{ebitda}-B{lease}"}, xl.FMT_NUM)
+    line("pvx", "PV of terminal value", {"B": '=IF(F{dfe}="","",B{tvx}*F{dfe})'}, xl.FMT_NUM)
+
+    sec("Cross-check between the two methods")
+    line("evm_g", "EV/EBITDA implied by the Gordon value", {"B": '=IF(B{tvg_e}="","",(B{tvg_e}+B{lease})/B{ebitda})'},
+         "0.00x", "Leases added back so it compares with Damodaran's multiple")
+    line("evm_x", "EV/EBITDA used for the exit multiple", {"B": "=B{evm}"}, "0.00x")
+    # Terminal FCFF = NOPAT(FY2030E) x (1 + g) x (1 - g / RONIC), so V x (WACC - g) = that is a
+    # quadratic in g. The smaller root is the growth rate; the larger one is far above WACC.
+    qa, nop = f"Sched!{src[4]}{s['nopat']}", I["ronic"]
+
+    def implied_g(v):
+        a, b = f"{qa}/{nop}", f"-({v}+{qa}-{qa}/{nop})"
+        c = f"({v}*$B{{wacc}}-{qa})"
+        return f"(-{b}-SQRT(({b})^2-4*{a}*{c}))/(2*{a})"
+    line("g_g", "Long-run growth implied by the Gordon value", {"B": '=IF(B{tvg}="","",' + implied_g("B{tvg}") + ")"},
+         "0.00%", "Should equal the long-run growth input (check row)")
+    line("g_x", "Long-run growth implied by the exit multiple",
+         {"B": '=IF(B{pvx}="","",' + implied_g("(B{pvx}/F{dfm})") + ")"}, "0.00%",
+         "Same terminal reinvestment rule: g / RONIC of NOPAT")
+
+    sec("Enterprise value to equity value")
+    for c, h in (("B", "Gordon"), ("C", "Exit mult.")):
+        ws[f"{c}{row}"] = h
+        ws[f"{c}{row}"].font = xl.BOLD
+        ws[f"{c}{row}"].alignment = Alignment(horizontal="right")
+    row += 1
+    both = lambda f: {"B": f.replace("#", "B"), "C": f.replace("#", "C")}
+    line("pvf", "PV of FCFF, Q4 2026E to FY2030E", both('=IF($B{dfm}="","",SUM($B{pv}:$F{pv}))'), xl.FMT_NUM)
+    line("pvt", "PV of terminal value", {"B": "=B{pvg}", "C": "=B{pvx}"}, xl.FMT_NUM)
+    line("ev", "Enterprise value", both('=IF(#{pvf}="","",#{pvf}+#{pvt})'), xl.FMT_NUM, bold=True)
+    line("tvs", "Terminal value % of EV", both('=IF(#{ev}="","",#{pvt}/#{ev})'), xl.FMT_PCT)
+    line("cash", "Plus: cash and marketable securities", both(f'=IF({I["cash_q3"]}="","",{I["cash_q3"]})'), xl.FMT_NUM,
+         "30 Sep 2026")
+    line("aff", "Plus: investments in affiliates", both(f'=IF({I["aff_q3"]}="","",{I["aff_q3"]})'), xl.FMT_NUM,
+         "Equity-method income is outside FCFF")
+    line("debt", "Less: debt at market value", both(f'=IF({I["debt_mv"]}="","",-{I["debt_mv"]})'), xl.FMT_NUM,
+         "Convertibles at principal; value above par is in diluted shares")
+    line("nci", "Less: non-controlling interests", both(f'=IF({I["nci_q3"]}="","",-{I["nci_q3"]})'), xl.FMT_NUM,
+         "Book value")
+    parts = ("ev", "cash", "aff", "debt", "nci")
+    line("eq", "Equity value",
+         both("=IF(OR(" + ",".join(f'#{{{k}}}=""' for k in parts) + '),"",' + "+".join(f"#{{{k}}}" for k in parts) + ")"),
+         xl.FMT_NUM, bold=True)
+    line("sh", "Diluted shares (m)", both(f'=IF({I["shares"]}="","",{I["shares"]})'), "0.0")
+    line("vps", "Value per share (USD)", both('=IF(OR(#{eq}="",#{sh}=""),"",#{eq}/#{sh})'), "0.00", bold=True)
+    line("px", "Share price (USD)", both(f'=IF({I["price"]}="","",{I["price"]})'), "0.00", "Close on the valuation date")
+    line("up", "Upside / (downside)", both('=IF(OR(#{vps}="",#{px}=""),"",#{vps}/#{px}-1)'), xl.FMT_PCT)
+
+    for r_ in range(1, row):
+        for c in cols:
+            cell = ws[f"{c}{r_}"]
+            if isinstance(cell.value, str) and "{" in cell.value:
+                cell.value = cell.value.format(**at)
+
+    ws["A3"] = "Check: growth implied by the Gordon value - long-run growth (0 = OK)"
+    ws["A3"].font = xl.BOLD
+    xl.put_formula(ws, "B3", f'=IF(B{at["g_g"]}="","pending",ROUND(B{at["g_g"]}-B{at["g"]},6))', xl.FMT_PCT)
     return ws
 
 
@@ -439,10 +618,10 @@ def build() -> Path:
     lines = [
         ("Granite Construction (NYSE: GVA): three-statement model and DCF", xl.BOLD),
         ("Ali Asgarov", xl.BASE),
-        (f"Draft, {date.today():%d %b %Y}. Forecast and valuation not yet built.", xl.BASE),
+        (f"Draft, {date.today():%d %b %Y}. Valuation inputs pending the Q3 2026 10-Q (29 Oct 2026).", xl.BASE),
         ("", xl.BASE),
         ("Sources: Granite 10-K and 10-Q filings (SEC EDGAR, inline XBRL); Damodaran datasets (Jan 2026);", xl.NOTE),
-        ("FRED series DGS10. Full list with accession numbers in data/SOURCES.md.", xl.NOTE),
+        ("FRED (DGS10, FOMC projections). Full list with accession numbers in data/SOURCES.md.", xl.NOTE),
         ("Blue = hard-coded input or reported figure. Black = formula. USD m unless stated.", xl.NOTE),
     ]
     for i, (text, font) in enumerate(lines, start=1):
@@ -607,8 +786,52 @@ def build() -> Path:
            "Q3 10-Q: shares outstanding + dilution incl. 2030 convertibles above par; memo s.9", "PENDING")
     scalar("debt_mv", "Debt at market value (USD m)", None, xl.FMT_NUM,
            "Q3 10-Q debt note: senior notes and convertibles' debt component at market, term loan at book", "PENDING")
+    scalar("kd_basis", "Cost of debt basis (1 = bond yield, 2 = synthetic rating)", 1, "0",
+           "Base case 1 (FINRA yield); 2 is the fallback and cross-check; memo s.9")
+    scalar("mcap_cut", "Synthetic rating: large-firm table above market cap of", 5000, xl.FMT_NUM,
+           "Damodaran ratings.xls: large-firm table for market cap above USD 5bn")
+    placeholder("cov_ebit", "Synthetic rating: EBIT", "INTERIM: FY2025 operating income; LTM to Sep 2026 after Q3")
+    placeholder("cov_int", "Synthetic rating: interest expense", "INTERIM: FY2025 interest expense; LTM to Sep 2026 after Q3")
     placeholder("ronic", "Terminal RONIC, base (FY2022-25 average ROIC)",
                 "EBIT after 25% tax / average invested capital; sensitivities WACC and 13%; memo s.8")
+
+    section("Valuation (DCF)")
+    scalar("fy_end", "End of FY2026", datetime(2026, 12, 31), "dd mmm yyyy", "Granite's fiscal year ends 31 Dec")
+    scalar("bs_date", "Balance sheet date", datetime(2026, 9, 30), "dd mmm yyyy",
+           "Q3 2026 10-Q; FCFF from 1 Oct onwards is valued; memo s.1")
+    scalar("val_date", "Valuation date", None, "dd mmm yyyy", "10-Q filing date (expected 29 Oct 2026)", "PENDING")
+    scalar("cash_q3", "Cash and marketable securities, 30 Sep 2026", None, xl.FMT_NUM,
+           "Q3 10-Q balance sheet: cash + current and long-term marketable securities", "PENDING")
+    scalar("aff_q3", "Investments in affiliates, 30 Sep 2026", None, xl.FMT_NUM,
+           "Q3 10-Q; equity-method income is outside FCFF, so the investment is added at book", "PENDING")
+    scalar("nci_q3", "Non-controlling interests, 30 Sep 2026", None, xl.FMT_NUM,
+           "Q3 10-Q, at book value", "PENDING")
+    scalar("evm_ec", "EV/EBITDA, Eng./Construction", round(dam["evm_ec"], 4), "0.00x",
+           "Damodaran vebitda.xls (5 Jan 2026), positive-EBITDA firms; EV includes lease debt")
+    scalar("evm_cs", "EV/EBITDA, Construction Supplies", round(dam["evm_cs"], 4), "0.00x",
+           "Damodaran vebitda.xls (5 Jan 2026), positive-EBITDA firms; EV includes lease debt")
+    scalar("lease25", "Operating lease liabilities, 31 Dec 2025", round(lease_liability(facts), 3), xl.FMT_NUM,
+           "FY2025 10-K, us-gaap:OperatingLeaseLiability (current + non-current)")
+    placeholder("lease_pct", "Lease liabilities % revenue", "FY2025; scales lease debt to FY2030E for the exit multiple")
+
+    section("Synthetic rating table (Damodaran ratings.xls)")
+    inp.cell(row=r, column=1, value="Rating").font = xl.BOLD
+    for col, text in ((2, "Large: cover >"), (3, "Small: cover >"), (4, "Spread")):
+        c = inp.cell(row=r, column=col, value=text)
+        c.font = xl.BOLD
+        c.alignment = Alignment(horizontal="right")
+    inp.cell(row=r, column=note_col, value="Interest coverage lower bounds; spread over the 10y Treasury").font = xl.NOTE
+    r += 1
+    rt = rating_table()
+    for i, t in enumerate(rt.itertuples()):
+        inp.cell(row=r + i, column=1, value=t.rating).font = xl.INPUT
+        xl.put_input(inp, f"B{r + i}", t.large, "0.00")
+        xl.put_input(inp, f"C{r + i}", t.small, "0.00")
+        xl.put_input(inp, f"D{r + i}", round(t.spread, 6), "0.00%")
+    last = r + len(rt) - 1
+    for k, col in (("rt_rating", "A"), ("rt_large", "B"), ("rt_small", "C"), ("rt_spread", "D")):
+        I[k] = f"Inputs!${col}${r}:${col}${last}"
+    r = last + 1
 
     # statements
     sheets = {}
@@ -728,6 +951,9 @@ def build() -> Path:
             f"-IS!{COL[y]}{is_at['Non-controlling interests']}/IS!{COL[y]}{is_at['Pre-tax income']}"
             for y in ("FY2024", "FY2025")) + ")", xl.FMT_PCT),
         "g_nom": (f"=(1+{I['g_real']})*(1+{I['g_infl']})-1", "0.00%"),
+        "cov_ebit": (f"=IS!{f25}{is_at['Operating income']}", xl.FMT_NUM),
+        "cov_int": (f"=-IS!{f25}{is_at['Interest expense']}", xl.FMT_NUM),
+        "lease_pct": (f"={I['lease25']}/IS!{f25}{rev}", "0.00%"),
         "ronic": ("=AVERAGE(" + ",".join(
             f"IS!{COL[y]}{is_at['Operating income']}*(1-{I['tax']})/(({ic(COL[y])}+{ic(COL[HIST[HIST.index(y) - 1]])})/2)"
             for y in yrs) + ")", xl.FMT_PCT),
@@ -741,19 +967,20 @@ def build() -> Path:
     for key, (formula, fmt) in fills.items():
         xl.put_formula(inp, f"B{later[key]}", formula, fmt)
 
-    sched_ws, _ = build_sched(wb, I, is_at, bs_at)
-    wacc_ws = build_wacc(wb, I, is_at)
+    sched_ws, s_at = build_sched(wb, I, is_at, bs_at)
+    wacc_ws, w_at = build_wacc(wb, I, is_at)
+    dcf_ws = build_dcf(wb, I, s_at, w_at)
 
     # Print areas end in a narrow empty spacer column: the PDF printer clips the last
     # column at its hard margin, and this way it clips the spacer, not FY2030E.
     for ws, last in ((is_ws, LAST_COL), (bs_ws, LAST_COL), (cf_ws, LAST_COL), (inp, note_col),
-                     (sched_ws, LAST_COL + 1), (wacc_ws, 2)):
+                     (sched_ws, LAST_COL + 1), (wacc_ws, 3), (dcf_ws, 8)):
         spacer = get_column_letter(last + 1)
         ws.column_dimensions[spacer].width = 3
         ws.print_area = f"A1:{spacer}{ws.max_row}"
         # a fixed scale prints more reliably than Excel's fit-to-width, which left
         # FY2030E half off the page in the PDF export
-        if ws in (inp, wacc_ws):
+        if ws in (inp, wacc_ws, dcf_ws):
             ws.page_setup.fitToHeight = 1  # fit-to-page works here and keeps it on one sheet
         else:
             ws.sheet_properties.pageSetUpPr.fitToPage = False
@@ -791,6 +1018,9 @@ def check(path: Path) -> None:
     g_check = wb["WACC"]["B3"].value
     assert g_check in ("pending", 0), f"terminal growth is not below the risk-free rate ({g_check})"
     print(f"WACC check (terminal growth < risk-free rate): {g_check}")
+    d_check = wb["DCF"]["B3"].value
+    assert d_check in ("pending", 0), f"implied growth does not match the long-run growth input ({d_check})"
+    print(f"DCF check (Gordon value implies the long-run growth input): {d_check}")
 
 
 def main() -> None:

@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 (cost of capital) is built; the risk-free rate, cost of debt, share price, diluted shares and debt are pending until the valuation date.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026), to be re-checked against the Q3 2026 results on 29 Oct. The FY2027 growth anchor on backlog (section 5) is agreed; its numbers are final after Q3. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Section 9 (cost of capital) and section 10 (DCF) are built; the risk-free rate, cost of debt, share price, diluted shares, debt, cash and the valuation date are pending until the Q3 10-Q.
 
 ## 1. Valuation date and balance sheet
 
@@ -310,7 +310,44 @@ Materials revenue here is external revenue only. The USD 275m of materials Grani
 
 **Cost of debt**
 - Main estimate: the market yield on Granite's 6.375% senior notes due 2034 on the valuation date, from FINRA's TRACE bond data. FINRA's bond search only runs in a browser, so I read the yield there and enter it by hand, with the date and the trade in the source note. At 30 Jun 2026 the notes had a fair value of USD 611.3m against USD 600m principal (Q2 10-Q, Note 9), which points to a yield a bit below the coupon.
-- Cross-check: a synthetic rating from interest coverage, using Damodaran's `ratings.xls`.
+- Fallback and cross-check: a synthetic rating from interest coverage, using Damodaran's `ratings.xls`. Coverage is EBIT / interest expense. Damodaran has one table for firms above USD 5bn market cap and a stricter one for smaller firms, and the WACC sheet picks the table from Granite's equity value on the valuation date. The synthetic cost of debt is the risk-free rate plus the default spread for that rating. An input switch (1 = bond yield, 2 = synthetic) sets which one goes into the WACC; the base case is the bond yield.
+- For now coverage uses FY2025 (operating income USD 282.4m / interest expense USD 47.2m = 6.0x). That understates the current interest bill: H1 2026 interest expense was already USD 38.1m (Q2 10-Q). At Q3 I switch to the last twelve months to September 2026, which will give lower coverage.
 - The convertible notes count as debt at their debt component. The option part goes into the diluted share count, not the cost of debt.
 
 **Capital structure weights: Granite's own market values on the valuation date.** Equity = share price × diluted shares. Debt = senior notes and the convertibles' debt component at market value, plus the term loan at book value (it's floating-rate, swapped to fixed, so book is close to market). Lease liabilities are left out because lease costs stay in operating costs and so in FCFF; including them would count them twice. All of these come from the Q3 10-Q.
+
+## 10. DCF and terminal value
+
+The calculation is on the DCF sheet. Everything that needs a valuation-date input stays blank until the Q3 10-Q.
+
+**Timing.** The balance sheet is at 30 Sep 2026, so the DCF values FCFF from 1 Oct onwards: a Q4 2026 stub, then FY2027E to FY2030E. Cash flows are discounted from the valuation date (the 10-Q filing date) with a mid-year convention: the stub at the middle of Q4, each full year at its midpoint.
+
+**Q4 stub = FY2026E FCFF × 25.2% (92/365 days).** This ignores seasonality. Granite's operating cash flow comes mostly in the second half: in FY2025 it was USD 5.4m in H1 out of USD 468.9m for the year (Q2 2025 10-Q, FY2025 10-K). So a straight share probably understates Q4. The alternative is FY2026E FCFF minus 9M 2026 actual FCFF from the 10-Q. That needs the 9M cash flow rebuilt on the same basis as the model (with SBC as a cost and interest taken out), which I can do at Q3. <!-- ALI: keep the straight share, or switch to FY2026E minus 9M actual at Q3? -->
+
+**Terminal value, main method: Gordon growth.** TV = terminal FCFF / (WACC − g), with g = 4% and terminal FCFF = FY2030E NOPAT × 1.04 × (1 − g / RONIC) (section 8). The formula values the FY2031E+ cash flows one year before the first of them. With mid-year timing the first one lands in mid-2031, so the value sits at mid-2030 and I discount it with the FY2030E mid-year factor. Applying the end-of-year factor instead would understate the value by about half a year of discounting.
+
+**Exit multiple, cross-check only.** Today's multiples price today's growth, and the industry is growing well above 4% now, so a multiple applied in 2030 would assume that growth continues indefinitely. I use it to test the Gordon value, not to replace it.
+- Multiple: Damodaran's EV/EBITDA (`vebitda.xls`, Jan 2026, positive-EBITDA firms): 17.18x for Engineering/Construction and 16.82x for Construction Supplies. Weighted by segment value as for the beta (28.2% Materials), this gives 17.08x.
+- Weighting: value weights apply to EBITDA/EV, not EV/EBITDA, so the combined multiple is the value-weighted harmonic mean. With two multiples this close the difference is tiny, but the arithmetic mean would be wrong in general.
+- EBITDA definition: Damodaran defines EBITDA as operating income plus D&A, and his EV as market cap + total debt − cash. My FY2030E EBITDA is built the same way: reported-style operating income (after SBC, other costs and gains on equipment sales) plus depreciation and amortisation. It's a trailing figure, as his is, so the multiple goes on FY2030E EBITDA for the value at the end of FY2030.
+- Leases: Damodaran counts lease commitments as debt in his datasets (his 2020 data update on debt). So his multiple gives an EV that includes leases, while my FCFF keeps lease costs in operating costs and leaves leases out of debt. I subtract FY2030E lease liabilities (3.6% of revenue, the FY2025 level from the 10-K) from the multiple-based value so the two methods measure the same thing. One caveat: his lease debt is his own estimate from lease commitments, and he says it runs about 60% above the accounting figure in aggregate. I can't rebuild his number for the industry, so I use Granite's accounting liability. At about USD 250m against a terminal value of about USD 11bn, this line moves the exit-multiple value by roughly 2%.
+- I couldn't confirm from his documentation whether his operating income adds back lease expense. If it does, the multiple applies to EBITDA plus rent, which for Granite is about USD 36m a year (FY2025 operating lease expense). That would raise the exit-multiple value by about 5-6%. It doesn't change the main valuation.
+
+**Cross-check table.** It shows two things:
+- the EV/EBITDA implied by the Gordon value, with leases added back so it compares with Damodaran's multiple;
+- the long-run growth rate implied by the exit multiple.
+
+The implied growth uses the same terminal rule as the model, FCFF = NOPAT × (1 + g) × (1 − g / RONIC). Setting value × (WACC − g) equal to that gives a quadratic in g; the smaller root is the answer. Holding FY2030E's reinvestment fixed instead would ignore that faster growth needs more reinvestment. The check row at the top of the sheet runs the same formula on the Gordon value and must return exactly 4.0%.
+
+**Equity bridge (30 Sep 2026 balances).** Enterprise value
++ cash and marketable securities
++ investments in affiliates (their income is outside FCFF)
+− debt at market value (the same figure as in the WACC; convertibles at principal, with the value above par in diluted shares)
+− non-controlling interests at book value
+= equity value, divided by diluted shares.
+
+Equity in construction joint ventures is not added: that income is in revenue and gross profit, so it's already in FCFF. Before finalising I'll re-check the convertible treatment against the settlement terms in the Q3 10-Q.
+
+A small timing gap remains: balances are at 30 Sep and discounting starts at the filing date about a month later. I leave it, because rolling the balance sheet forward a month would mean estimating October cash flows.
+
+Sensitivity tables (WACC × g and WACC × exit multiple) come next, on a separate sheet.

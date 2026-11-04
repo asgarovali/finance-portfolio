@@ -88,13 +88,14 @@ Downloaded by `src/data/download_market.py` on 2026-10-22. Damodaran's data is f
 |---|---|---|---|
 | `raw/damodaran/betas.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/betas.xls | US industry betas, unlevered and cash-corrected | "Date updated" 2026-01-05 |
 | `raw/damodaran/histimpl.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/histimpl.xls | implied ERP by year | latest row: 2025 (start of 2026), 4.23% |
-| `raw/damodaran/ratings.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/ratings.xls | interest coverage to rating to default spread | |
+| `raw/damodaran/ratings.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/ratings.xls | interest coverage to rating to default spread (large-firm and smaller-firm tables, rows 19-33 and 38-52 of the first sheet) | no date in the file; downloaded 2026-10-22 |
 | `raw/damodaran/indname.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/indname.xls | companies in each industry | 22 MB, not committed; re-download with the script |
 | `raw/fred/fred_DGS10.json` | FRED API, series DGS10 (10-year Treasury constant maturity) | daily yields | last observation 2026-10-20: 5.12% |
 | `raw/damodaran/psdata.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/psdata.xls | price and EV to sales by industry (segment value weights) | "Date updated" 2026-01-05; downloaded 2026-10-23 |
 | `raw/damodaran/ERPbymonth.xlsx` | https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx | implied ERP at the start of each month since Sep 2008 | latest row: 1 Oct 2026, 4.20% (T12m with sustainable payout); downloaded 2026-10-23 |
 | `raw/fred/fred_GDPC1MDLR.json` | FRED API, series GDPC1MDLR (FOMC longer-run real GDP growth, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
 | `raw/fred/fred_PCECTPIMDLR.json` | FRED API, series PCECTPIMDLR (FOMC longer-run PCE inflation, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
+| `raw/damodaran/vebitda.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitda.xls | EV/EBITDA and EV/EBIT by industry (exit-multiple cross-check); EV = market cap + total debt - cash | "Date updated" 2026-01-05; downloaded 2026-10-23 |
 
 Still to come at the valuation date: DGS10 on the 10-Q filing date (refreshed with the same script), and the market yield on the 6.375% 2034 notes from FINRA TRACE (https://www.finra.org/finra-data/fixed-income). FINRA's bond-level data is only available through its browser search, so that yield is read there by hand and recorded here with the date, CUSIP and trade.
 
@@ -124,3 +125,5 @@ Files in `raw/policy/`:
 ## Valuation date
 
 Balance sheet at 30 Sep 2026 from the Q3 2026 10-Q, and share price at the close on the day that 10-Q is filed on EDGAR (expected 29 Oct 2026).
+
+Definitions used to match the exit multiple: Damodaran's variable definitions page (https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/variable.htm), where EBITDA is operating income plus D&A, and his post "Data Update 7 for 2020: Debt Delusions and Reality" (https://aswathdamodaran.blogspot.com/2020/03/data-update-7-for-2020-debt-delusions.html), which says lease commitments are counted as debt in his data. Operating lease liabilities at 31 Dec 2025 (USD 158.5m) are the XBRL tag us-gaap:OperatingLeaseLiability in the FY2025 10-K.

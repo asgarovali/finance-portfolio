@@ -22,6 +22,7 @@ DAMODARAN_FILES = {
     "ratings": "synthetic ratings: interest coverage to rating to default spread",
     "indname": "list of companies in each industry",
     "psdata": "price and enterprise value to sales by industry (segment value weights)",
+    "vebitda": "EV/EBITDA and EV/EBIT by industry (exit multiple)",
 }
 # monthly implied ERP, start of each month since Sep 2008
 ERP_MONTHLY_URL = "https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx"
