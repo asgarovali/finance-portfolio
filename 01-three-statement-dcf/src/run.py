@@ -5,6 +5,8 @@ Later steps get added here as they're built.
 from src.analysis import history, reconcile
 from src.data import clean_statements, download_market, download_policy, download_sec, extract_cap
 from src.model import build_excel
+from src.report import summary
+from src.viz import charts
 
 
 def main() -> None:
@@ -16,6 +18,8 @@ def main() -> None:
     reconcile.main()
     history.main()
     build_excel.main()  # needs Excel installed for the recalculation
+    charts.main()
+    summary.main()
 
 
 if __name__ == "__main__":
