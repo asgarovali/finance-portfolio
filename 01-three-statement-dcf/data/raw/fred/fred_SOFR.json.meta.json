@@ -1,0 +1,8 @@
+{
+  "url": "https://api.stlouisfed.org/fred/series/observations",
+  "params": {
+    "series_id": "SOFR",
+    "file_type": "json"
+  },
+  "retrieved_utc": "2026-11-04 14:40:07"
+}

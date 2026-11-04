@@ -444,7 +444,7 @@ At the base WACC (8.93%), long-run growth from 3.0% to 4.5% moves the value only
 
 WACC matters more than growth: 7.93% gives USD 78.43 and 9.93% gives USD 45.64, both at 4% growth.
 
-**Interpretation.** My base case gives about $59 per share, well below the $121.69 price on 29 Oct. The reverse DCF shows why: the price is roughly what you get if Granite hits the middle of its 2029 targets (about 11% organic growth and a 15% adjusted EBITDA margin) and then slows to 4%. That needs a gross margin of about 18-19%, above anything Granite reported in FY2021-25 (10.4-16.1%). So the gap is mostly a question of whether management delivers its margin targets. The record backlog supports the growth part. Granite's history of optimistic project forecasts, and the open question on federal highway funding, make me cautious about the margin part. I read the current price as leaving little room for error rather than as clearly wrong.
+**Interpretation.** My base case gives about USD 59 per share, well below the USD 121.69 price on 29 Oct. The reverse DCF shows why: the price is roughly what you get if Granite hits the middle of its 2029 targets (about 11% organic growth and a 15% adjusted EBITDA margin) and then slows to 4%. That needs a gross margin of about 18-19%, above anything Granite reported in FY2021-25 (10.4-16.1%). So the gap is mostly a question of whether management delivers its margin targets. The record backlog supports the growth part. Granite's history of optimistic project forecasts, and the open question on federal highway funding, make me cautious about the margin part. I read the current price as leaving little room for error rather than as clearly wrong.
 
 ## 12. What the share price implies (4 Nov 2026)
 
@@ -532,3 +532,47 @@ Materials is under a quarter of profit, and terminal reinvestment is only part o
 - **Management's 2029 targets stay as scenarios**, not in the base case.
 - **FY2026E Q4 uses the Q4 2025 gross margin pattern** instead of the 9M margin, consistent with the seasonal stub (section 6).
 
+## 13. Forecast statements and debt schedule (built 4 Nov 2026)
+
+The IS, BS and CF sheets now run to FY2030E, with the debt schedule at the bottom of Sched. The operating lines come straight from Sched, so FCFF and the DCF don't change: the value per share is still USD 58.72. The statements add what the DCF doesn't need, which is interest, tax on actual pre-tax income, NCI, net income, EPS, cash and debt.
+
+**How FY2026E is built.** Each statement has a "9M 2026A" column with the Q3 10-Q actuals. FY2026E = 9M actual + a forecast Q4:
+- The FY2026E balance sheet rolls forward from the actual 30 Sep 2026 balance sheet. Later years roll forward from the year before.
+- FY2026E net income includes the actual 9M charges from settling the 3.75% convertibles: USD 260.9m loss on the conversion derivative and USD 273.7m non-cash interest. That's why FY2026E shows a loss.
+
+**What moves and what is held.**
+- **Working capital** (receivables, contract assets, inventories, payables, contract liabilities, accrued liabilities) comes from Sched. On the cash flow statement, contract liabilities are shown inside "Change in accrued and other liabilities".
+- **PP&E** = opening + capex − depreciation − book value of equipment sold. **Intangibles** fall by Granite's amortisation schedule.
+- **Equity:** APIC grows with SBC (USD 48m in FY2026, from guidance, then the same share of revenue). Retained earnings grow with net income less dividends (USD 0.13 a quarter, held flat). No buybacks.
+- **NCI** is held at its 30 Sep balance: the JV partners take their share of profit out each year.
+- **Everything else** is held at 30 Sep 2026 values: marketable securities, equity in construction JVs, goodwill, leases, deferred tax and other assets and liabilities.
+- **Cash** comes only from the cash flow statement. So the balance check (assets − liabilities and equity = 0, every year) is a real test of the links, not a plug.
+
+**Debt schedule (Q3 10-Q, Note 14 and the derivatives note).**
+
+| Instrument | 30 Sep 2026 | Terms in the model |
+|---|---|---|
+| Term loan | 600.0 | Amortises 2.5% a year from Q4 2026, 5% from Q4 2027; the balance is repaid at maturity (5 Aug 2030). Interest: USD 350m swapped to 3.218% until Jan 2029 (treated as ending with FY2028), the rest at SOFR 3.94% (29 Oct, held flat), plus a 1.625% margin (midpoint of the 1.25-2.0% grid) |
+| 3.25% convertibles | 373.75 | 3.25% coupon; principal repaid in cash at maturity (15 Jun 2030) |
+| 6.375% senior notes | 600.0 | 6.375%; due 2034, after the forecast |
+| Revolver (USD 600m) | 0 | Draws only if cash falls below USD 149.7m. That's the cash held by consolidated construction JVs at 30 Sep, which isn't freely available to Granite. Interest at SOFR + margin on the opening balance |
+
+The term loan and convertibles use average balances; the revolver and interest income use opening balances, so the workbook has no circular references. Interest income is the FY2025 yield (4.35%) on opening cash and marketable securities. Unamortised issuance costs (USD 17.7m) are held flat.
+
+I assume maturities are repaid from cash, not refinanced. That's the simpler choice, and the model can afford it: the USD 891m due in FY2030E is paid from cash built up over four years. Cash falls to USD 339m but stays above the minimum, and the revolver is never drawn. I checked the revolver logic separately by raising the minimum cash to USD 1bn: it draws, the balance sheet still balances and the DCF doesn't move. The build also fails if the revolver would ever exceed its USD 600m size.
+
+**Results (USD m).**
+
+| | FY2025A | FY2026E | FY2027E | FY2028E | FY2029E | FY2030E |
+|---|---|---|---|---|---|---|
+| Operating income | 282 | 364 | 365 | 392 | 414 | 430 |
+| Interest expense | -47 | -350 | -81 | -79 | -80 | -59 |
+| Net income to Granite | 193 | -292 | 228 | 252 | 272 | 304 |
+| Diluted EPS (USD) | 3.86 | -6.53 | 5.10 | 5.64 | 6.09 | 6.81 |
+| Cash from operations | 469 | 436 | 483 | 521 | 555 | 600 |
+| Cash | 529 | 463 | 588 | 745 | 943 | 339 |
+| Debt (book) | 1,339 | 1,552 | 1,534 | 1,504 | 1,474 | 582 |
+
+EPS uses the 44.70m diluted shares from the valuation date, held flat. At the share price of USD 121.69, FY2027E EPS of USD 5.10 is a P/E of about 24x.
+
+**One difference from the DCF stub.** The statements measure Q4 2026 from the 30 Sep balance sheet: the working-capital build is USD 38m. The DCF stub measures it as FY2026E less the 9M cash flow lines: USD 19m. They differ because some balance-sheet movements weren't cash flows, such as working capital that came with the 2026 acquisitions. The gap is about USD 0.43 a share, so I've left the agreed stub as it is.

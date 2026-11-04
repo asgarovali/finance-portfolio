@@ -34,8 +34,8 @@ DAMODARAN_FILES = {
 # monthly implied ERP, start of each month since Sep 2008
 ERP_MONTHLY_URL = "https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx"
 # DGS10: 10-year Treasury yield. GDPC1MDLR / PCECTPIMDLR: FOMC median longer-run
-# projections of real GDP growth and PCE inflation (source for long-run growth)
-FRED_SERIES = ["DGS10", "GDPC1MDLR", "PCECTPIMDLR"]
+# projections of real GDP growth and PCE inflation (source for long-run growth). SOFR: term loan and revolver rate
+FRED_SERIES = ["DGS10", "GDPC1MDLR", "PCECTPIMDLR", "SOFR"]
 # daily GVA prices; a fixed window so a re-run gives the same file (52-week range kept for the comps project)
 PRICE_TICKER, PRICE_START, PRICE_END = "GVA", "2025-10-01", "2026-11-04"
 

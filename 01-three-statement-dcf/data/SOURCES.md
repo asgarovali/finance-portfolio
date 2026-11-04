@@ -153,3 +153,12 @@ Definitions used to match the exit multiple: Damodaran's variable definitions pa
 - FY2026 guidance and 2029 targets: Exhibit 99.1.
 
 **Segment returns (memo s.12).** XBRL us-gaap:Assets, us-gaap:OperatingIncomeLoss and us-gaap:Goodwill with the StatementBusinessSegmentsAxis member, from the FY2022-FY2025 10-Ks (segment note).
+
+**Forecast statements and debt schedule (memo s.13).**
+- Term loan amortisation and maturity, the revolver size and the margin grid: Q3 2026 10-Q, Note 14.
+- Swap notional, fixed rate and maturity: Q3 2026 10-Q, derivatives note.
+- Convertible coupon and maturity: Note 14.
+- Dividend of USD 0.13 a quarter: statement of equity.
+- Cash held by consolidated construction JVs, USD 149.7m (used as minimum cash): XBRL CashAndCashEquivalentsAtCarryingValue with the ConsolidatedConstructionCorporateJointVentureMember dimension.
+- Unamortised issuance costs, USD 17.7m: Note 14 debt table.
+- SOFR: FRED series SOFR (`raw/fred/fred_SOFR.json`, downloaded 2026-11-04 by `download_market.py`), value on 29 Oct 2026: 3.94%.

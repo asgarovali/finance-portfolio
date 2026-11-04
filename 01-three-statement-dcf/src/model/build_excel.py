@@ -36,6 +36,8 @@ FIRST_COL = 2  # column B = FY2021
 COL = {p: get_column_letter(FIRST_COL + i) for i, p in enumerate(HIST + FCST)}
 LAST_COL = FIRST_COL + len(HIST) + len(FCST) - 1
 HEADER_ROW, FIRST_ROW = 5, 7
+NINE = "9M 2026"  # actuals from the Q3 10-Q, shown in an extra column on IS, BS and CF
+NINE_COL = get_column_letter(LAST_COL + 1)
 
 VAL_DATE = "2026-10-29"  # Q3 10-Q filing date; memo s.1
 SEP_DATE = "2026-09-16"  # FOMC Summary of Economic Projections used for long-run growth
@@ -146,6 +148,12 @@ def q3_facts() -> dict[str, float]:
         "cv30_price": one("us-gaap:DebtInstrumentConvertibleConversionPrice1", debt + "A3.25ConvertibleNotesMember",
                           end="2024-06-11"),
         "shares_out": one("dei:EntityCommonStockSharesOutstanding", end="2026-10-23") / 1e6,
+        "jv_cash": one("us-gaap:CashAndCashEquivalentsAtCarryingValue",
+                       "us-gaap:RelatedPartyTransactionsByRelatedPartyAxis=gva:ConsolidatedConstructionCorporateJointVentureMember") / 1e6,
+        "iss_cost": (sum(one("us-gaap:LongTermDebt", debt + d) for d in (
+            "A6.375SeniorNotesMember",
+            "A3.25ConvertibleNotesMember;us-gaap:LongtermDebtTypeAxis=us-gaap:ConvertibleDebtMember",
+            "TermLoanMember;us-gaap:LongtermDebtTypeAxis=us-gaap:LineOfCreditMember")) - one("us-gaap:LongTermDebt")) / 1e6,
     }
 
 
@@ -344,6 +352,207 @@ def build_sched(wb, I: dict, is_at: dict, bs_at: dict) -> tuple:
     ws["A3"].font = xl.BOLD
     xl.put_formula(ws, f"{COL['FY2030']}3", f"=ROUND({COL['FY2030']}{at['twcp']}-{I['nwc_target']},6)", xl.FMT_PCT)
     return ws, at
+
+
+def build_forecast(wb, I: dict, is_at: dict, bs_at: dict, cf_at: dict, s: dict) -> None:
+    """Forecast IS, BS and CF for FY2026E-FY2030E plus the debt schedule (added to Sched).
+
+    FY2026E = 9M 2026 actual (column L of each statement) + a forecast Q4. The FY2026E balance
+    sheet rolls forward from the actual 30 Sep 2026 balance sheet; later years roll from the year
+    before. Cash comes only from the cash flow statement, so the BS check is a real test.
+    The operating lines come from Sched, so FCFF and the DCF don't change."""
+    sch = wb["Sched"]
+    fc = [COL[p] for p in FCST]
+    g, L = fc[0], NINE_COL
+    prev = {c: (L if c == g else get_column_letter(FIRST_COL + len(HIST) + i - 1)) for i, c in enumerate(fc)}
+    nxt = {c: (fc[i + 1] if i + 1 < len(fc) else None) for i, c in enumerate(fc)}
+    at: dict[str, int] = {}
+    row = sch.max_row + 2
+
+    def sec(title):
+        nonlocal row
+        xl.header(sch, row, title, LAST_COL + 1)
+        row += 1
+
+    def line(key, label, f, fmt=xl.FMT_NUM, inputs=False, bold=False):
+        nonlocal row
+        at[key] = row
+        sch.cell(row=row, column=1, value=label).font = xl.BOLD if bold else xl.BASE
+        for c in fc:
+            v = f(c)
+            if v is None:
+                continue
+            (xl.put_input(sch, f"{c}{row}", v, fmt) if inputs else xl.put_formula(sch, f"{c}{row}", v, fmt, bold=bold))
+        row += 1
+
+    S = lambda k, c: f"Sched!{c}{s[k]}"      # Sched operating lines
+    # debt schedule lines (same sheet); rows not written yet get a {key} placeholder, filled in below
+    D = lambda k, c: f"Sched!{c}{at[k]}" if k in at else f"Sched!{c}{{{k}}}"
+    B = lambda k, c: f"BS!{c}{bs_at[k]}"
+    C = lambda k, c: f"CF!{c}{cf_at[k]}"
+    IS_ = lambda k, c: f"IS!{c}{is_at[k]}"
+    i = {c: k for k, c in enumerate(fc)}
+
+    sec("Debt, interest and cash (FY2026E column = Q4 2026 only, from the 30 Sep balance sheet)")
+    line("frac", "Share of the year", lambda c: 0.25 if c == g else 1, "0.00", inputs=True)
+    line("q1", "Term loan: quarters at the first amortisation rate", lambda c: [1, 3, 0, 0, 0][i[c]], "0", inputs=True)
+    line("q2", "Term loan: quarters at the second rate", lambda c: [0, 1, 4, 4, 0][i[c]], "0", inputs=True)
+    line("mat", "Maturity year (term loan Aug 2030, convertibles Jun 2030)", lambda c: [0, 0, 0, 0, 1][i[c]], "0", inputs=True)
+    line("swp", "Swap notional in force (matures Jan 2029)", lambda c: f"={I['swap_n']}" if i[c] < 3 else "=0")
+    line("tl_o", "Term loan, opening", lambda c: f"={I['tl']}" if c == g else f"={D('tl_c', prev[c])}")
+    line("tl_r", "Term loan repaid", lambda c: f"=IF({D('mat', c)}=1,{D('tl_o', c)},MIN({D('tl_o', c)},"
+                                                 f"{I['tl']}*({D('q1', c)}*{I['tl_a1']}+{D('q2', c)}*{I['tl_a2']})/4))")
+    line("tl_c", "Term loan, closing", lambda c: f"={D('tl_o', c)}-{D('tl_r', c)}")
+    avg = lambda c: f"({D('tl_o', c)}+{D('tl_c', c)})/2"
+    line("tl_i", "Term loan interest (swapped part at the swap rate)",
+         lambda c: f"=IF({avg(c)}=0,0,(MIN({D('swp', c)},{avg(c)})*{I['swap_r']}+MAX({avg(c)}-{D('swp', c)},0)*{I['sofr']}"
+                   f"+{avg(c)}*{I['margin']})*{D('frac', c)})")
+    line("cv_o", "2030 convertibles, opening", lambda c: f"={I['cv30']}" if c == g else f"={D('cv_c', prev[c])}")
+    line("cv_r", "2030 convertibles repaid (principal in cash)", lambda c: f"=IF({D('mat', c)}=1,{D('cv_o', c)},0)")
+    line("cv_c", "2030 convertibles, closing", lambda c: f"={D('cv_o', c)}-{D('cv_r', c)}")
+    line("cv_i", "Convertible interest", lambda c: f"=({D('cv_o', c)}+{D('cv_c', c)})/2*{I['cv_cpn']}*{D('frac', c)}")
+    line("nt_i", "6.375% notes interest (USD 600m, due 2034)", lambda c: f"={I['nt_par']}*{I['nt_cpn']}*{D('frac', c)}")
+    line("rv_o", "Revolver, opening (undrawn at 30 Sep 2026)", lambda c: "=0" if c == g else f"={D('rv_c', prev[c])}")
+    # cash before any revolver flow: opening cash plus every cash flow except the revolver line
+    # financing rows other than the revolver, summed one by one so Excel sees no circular reference
+    fin = [k for k, r in cf_at.items() if not k.startswith("memo:")
+           and cf_at["Cash from investing"] < r < cf_at["Cash from financing"] and k != "Other debt issued"]
+    line("cash_pre", "Cash before revolver",
+         lambda c: f"={B('Cash and cash equivalents', COL['FY2025'] if c == g else prev[c])}+{C('Cash from operations', c)}"
+                   f"+{C('Cash from investing', c)}+" + "+".join(C(k, c) for k in fin)
+                   + (f"+{C('Other debt issued', L)}" if c == g else ""))
+    line("rv_f", "Revolver draw / (repayment)", lambda c: f"=MAX({I['min_cash']}-{D('cash_pre', c)},-{D('rv_o', c)})")
+    line("rv_c", "Revolver, closing", lambda c: f"={D('rv_o', c)}+{D('rv_f', c)}")
+    line("rv_i", "Revolver interest (on opening balance)", lambda c: f"={D('rv_o', c)}*({I['sofr']}+{I['margin']})*{D('frac', c)}")
+    line("int_x", "Interest expense", lambda c: f"={D('tl_i', c)}+{D('cv_i', c)}+{D('nt_i', c)}+{D('rv_i', c)}", bold=True)
+    cash_sec = lambda c: (f"({B('Cash and cash equivalents', prev[c])}+{B('Marketable securities, current', prev[c])}"
+                          f"+{B('Marketable securities, long-term', prev[c])})")
+    line("int_i", "Interest income (on opening cash and securities)", lambda c: f"={I['yld']}*{cash_sec(c)}*{D('frac', c)}",
+         bold=True)
+    line("sbc", "Stock-based compensation", lambda c: f"={I['sbc_g']}" if c == g
+         else f"={I['sbc_g']}/{I['rev26']}*{S('rev', c)}")
+
+    for r_ in range(at["frac"], row):
+        for c in fc:
+            cell = sch[f"{c}{r_}"]
+            if isinstance(cell.value, str) and "{" in cell.value:
+                cell.value = cell.value.format(**at)
+
+    q4rev = f"({IS_('Revenue', g)}-{IS_('Revenue', L)})"
+    put = lambda ws, ref, v: xl.put_formula(ws, ref, v, xl.FMT_NUM)
+
+    # ---- income statement
+    isw = wb["IS"]
+    from_sched = {"Revenue": "rev", "Cost of revenue": "cogs", "SG&A": "sga", "Other costs, net": "oc",
+                  "Gain on sale of PP&E": "gain"}
+    pretax_q4 = f"({IS_('Pre-tax income', g)}-{IS_('Pre-tax income', L)})"
+    for label, r in is_at.items():
+        if label.startswith("memo:") or str(isw[f"{g}{r}"].value or "").startswith("="):
+            continue
+        for c in fc:
+            if label in from_sched:
+                f = f"={S(from_sched[label], c)}"
+            elif label == "Interest income":
+                f = f"={IS_(label, L)}+{D('int_i', c)}" if c == g else f"={D('int_i', c)}"
+            elif label == "Interest expense":
+                f = f"={IS_(label, L)}-{D('int_x', c)}" if c == g else f"=-{D('int_x', c)}"
+            elif label == "Equity income of affiliates":
+                f = f"={IS_(label, L)}+{q4rev}*{I['aff']}" if c == g else f"={S('aff', c)}"
+            elif label == "Other income, net":
+                f = f"={IS_(label, L)}+{q4rev}*{I['oth']}" if c == g else f"={S('oth', c)}"
+            elif label == "Income tax":
+                f = f"={IS_(label, L)}-{I['tax']}*{pretax_q4}" if c == g else f"=-{I['tax']}*{IS_('Pre-tax income', c)}"
+            elif label == "Non-controlling interests":
+                f = f"={IS_(label, L)}-{I['nci']}*{pretax_q4}" if c == g else f"=-{I['nci']}*{IS_('Pre-tax income', c)}"
+            else:  # one-off lines (convertible losses, impairments): 9M actual only
+                f = f"={IS_(label, L)}" if c == g else "=0"
+            put(isw, f"{c}{r}", f)
+
+    # ---- balance sheet
+    bsw = wb["BS"]
+    wc = {"Receivables, net": ("rec", "ret"), "Contract assets": ("ca",), "Inventories": ("inv",),
+          "Accounts payable": ("ap",), "Contract liabilities": ("cl",), "Accrued and other current liabilities": ("acc",)}
+    q4 = lambda k, c, sheet: (f"({sheet(k, c)}-{sheet(k, L)})" if c == g else f"{sheet(k, c)}")  # Q4 or full-year flow
+    amort = lambda c: f"{S('amort', c)}*{D('frac', c)}"
+    dep = lambda c: f"({q4('D&A', c, C)}-{amort(c)})"
+    nbv = lambda c: f"({q4('Proceeds from sale of PP&E', c, C)}+{q4('Gain on sale of PP&E', c, C)})"  # CF gain is negative
+    debt_total = lambda c: f"({D('tl_c', c)}+{D('cv_c', c)}+{I['nt_par']}+{D('rv_c', c)}-{I['iss_cost']})"
+    for label, r in bs_at.items():
+        if label.startswith("memo:") or str(bsw[f"{g}{r}"].value or "").startswith("="):
+            continue
+        for c in fc:
+            pc = prev[c]
+            if label == "Cash and cash equivalents":
+                f = f"={B(label, COL['FY2025'] if c == g else pc)}+{C('Net change in cash', c)}"
+            elif label in wc:
+                f = "=" + "+".join(S(k, c) for k in wc[label])
+            elif label == "PP&E, net":
+                f = f"={B(label, pc)}-{q4('Capex', c, C)}-{dep(c)}-{nbv(c)}"
+            elif label == "Intangible assets":
+                f = f"={B(label, pc)}-{amort(c)}"
+            elif label == "Current debt":
+                f = f"={D('tl_r', nxt[c])}+{D('cv_r', nxt[c])}" if nxt[c] else "=0"
+            elif label == "Long-term debt":
+                f = f"={debt_total(c)}-{B('Current debt', c)}"
+            elif label == "Additional paid-in capital":
+                f = f"={B(label, pc)}+{q4('Stock-based compensation', c, C)}"
+            elif label == "Retained earnings":
+                f = f"={B(label, pc)}+{q4('Net income to Granite', c, IS_)}+{q4('Dividends paid', c, C)}"
+            else:  # held at the last reported balance
+                f = f"={B(label, pc)}"
+            put(bsw, f"{c}{r}", f)
+
+    # ---- cash flow statement
+    cfw = wb["CF"]
+    dwc = lambda k, c, sign: f"{sign}({B(k, c)}-{B(k, prev[c])})"
+    for label, r in cf_at.items():
+        if label.startswith("memo:") or str(cfw[f"{g}{r}"].value or "").startswith("="):
+            continue
+        for c in fc:
+            plus9 = f"{C(label, L)}+" if c == g else ""
+            if label == "Net income incl. NCI":
+                f = f"={IS_(label, c)}"
+            elif label == "D&A":
+                f = f"={S('da', c)}"
+            elif label == "Stock-based compensation":
+                f = f"={D('sbc', c)}"  # FY2026E: full-year guidance, 9M actual included
+            elif label == "Gain on sale of PP&E":
+                f = f"=-{S('gain', c)}"
+            elif label == "Change in receivables":
+                f = f"={plus9}{dwc('Receivables, net', c, '-')}"
+            elif label == "Change in contract assets":
+                f = f"={plus9}{dwc('Contract assets', c, '-')}"
+            elif label == "Change in inventories":
+                f = f"={plus9}{dwc('Inventories', c, '-')}"
+            elif label == "Change in accounts payable":
+                f = f"={plus9}{dwc('Accounts payable', c, '+')}"
+            elif label == "Change in accrued and other liabilities":  # contract liabilities included here
+                f = (f"={plus9}{dwc('Accrued and other current liabilities', c, '+')}"
+                     f"{dwc('Contract liabilities', c, '+')}")
+            elif label == "Capex":
+                f = f"={S('capex', c)}"
+            elif label == "Proceeds from sale of PP&E":
+                f = f"={S('proc', c)}"
+            elif label == "Debt repaid":
+                f = f"={plus9}-({D('tl_r', c)}+{D('cv_r', c)})"
+            elif label == "Other debt issued":
+                f = f"={plus9}{D('rv_f', c)}"
+            elif label == "Dividends paid":
+                f = f"={plus9}-{I['dps']}*{I['sh_out']}*{D('frac', c)}"
+            elif label == "NCI distributions":  # NCI balance held flat: partners take their share out
+                f = f"={plus9}{q4('Non-controlling interests', c, IS_)}"
+            else:  # 9M 2026 actual only; nothing in later years
+                f = f"={C(label, L)}" if c == g else "=0"
+            put(cfw, f"{c}{r}", f)
+
+    # memo: D&A and EBITDA as in the history; diluted shares held at the valuation-date count
+    for c in fc:
+        xl.put_formula(isw, f"{c}{is_at['memo:D&A (from CF)']}", f"={C('D&A', c)}", xl.FMT_NUM)
+        xl.put_formula(isw, f"{c}{is_at['memo:EBITDA (operating income + D&A)']}",
+                       f"={IS_('Operating income', c)}+{c}{is_at['memo:D&A (from CF)']}", xl.FMT_NUM)
+        xl.put_formula(isw, f"{c}{is_at['memo:Diluted shares (m)']}", f"={I['shares']}", xl.FMT_NUM)
+        xl.put_formula(isw, f"{c}{is_at['memo:Diluted EPS (USD)']}",
+                       f"={IS_('Net income to Granite', c)}/{c}{is_at['memo:Diluted shares (m)']}", "0.00")
 
 
 def build_wacc(wb, I: dict, is_at: dict):
@@ -597,7 +806,7 @@ def build_dcf(wb, I: dict, s: dict, w: dict):
     return ws
 
 
-def year_header(ws, title: str, inputs: bool = False) -> None:
+def year_header(ws, title: str, inputs: bool = False, nine: bool = False) -> None:
     """Title, units and the year row. On Inputs, column B holds single values
     and the history columns are left empty, so only the forecast years get headers."""
     ws["A1"] = title
@@ -615,29 +824,37 @@ def year_header(ws, title: str, inputs: bool = False) -> None:
     xl.header(ws, HEADER_ROW, "", LAST_COL)
     for p, c in COL.items():
         ws.column_dimensions[c].width = 3 if inputs and p in HIST[1:] else 11
+    if nine:
+        cell = ws[f"{NINE_COL}{HEADER_ROW}"]
+        cell.value, cell.font, cell.border = "9M 2026A", xl.BOLD, xl.THIN_BOTTOM
+        cell.alignment = Alignment(horizontal="right")
+        ws.column_dimensions[NINE_COL].width = 11
 
 
 def write_statement(ws, stmt: str, rows, values: pd.DataFrame, start_row: int) -> dict[str, int]:
-    """History values in blue, subtotals as formulas. Returns label -> row."""
-    # drop lines that are zero in every year, and take them out of the subtotals too
+    """History values in blue, subtotals as formulas in every column (history, forecast and
+    the 9M 2026 actuals column). Forecast lines are filled in by build_forecast. Returns label -> row."""
+    # drop lines that are zero in every year and in 9M 2026, and take them out of the subtotals too
     used = [r for r in rows if r.parts is not None
-            or values.loc[r.label, HIST].abs().sum() > 1e-9]
+            or values.loc[r.label, HIST + [NINE]].abs().sum() > 1e-9]
     labels = {r.label for r in used}
     at: dict[str, int] = {}
     row = start_row
     for r in used:
         at[r.label] = row
         ws.cell(row=row, column=1, value=r.label).font = xl.BOLD if r.label in BOLD_TOTALS else xl.BASE
-        for p in HIST:
-            ref = f"{COL[p]}{row}"
+        for p, c in list(COL.items()) + [(NINE, NINE_COL)]:
+            ref = f"{c}{row}"
             if r.parts is None:
-                xl.put_input(ws, ref, round(float(values.loc[r.label, p]), 3), xl.FMT_NUM)
+                if p in HIST or p == NINE:
+                    v = values.loc[r.label, p]
+                    xl.put_input(ws, ref, round(float(0 if pd.isna(v) else v), 3), xl.FMT_NUM)
             else:
                 parts = [q for q in r.parts if q in labels]
-                xl.put_formula(ws, ref, "=" + "+".join(f"{COL[p]}{at[q]}" for q in parts), xl.FMT_NUM,
+                xl.put_formula(ws, ref, "=" + "+".join(f"{c}{at[q]}" for q in parts), xl.FMT_NUM,
                                bold=r.label in BOLD_TOTALS)
         if r.label in BOLD_TOTALS:
-            for c in range(1, LAST_COL + 1):
+            for c in range(1, LAST_COL + 2):
                 ws.cell(row=row, column=c).border = xl.Border(top=xl.Side(style="thin"))
         row += 1
     return at
@@ -879,6 +1096,25 @@ def build() -> Path:
     placeholder("cov_int", "Synthetic rating: interest expense, LTM to Sep 2026",
                 "FY2025 + 9M 2026 - 9M 2025, excl. the non-cash convertible discount amortisation")
 
+    section("Financing (forecast statements; memo s.13)")
+    scalar("tl_a1", "Term loan amortisation, Q4 2026 to Q3 2027 (% a year)", 0.025, xl.FMT_PCT, src9 + ", Note 14")
+    scalar("tl_a2", "Term loan amortisation from Q4 2027 (% a year)", 0.05, xl.FMT_PCT,
+           src9 + ", Note 14; balance due at maturity, 5 Aug 2030")
+    scalar("swap_n", "Interest rate swaps, notional (USD m)", 350, xl.FMT_NUM, src9 + ", derivatives note; mature Jan 2029")
+    scalar("swap_r", "Swap fixed rate (before margin)", 0.03218, "0.000%", src9 + ", derivatives note")
+    scalar("margin", "Credit agreement margin over SOFR", 0.01625, "0.000%",
+           "Midpoint of the 1.25-2.0% grid (depends on leverage); Q3 10-Q, Note 14")
+    scalar("sofr", "SOFR", fred_on("SOFR", VAL_DATE), "0.00%", f"FRED SOFR, {VAL_DATE}; held flat (no forward curve)")
+    scalar("cv_cpn", "2030 convertibles: coupon", 0.0325, "0.00%", src9 + ", Note 14; principal due 15 Jun 2030")
+    scalar("iss_cost", "Unamortised debt issuance costs and other (held flat)", round(q3["iss_cost"], 3), xl.FMT_NUM,
+           src9 + ", Note 14 (debt table)")
+    scalar("min_cash", "Minimum cash (revolver draws below this)", round(q3["jv_cash"], 3), xl.FMT_NUM,
+           src9 + ": cash held by consolidated construction JVs at 30 Sep 2026, not freely available to Granite")
+    scalar("rv_cap", "Revolver size (USD m)", 600, xl.FMT_NUM, src9 + ", Note 14; undrawn at 30 Sep 2026, matures Aug 2030")
+    scalar("dps", "Dividend per share, annual (USD)", 0.52, "0.00", src9 + ": USD 0.13 per quarter; held flat")
+    scalar("sbc_g", "Stock-based compensation, FY2026 (USD m)", 48, xl.FMT_NUM,
+           "FY2026 guidance, 8-K 29 Oct 2026; later years at the same % of revenue")
+
     section("Diluted shares (valuation date)")
     scalar("sh_out", "Shares outstanding (m)", round(q3["shares_out"], 3), "0.000", src9 + " cover page, 23 Oct 2026")
     scalar("rsu", "Unvested RSUs (m)", 0.501, "0.000",
@@ -947,7 +1183,7 @@ def build() -> Path:
                               ("CF", CF_ROWS, "Cash flow statement")]:
         ws = wb.create_sheet(stmt)
         xl.setup_sheet(ws, freeze=f"B{FIRST_ROW}", col_a_width=40)
-        year_header(ws, title)
+        year_header(ws, title, nine=True)
         sheets[stmt] = (ws, write_statement(ws, stmt, rows, wide[stmt], FIRST_ROW))
 
     is_ws, is_at = sheets["IS"]
@@ -984,8 +1220,7 @@ def build() -> Path:
     # check rows at the top of BS and CF
     bs_ws["A3"] = "BS check (assets - L&E, should be 0)"
     cf_ws["A3"] = "CF check (vs IS net income, should be 0)"
-    for p in HIST:
-        c = COL[p]
+    for c in list(COL.values()) + [NINE_COL]:
         xl.put_formula(bs_ws, f"{c}3", f"=ROUND({c}{bs_at['Total assets']}-{c}{bs_at['Total liabilities and equity']},3)", xl.FMT_NUM)
         xl.put_formula(cf_ws, f"{c}3", f"=ROUND({c}{cf_at['Net income incl. NCI']}-IS!{c}{is_at['Net income incl. NCI']},3)", xl.FMT_NUM)
     for ws in (bs_ws, cf_ws):
@@ -1096,13 +1331,15 @@ def build() -> Path:
     for key, (formula, fmt) in fills.items():
         xl.put_formula(inp, f"B{later[key]}", formula, fmt)
 
+    memo_row(is_ws, is_at, "Diluted EPS (USD)", wide["Memo"].loc["Diluted EPS (USD)"], fmt="0.00")
     sched_ws, s_at = build_sched(wb, I, is_at, bs_at)
+    build_forecast(wb, I, is_at, bs_at, cf_at, s_at)
     wacc_ws, w_at = build_wacc(wb, I, is_at)
     dcf_ws = build_dcf(wb, I, s_at, w_at)
 
     # Print areas end in a narrow empty spacer column: the PDF printer clips the last
     # column at its hard margin, and this way it clips the spacer, not FY2030E.
-    for ws, last in ((is_ws, LAST_COL), (bs_ws, LAST_COL), (cf_ws, LAST_COL), (inp, note_col),
+    for ws, last in ((is_ws, LAST_COL + 1), (bs_ws, LAST_COL + 1), (cf_ws, LAST_COL + 1), (inp, note_col),
                      (sched_ws, LAST_COL + 1), (wacc_ws, 3), (dcf_ws, 8)):
         spacer = get_column_letter(last + 1)
         ws.column_dimensions[spacer].width = 3
@@ -1132,14 +1369,30 @@ def check(path: Path) -> None:
     for stmt in ("IS", "BS", "CF"):
         ws = wb[stmt]
         rows = {ws.cell(row=i, column=1).value: i for i in range(FIRST_ROW, ws.max_row + 1)}
-        for p in HIST:
+        for p, c in list(COL.items()) + [(NINE, NINE_COL)]:
             if stmt in ("BS", "CF"):
-                v = ws[f"{COL[p]}3"].value
+                v = ws[f"{c}3"].value
                 assert v is not None and abs(v) < 1e-6, f"{stmt} check {p} = {v}"
         for r in filed[filed["statement"] == stmt].itertuples():
             v = ws[f"{COL[r.period]}{rows[r.line]}"].value
             worst = max(worst, abs(v - r.filed_total))
-    print(f"BS and CF check rows: 0 in all years; largest gap between workbook totals and filed totals: {worst:.3f} USD m")
+    print(f"BS and CF check rows: 0 in all years, forecast and 9M 2026 included; "
+          f"largest gap between workbook totals and filed totals: {worst:.3f} USD m")
+    # forecast: cash never below the minimum, revolver never negative
+    sch, bs = wb["Sched"], wb["BS"]
+    srow = {sch.cell(row=r, column=1).value: r for r in range(1, sch.max_row + 1)}
+    brow = {bs.cell(row=r, column=1).value: r for r in range(1, bs.max_row + 1)}
+    inp = wb["Inputs"]
+    min_cash = next(inp[f"B{r}"].value for r in range(1, inp.max_row + 1)
+                    if str(inp[f"A{r}"].value).startswith("Minimum cash"))
+    rv_cap = next(inp[f"B{r}"].value for r in range(1, inp.max_row + 1)
+                  if str(inp[f"A{r}"].value).startswith("Revolver size"))
+    for p in FCST:
+        cash = bs[f"{COL[p]}{brow['Cash and cash equivalents']}"].value
+        rv = sch[f"{COL[p]}{srow['Revolver, closing']}"].value
+        assert cash >= min_cash - 1e-6 and -1e-9 <= rv <= rv_cap, f"{p}: cash {cash}, revolver {rv}"
+    print(f"Forecast cash at or above the USD {min_cash:.1f}m minimum; revolver between 0 and its "
+          f"USD {rv_cap:.0f}m size in FY2026E-FY2030E")
     sched = wb["Sched"]
     k = COL["FY2030"]
     assert abs(sched[f"{k}3"].value) < 1e-9, f"WC check = {sched[k + '3'].value}"
