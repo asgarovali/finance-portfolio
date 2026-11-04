@@ -8,7 +8,7 @@ def test_workbook_layout(tmp_path, monkeypatch):
     monkeypatch.setattr(build_excel, "MODEL", tmp_path / "m.xlsx")
     wb = load_workbook(build_excel.build())
 
-    assert wb.sheetnames == ["Cover", "Inputs", "IS", "BS", "CF", "Sched", "WACC", "DCF"]
+    assert wb.sheetnames == ["Cover", "Inputs", "IS", "BS", "CF", "Sched", "WACC", "DCF"]  # Sens is added after the first recalculation
     ws = wb["IS"]
     labels = {ws.cell(row=r, column=1).value: r for r in range(1, ws.max_row + 1)}
     revenue = ws.cell(row=labels["Revenue"], column=2)

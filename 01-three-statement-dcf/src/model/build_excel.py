@@ -1156,8 +1156,94 @@ def check(path: Path) -> None:
     print(f"DCF check (Gordon value implies the long-run growth input): {d_check}")
 
 
+def write_sens(path: Path, res: dict) -> None:
+    """Sens sheet: reverse DCF and what-if cases. The Goal Seek results are written as values
+    by the build (src/model/reverse_dcf.py); base value and price are live links."""
+    wb = load_workbook(path)
+    ws = wb.create_sheet("Sens")
+    xl.setup_sheet(ws, freeze=None, col_a_width=52, landscape=False)
+    for col, w in (("B", 13), ("C", 13), ("D", 13), ("E", 13), ("F", 13), ("G", 3)):
+        ws.column_dimensions[col].width = w
+    ws["A1"] = "Sens"
+    ws["A1"].font = xl.BOLD
+    ws["A2"] = ("Gordon value per share, USD. Black numbers in the case tables are values written by the build "
+                "(Excel Goal Seek / recalculation on a copy of this model), not live formulas.")
+    ws["A2"].font = xl.NOTE
+    dcf = {ws_.cell(row=r, column=1).value: r for ws_ in [wb["DCF"]] for r in range(1, ws_.max_row + 1)}
+    inp = {wb["Inputs"].cell(row=r, column=1).value: r for r in range(1, wb["Inputs"].max_row + 1)}
+    sch = {wb["Sched"].cell(row=r, column=1).value: r for r in range(1, wb["Sched"].max_row + 1)}
+    row = 4
+
+    def put(r, c, v, fmt, bold=False):
+        cell = ws.cell(row=r, column=c, value=v)
+        cell.font = xl.BOLD if bold else xl.BASE
+        cell.number_format = fmt
+
+    def head(title, cols):
+        nonlocal row
+        row += 1
+        xl.header(ws, row, title, 6)
+        row += 1
+        for i, h in enumerate(cols, start=2):
+            put(row, i, h, "@", bold=True)
+            ws.cell(row=row, column=i).alignment = Alignment(horizontal="right", wrap_text=True)
+        row += 1
+
+    ws.cell(row=row, column=1, value="Base case value per share").font = xl.BASE
+    put(row, 2, f"=DCF!B{dcf['Value per share (USD)']}", "0.00")
+    ws.cell(row=row + 1, column=1, value="Share price, 29 Oct 2026").font = xl.BASE
+    put(row + 1, 2, f"=Inputs!B{inp['Share price (USD)']}", "0.00")
+    row += 1
+
+    head("Reverse DCF: one driver at a time, everything else at base", ["Base", "Implied by price"])
+    for label, base, implied, fmt in (
+            ("Gross margin from FY2027E", f"=Inputs!B{inp['Gross margin from FY2027E, base']}", res["gm"], "0.0%"),
+            ("Organic growth FY2027E-30E, flat (then 4%)", f"=Sched!H{sch['Organic growth, base path']}", res["growth"], "0.0%")):
+        ws.cell(row=row, column=1, value=label).font = xl.BASE
+        put(row, 2, base, fmt)
+        put(row, 3, implied, fmt)
+        row += 1
+    ws.cell(row=row, column=1, value="Terminal RONIC").font = xl.BASE
+    ronic = next(k for k in inp if k and k.startswith("Terminal RONIC"))
+    put(row, 2, f"=Inputs!B{inp[ronic]}", "0.0%")
+    put(row, 3, "not reachable", "@")
+    ws.cell(row=row, column=3).alignment = Alignment(horizontal="right")
+    row += 1
+    ws.cell(row=row, column=1, value=f"  even with no terminal reinvestment, value is USD {res['ronic_max']:.2f}").font = xl.NOTE
+    row += 1
+    ws.cell(row=row, column=1, value="  base growth path: FY2027E from backlog, fading to 4% in FY2030E").font = xl.NOTE
+    row += 1
+
+    head("Management 2029 targets: growth FY2027E-29E, adjusted EBITDA margin reached in FY2029E",
+         ["Organic growth", "Adj. EBITDA margin", "Gross margin FY2029E", "Value per share", "vs price"])
+    for label, gr, target, gm29, vps in res["mgmt"]:
+        ws.cell(row=row, column=1, value=label).font = xl.BASE
+        for c, v, fmt in ((2, gr, "0.0%"), (3, target, "0.0%"), (4, gm29, "0.0%"), (5, vps, "0.00"),
+                          (6, f"=E{row}/$B$5-1", "0.0%")):
+            put(row, c, v, fmt)
+        row += 1
+    ws.cell(row=row, column=1, value=f"  margin ramps linearly from FY2026E ({res['adj26']:.1%} on Granite's definition); "
+                                     "FY2030E growth 4%; memo s.12").font = xl.NOTE
+    row += 1
+
+    head("Terminal RONIC by segment: Construction at the base RONIC, Materials higher",
+         ["Materials RONIC", "Effective RONIC", "Value per share", "vs price"])
+    for label, rm, eff, vps in res["mat"]:
+        ws.cell(row=row, column=1, value=label).font = xl.BASE
+        for c, v, fmt in ((2, rm, "0.0%"), (3, eff, "0.00%"), (4, vps, "0.00"), (5, f"=D{row}/$B$5-1", "0.0%")):
+            put(row, c, v, fmt)
+        row += 1
+    ws.cell(row=row, column=1, value="  Materials = 23.4% of segment operating income (FY2022-25 average); memo s.12").font = xl.NOTE
+    ws.print_area = f"A1:G{row}"
+    ws.page_setup.fitToHeight = 1
+    wb.save(path)
+
+
 def main() -> None:
+    from src.model import reverse_dcf
     path = build()
+    xl.recalc_with_excel(path)
+    write_sens(path, reverse_dcf.run_all(path))
     xl.recalc_with_excel(path)
     check(path)
     print(f"saved {path.relative_to(ROOT)}")

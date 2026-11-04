@@ -439,3 +439,84 @@ How much a few single changes move the Gordon value per share (each change on it
 None of these single changes closes the gap to the share price. The gap comes from the combination of: growth fading to 4% by FY2030 (Granite's 2029 target is 10-12% organic growth a year); an EBITDA margin of about 9.2% from FY2027E (2029 target: 14-16% adjusted EBITDA, which also excludes SBC); and terminal returns on new capital falling to 9.7%. The checks all pass (balance sheet and cash flow history, working capital, g < risk-free rate, Gordon value implies 4.0%), so the gap is about assumptions, not arithmetic.
 
 <!-- ALI: interpretation. What explains the gap between the DCF value and the share price, and does any base-case assumption change in light of the Q3 results and the 2029 targets? -->
+
+## 12. What the share price implies (4 Nov 2026; analysis only, base case unchanged)
+
+The numbers are on the Sens sheet. The build produces them by changing one thing at a time in Excel and using Goal Seek on the Gordon value per share (`src/model/reverse_dcf.py`). The base case itself isn't touched.
+
+**Reverse DCF, one driver at a time (price USD 121.69, base USD 52.07)**
+
+| Driver | Base | Needed to reach the price |
+|---|---|---|
+| Gross margin from FY2027E | 15.0% | 19.9% |
+| Organic growth FY2027E-30E, flat, then 4% | 9.0% fading to 4.0% | 38.0% a year |
+| Terminal RONIC | 9.7% | not reachable: even with no terminal reinvestment the value is USD 94.30 |
+
+For comparison, Granite's gross margin was 10.4% to 16.1% in FY2021-25.
+
+**Management's 2029 targets as one case.** Organic growth at the target for FY2027E-29E, then 4% in FY2030E. The adjusted EBITDA margin rises in a straight line from FY2026E (13.1%) to the target in FY2029E. To translate the margin into the model's gross margin I keep SG&A at 8.75% and add SBC (FY2026 guidance, USD 48m) and NCI (9M 2026 share of revenue). The result depends only on EBITDA, so using Granite's 7.5% SG&A target with a lower gross margin would give the same value.
+
+| | Organic growth | Adj. EBITDA margin FY2029E | Gross margin FY2029E | Value per share | vs price |
+|---|---|---|---|---|---|
+| Low end | 10% | 14% | 17.7% | 95.43 | -22% |
+| Midpoint | 11% | 15% | 18.7% | 112.27 | -8% |
+| High end | 12% | 16% | 19.7% | 129.92 | +7% |
+
+So the share price is roughly what the model gives if Granite meets the middle of its 2029 targets and then grows at 4%.
+
+**Margin normalisation on net revisions only.** The gross margin with net revisions removed:
+
+| Period | Margin, net revisions removed |
+|---|---|
+| FY2025 | 15.37% |
+| 9M 2026 | 15.59% |
+| Both together, revenue-weighted | **15.47%** |
+
+At a 15.5% base the value is USD 59.13 (scratch run). Two facts to weigh: net revisions were negative in FY2023 (-2.5% of revenue) and FY2024 (-0.6%), and positive in FY2025 (+0.7%) and 9M 2026 (+1.0%). Averaged over the four periods they come to about -0.35% of revenue.
+
+**Why FY2027E steps down from FY2026E.** FY2026E uses the 9M 2026 gross margin (16.55%) for the whole year. The base 15.0% from FY2027E is lower for three reasons:
+
+| Step | Effect | Margin after the step |
+|---|---|---|
+| FY2026E gross margin (9M 2026) | | 16.55% |
+| Remove net revisions | -0.96 points | 15.59% |
+| Remove the rest of the upward revisions | -0.45 points | 15.14% |
+| Move to the FY2025-range midpoint | -0.14 points | 15.00% |
+
+Part of the step is FY2026E itself being high. Applying the 9M margin to the whole year puts Q4 2026 at 16.55%. Q4 2025 was 14.4% (FY2025 less 9M 2025), so at the Q4 2025 margin FY2026E would be 16.05%, not 16.55%. The EBITDA margin goes from 11.0% to 9.3%, and adjusted EBITDA (Granite's definition) from 13.1% to 11.3%.
+
+**FY2026E adjusted EBITDA against guidance.** Granite's definition starts from net income after NCI and adds back interest, tax, D&A, SBC, other costs, net, convertible debt gains and losses, and the remeasurement gain. Rebuilt from the model's lines (operating income + D&A + SBC + other costs + affiliate income + other income − NCI), 9M 2026 comes to USD 526.98m. Granite reports USD 526.981m (Q3 release), so the definition matches. For FY2026E, with SBC and NCI for Q4 at the Q3 rate:
+
+| | Adjusted EBITDA | Margin |
+|---|---|---|
+| Model FY2026E | USD 708.7m | **13.1%** |
+| Guidance range | | 12.25% to 13.25% |
+| Implied Q4 2026 (model) | | 14.4% |
+| Q4 2025 | | 11.1% |
+| Q4 2026 at the guidance midpoint | | 12.8% |
+
+So FY2026E is inside guidance, near the top. There's no modelling gap. If anything, FY2026E is slightly high because the 9M gross margin is used for Q4 as well.
+
+**Terminal RONIC by segment.** Granite's own Materials returns, from the 10-K segment notes, are after-tax segment operating income divided by average segment assets:
+
+| | FY2022 | FY2023 | FY2024 | FY2025 | Average |
+|---|---|---|---|---|---|
+| Materials return on segment assets | 12.1% | 10.3% | 6.6% | 7.9% | 9.2% |
+| Same, excluding goodwill | | | | | 9.8% |
+
+The return fell as the 2023-25 acquisitions added assets at their purchase prices. This isn't the same measure as RONIC:
+- Segment assets aren't invested capital. They leave out most working capital, which is why the same ratio for Construction (about 33%) can't be compared with anything.
+- Segment operating income is before corporate costs.
+
+Damodaran's industry return on capital (`EVA.xls`, Jan 2026) is on the same book-capital basis as Granite's own 9.7%:
+- Construction Supplies 16.7%, against an 8.3% cost of capital;
+- Engineering/Construction 25.3%, against 8.7%.
+
+With Construction at 9.7% and Materials at 23.4% of segment operating income (FY2022-25 average), the effect on value is small:
+- Materials at Granite's own 9.8%: effective RONIC 9.70%, USD 52.20.
+- Materials at Damodaran's 16.7%: effective RONIC 10.73%, USD 56.23.
+
+Materials is under a quarter of profit, and terminal reinvestment is only part of the value.
+
+<!-- ALI: decisions after this analysis: base gross margin (15.0% or the 15.5% net-only normalisation), and whether the Materials RONIC or anything from the 2029 targets goes into the base case. Then the interpretation in section 11. -->
+

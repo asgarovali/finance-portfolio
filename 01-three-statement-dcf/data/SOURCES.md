@@ -96,6 +96,7 @@ Downloaded by `src/data/download_market.py` on 2026-10-22. Damodaran's data is f
 | `raw/fred/fred_GDPC1MDLR.json` | FRED API, series GDPC1MDLR (FOMC longer-run real GDP growth, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
 | `raw/fred/fred_PCECTPIMDLR.json` | FRED API, series PCECTPIMDLR (FOMC longer-run PCE inflation, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
 | `raw/damodaran/vebitda.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitda.xls | EV/EBITDA and EV/EBIT by industry (exit-multiple cross-check); EV = market cap + total debt - cash | "Date updated" 2026-01-05; downloaded 2026-10-23 |
+| `raw/damodaran/EVA.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/EVA.xls | return on capital (after-tax operating income / book capital) and cost of capital by industry; Materials RONIC benchmark (Sens sheet) | "Date updated" 2026-01-05; downloaded 2026-11-04 |
 
 DGS10 was refreshed on 2026-11-03 (`python -m src.data.download_market --refresh`). The model looks up two dates in it: 29 Oct 2026, the valuation date (4.98%), and 30 Sep 2026, the date of the notes' fair value (5.29%). The FOMC long-run series are looked up on the 16 Sep 2026 projection date, so a later refresh can't change them.
 
@@ -150,3 +151,5 @@ Definitions used to match the exit multiple: Damodaran's variable definitions pa
 - Shares outstanding, 44,130,293 at 23 Oct 2026: XBRL dei:EntityCommonStockSharesOutstanding.
 - Revisions in estimates for 9M 2026: Note 3, text.
 - FY2026 guidance and 2029 targets: Exhibit 99.1.
+
+**Segment returns (memo s.12).** XBRL us-gaap:Assets, us-gaap:OperatingIncomeLoss and us-gaap:Goodwill with the StatementBusinessSegmentsAxis member, from the FY2022-FY2025 10-Ks (segment note).
