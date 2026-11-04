@@ -21,7 +21,9 @@ from openpyxl.utils import get_column_letter
 
 from common import excel as xl
 from src.analysis.history import segments
+from src.analysis.bond import ytm
 from src.data.clean_statements import BS_ROWS, CF_ROWS, IS_ROWS
+from src.data.ixbrl import read_facts
 
 ROOT = Path(__file__).resolve().parents[2]
 PROCESSED = ROOT / "data" / "processed"
@@ -34,6 +36,13 @@ FIRST_COL = 2  # column B = FY2021
 COL = {p: get_column_letter(FIRST_COL + i) for i, p in enumerate(HIST + FCST)}
 LAST_COL = FIRST_COL + len(HIST) + len(FCST) - 1
 HEADER_ROW, FIRST_ROW = 5, 7
+
+VAL_DATE = "2026-10-29"  # Q3 10-Q filing date; memo s.1
+SEP_DATE = "2026-09-16"  # FOMC Summary of Economic Projections used for long-run growth
+Q3_10Q = "0000861459-26-000042"
+# 6.375% senior notes due 2034: indenture, 8-K of 2 Jun 2026 (0001437749-26-019166), Exhibit 4.1
+NOTES = {"coupon": 0.06375, "issue": datetime(2026, 6, 2), "first": datetime(2026, 12, 15),
+         "maturity": datetime(2034, 6, 15)}
 
 # key totals shown in bold
 BOLD_TOTALS = {"Gross profit", "Operating income", "Pre-tax income", "Net income to Granite",
@@ -83,11 +92,20 @@ def lease_liability(facts: pd.DataFrame) -> float:
     return f["value"].iloc[-1] / 1e6
 
 
-def fred_latest(series: str) -> tuple[float, str]:
-    """Latest observation of a saved FRED series (value in %, date)."""
-    obs = [o for o in json.loads((RAW / "fred" / f"fred_{series}.json").read_text())["observations"]
-           if o["value"] != "."]
-    return float(obs[-1]["value"]) / 100, obs[-1]["date"]
+def fred_on(series: str, day: str) -> float:
+    """Observation of a saved FRED series on one date, as a decimal. Looked up by date so a
+    later refresh of the file can't move the model's inputs."""
+    obs = {o["date"]: o["value"] for o in json.loads((RAW / "fred" / f"fred_{series}.json").read_text())["observations"]}
+    return float(obs[day]) / 100
+
+
+def notes_2034_fair_value() -> tuple[float, float]:
+    """Carrying amount and fair value (USD m) of the 6.375% notes at 30 Sep 2026, Q3 10-Q fair value table."""
+    f = read_facts(RAW / "sec" / f"{Q3_10Q}_gva-20260930.htm")
+    f = f[(f["tag"] == "us-gaap:NotesPayableFairValueDisclosure") & (f["end"] == "2026-09-30")
+          & f["dims"].str.contains("A6.375SeniorNotesMember") & f["dims"].str.contains("FairValueInputsLevel2Member")]
+    pick = lambda basis: f.loc[f["dims"].str.contains(basis), "value"].iloc[0] / 1e6
+    return pick("CarryingReportedAmountFairValueDisclosureMember"), pick("EstimateOfFairValueFairValueDisclosureMember")
 
 
 def amortisation_history(facts: pd.DataFrame) -> dict[str, float]:
@@ -379,17 +397,23 @@ def build_wacc(wb, I: dict, is_at: dict):
     line("ke", "Cost of equity", '=IF(OR({rf}="",{bl}=""),"",{rf}+{bl}*{erp})', "0.00%", bold=True)
 
     sec("Cost of debt")
-    line("kd_mkt", "Market yield, 6.375% 2034 notes", f"=IF({I['kd']}=\"\",\"\",{I['kd']})", "0.00%", "FINRA TRACE")
+    line("nt_sp", "Credit spread, 6.375% 2034 notes (30 Sep 2026)", f"={I['nt_spread']}", "0.00%",
+         "Yield from the 10-Q fair value - DGS10 on the same date")
+    line("kd_mkt", "Market-based cost of debt", f"={{rf}}+{{nt_sp}}", "0.00%",
+         "Risk-free rate on the valuation date + spread")
     line("cov", "Interest coverage (EBIT / interest expense)", f"={I['cov_ebit']}/{I['cov_int']}", "0.00x",
          "Synthetic rating cross-check from here")
     line("tbl", "Damodaran table (1 = large firm, 2 = smaller firm)",
          f'=IF({{e}}="","",IF({{e}}>{I["mcap_cut"]},1,2))', "0", "By equity market value")
-    lk = lambda out: (f'=IF({{tbl}}="","",IF({{tbl}}=1,LOOKUP({{cov}},{I["rt_large"]},{I[out]}),'
-                      f'LOOKUP({{cov}},{I["rt_small"]},{I[out]})))')
-    line("rating", "Synthetic rating", lk("rt_rating"), None)
-    line("spread", "Default spread", lk("rt_spread"), "0.00%")
-    line("kd_syn", "Synthetic cost of debt", '=IF(OR({rf}="",{spread}=""),"",{rf}+{spread})', "0.00%",
+    # both tables shown, so the cross-check is visible before the market cap is known
+    for k, size, rng in (("l", "large-firm", "rt_large"), ("s", "smaller-firm", "rt_small")):
+        line(f"rating_{k}", f"Synthetic rating, {size} table", f'=LOOKUP({{cov}},{I[rng]},{I["rt_rating"]})', None)
+        line(f"spread_{k}", f"Default spread, {size} table", f'=LOOKUP({{cov}},{I[rng]},{I["rt_spread"]})', "0.00%")
+    line("spread", "Default spread, table that applies", '=IF({tbl}="","",IF({tbl}=1,{spread_l},{spread_s}))', "0.00%")
+    line("kd_syn", "Synthetic cost of debt", '=IF({spread}="","",{rf}+{spread})', "0.00%",
          "Risk-free rate + default spread")
+    line("kd_gap", "Market-based minus synthetic", '=IF({kd_syn}="","",{kd_mkt}-{kd_syn})', "0.00%",
+         "Cross-check")
     line("kd", "Pre-tax cost of debt used", f"=CHOOSE({I['kd_basis']},{{kd_mkt}},{{kd_syn}})", "0.00%",
          "Inputs: cost of debt basis", bold=True)
     line("kd_at", "After-tax cost of debt", f'=IF({{kd}}="","",{{kd}}*(1-{I["tax"]}))', "0.00%")
@@ -696,12 +720,10 @@ def build() -> Path:
     d = cap.iloc[-1]
     scalar("cap_now", "CAP at latest quarter-end", d["cap"], xl.FMT_NUM,
            f"{d['date']:%d %b %Y}, {d['form']} {d['accession']}; replace with 30 Sep 2026 on 29 Oct", "INTERIM")
-    g_real, d_real = fred_latest("GDPC1MDLR")
-    g_infl, d_infl = fred_latest("PCECTPIMDLR")
-    scalar("g_real", "FOMC longer-run real GDP growth (median)", g_real, xl.FMT_PCT,
-           f"FRED GDPC1MDLR, Summary of Economic Projections {d_real}")
-    scalar("g_infl", "FOMC longer-run PCE inflation (median)", g_infl, xl.FMT_PCT,
-           f"FRED PCECTPIMDLR, Summary of Economic Projections {d_infl}")
+    scalar("g_real", "FOMC longer-run real GDP growth (median)", fred_on("GDPC1MDLR", SEP_DATE), xl.FMT_PCT,
+           f"FRED GDPC1MDLR, Summary of Economic Projections {SEP_DATE}")
+    scalar("g_infl", "FOMC longer-run PCE inflation (median)", fred_on("PCECTPIMDLR", SEP_DATE), xl.FMT_PCT,
+           f"FRED PCECTPIMDLR, Summary of Economic Projections {SEP_DATE}")
     placeholder("g_nom", "Implied long-run nominal growth", "(1 + real) x (1 + inflation) - 1; source for the 4% below")
     scalar("gLR", "Long-run growth (FY2030E and terminal)", 0.04, xl.FMT_PCT,
            "Implied nominal growth above, rounded; must stay below the risk-free rate (WACC check); memo s.5, s.9")
@@ -777,17 +799,34 @@ def build() -> Path:
            "Damodaran betas.xls; cross-check on Granite's D/E only")
     scalar("erp", "Equity risk premium", round(dam["erp"], 4), "0.00%",
            f"Damodaran ERPbymonth.xlsx, implied ERP {dam['erp_date']:%d %b %Y} (start of 2026: {dam['erp_jan']:.2%})")
-    scalar("rf", "Risk-free rate (10y Treasury)", None, xl.FMT_PCT,
-           "FRED DGS10 on the valuation date (same day as the share price)", "PENDING")
-    scalar("kd", "Pre-tax cost of debt", None, xl.FMT_PCT,
-           "Market yield on the 6.375% 2034 notes at the valuation date (FINRA TRACE)", "PENDING")
+    scalar("rf", "Risk-free rate (10y Treasury)", fred_on("DGS10", VAL_DATE), "0.00%",
+           f"FRED DGS10 on the valuation date, {VAL_DATE} (same day as the share price)")
     scalar("price", "Share price (USD)", None, "0.00", "NYSE close on the 10-Q filing date", "PENDING")
     scalar("shares", "Diluted shares (m)", None, "0.0",
            "Q3 10-Q: shares outstanding + dilution incl. 2030 convertibles above par; memo s.9", "PENDING")
     scalar("debt_mv", "Debt at market value (USD m)", None, xl.FMT_NUM,
            "Q3 10-Q debt note: senior notes and convertibles' debt component at market, term loan at book", "PENDING")
-    scalar("kd_basis", "Cost of debt basis (1 = bond yield, 2 = synthetic rating)", 1, "0",
-           "Base case 1 (FINRA yield); 2 is the fallback and cross-check; memo s.9")
+    carrying, fair = notes_2034_fair_value()
+    scalar("nt_fv", "6.375% notes due 2034: fair value, 30 Sep 2026", round(fair, 3), xl.FMT_NUM,
+           f"Q3 10-Q ({Q3_10Q}) fair value table: Level 2, median price in an active market")
+    scalar("nt_par", "6.375% notes due 2034: principal", round(carrying, 3), xl.FMT_NUM,
+           "Q3 10-Q fair value table, carrying amount")
+    scalar("nt_cpn", "6.375% notes: coupon", NOTES["coupon"], "0.000%", "Indenture, 8-K 2 Jun 2026, Exhibit 4.1")
+    scalar("nt_issue", "6.375% notes: issue date", NOTES["issue"], "dd mmm yyyy", "Indenture; interest accrues from here")
+    scalar("nt_first", "6.375% notes: first coupon date", NOTES["first"], "dd mmm yyyy",
+           "Indenture; then every 15 Jun and 15 Dec, 30/360")
+    scalar("nt_mat", "6.375% notes: maturity", NOTES["maturity"], "dd mmm yyyy", "Indenture")
+    scalar("rf_fv", "10y Treasury on the fair value date", fred_on("DGS10", "2026-09-30"), "0.00%",
+           "FRED DGS10, 30 Sep 2026")
+    placeholder("nt_px", "6.375% notes: price implied by fair value (per 100)",
+                "Fair value / principal; taken as a clean price (excl. accrued interest)")
+    placeholder("nt_ytm", "6.375% notes: yield to maturity, 30 Sep 2026",
+                "ODDFYIELD: long first coupon, semi-annual, 30/360; checked in Python (src/analysis/bond.py)")
+    placeholder("nt_spread", "Credit spread over the 10y Treasury", "Yield to maturity - DGS10, both 30 Sep 2026")
+    placeholder("kd", "Pre-tax cost of debt, market-based",
+                "DGS10 on the valuation date + 30 Sep spread; memo s.9")
+    scalar("kd_basis", "Cost of debt basis (1 = market-based, 2 = synthetic rating)", 1, "0",
+           "Base case 1 (notes' spread); 2 is the cross-check; memo s.9")
     scalar("mcap_cut", "Synthetic rating: large-firm table above market cap of", 5000, xl.FMT_NUM,
            "Damodaran ratings.xls: large-firm table for market cap above USD 5bn")
     placeholder("cov_ebit", "Synthetic rating: EBIT", "INTERIM: FY2025 operating income; LTM to Sep 2026 after Q3")
@@ -799,7 +838,8 @@ def build() -> Path:
     scalar("fy_end", "End of FY2026", datetime(2026, 12, 31), "dd mmm yyyy", "Granite's fiscal year ends 31 Dec")
     scalar("bs_date", "Balance sheet date", datetime(2026, 9, 30), "dd mmm yyyy",
            "Q3 2026 10-Q; FCFF from 1 Oct onwards is valued; memo s.1")
-    scalar("val_date", "Valuation date", None, "dd mmm yyyy", "10-Q filing date (expected 29 Oct 2026)", "PENDING")
+    scalar("val_date", "Valuation date", datetime.strptime(VAL_DATE, "%Y-%m-%d"), "dd mmm yyyy",
+           "Q3 10-Q filing date; the 8-K with the 30 Sep balance sheet came out before the open; memo s.1")
     scalar("cash_q3", "Cash and marketable securities, 30 Sep 2026", None, xl.FMT_NUM,
            "Q3 10-Q balance sheet: cash + current and long-term marketable securities", "PENDING")
     scalar("aff_q3", "Investments in affiliates, 30 Sep 2026", None, xl.FMT_NUM,
@@ -951,6 +991,11 @@ def build() -> Path:
             f"-IS!{COL[y]}{is_at['Non-controlling interests']}/IS!{COL[y]}{is_at['Pre-tax income']}"
             for y in ("FY2024", "FY2025")) + ")", xl.FMT_PCT),
         "g_nom": (f"=(1+{I['g_real']})*(1+{I['g_infl']})-1", "0.00%"),
+        "nt_px": (f"={I['nt_fv']}/{I['nt_par']}*100", "0.000"),
+        "nt_ytm": (f"=ODDFYIELD({I['bs_date']},{I['nt_mat']},{I['nt_issue']},{I['nt_first']},{I['nt_cpn']},"
+                   f"{I['nt_px']},100,2,0)", "0.00%"),
+        "nt_spread": (f"={I['nt_ytm']}-{I['rf_fv']}", "0.00%"),
+        "kd": (f"={I['rf']}+{I['nt_spread']}", "0.00%"),
         "cov_ebit": (f"=IS!{f25}{is_at['Operating income']}", xl.FMT_NUM),
         "cov_int": (f"=-IS!{f25}{is_at['Interest expense']}", xl.FMT_NUM),
         "lease_pct": (f"={I['lease25']}/IS!{f25}{rev}", "0.00%"),
@@ -1018,6 +1063,14 @@ def check(path: Path) -> None:
     g_check = wb["WACC"]["B3"].value
     assert g_check in ("pending", 0), f"terminal growth is not below the risk-free rate ({g_check})"
     print(f"WACC check (terminal growth < risk-free rate): {g_check}")
+    inp = wb["Inputs"]
+    rows = {inp.cell(row=r, column=1).value: r for r in range(1, inp.max_row + 1)}
+    v = lambda label: inp[f"B{rows[label]}"].value
+    xl_ytm = v("6.375% notes: yield to maturity, 30 Sep 2026")
+    py_ytm = ytm(v("6.375% notes: price implied by fair value (per 100)"), date(2026, 9, 30),
+                 NOTES["issue"].date(), NOTES["first"].date(), NOTES["maturity"].date(), NOTES["coupon"])
+    assert abs(xl_ytm - py_ytm) < 1e-5, f"ODDFYIELD {xl_ytm} vs Python {py_ytm}"
+    print(f"6.375% notes yield: Excel {xl_ytm:.4%}, Python {py_ytm:.4%}")
     d_check = wb["DCF"]["B3"].value
     assert d_check in ("pending", 0), f"implied growth does not match the long-run growth input ({d_check})"
     print(f"DCF check (Gordon value implies the long-run growth input): {d_check}")

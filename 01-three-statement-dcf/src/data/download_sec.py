@@ -6,10 +6,12 @@ data/processed/ is a list of the 10-K, 10-K/A and 10-Q filings, so the
 later steps (and SOURCES.md) can point to exact accession numbers.
 
 Run from the project folder:  python -m src.data.download_sec
+Add --refresh to fetch the facts and filing list again after a new filing.
 """
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -48,9 +50,9 @@ def filings_index(submissions_path: Path) -> pd.DataFrame:
     return df.sort_values("filingDate").reset_index(drop=True)
 
 
-def main() -> None:
-    facts = sec_company_facts(CIK, RAW)
-    subs = sec_submissions(CIK, RAW)
+def main(refresh: bool = False) -> None:
+    facts = sec_company_facts(CIK, RAW, refresh)
+    subs = sec_submissions(CIK, RAW, refresh)
     print(f"saved {facts.name} and {subs.name}")
 
     idx = filings_index(subs)
@@ -67,4 +69,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(refresh="--refresh" in sys.argv)

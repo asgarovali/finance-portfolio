@@ -97,7 +97,17 @@ Downloaded by `src/data/download_market.py` on 2026-10-22. Damodaran's data is f
 | `raw/fred/fred_PCECTPIMDLR.json` | FRED API, series PCECTPIMDLR (FOMC longer-run PCE inflation, median) | Summary of Economic Projections | latest: 2026-09-16, 2.0% |
 | `raw/damodaran/vebitda.xls` | https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitda.xls | EV/EBITDA and EV/EBIT by industry (exit-multiple cross-check); EV = market cap + total debt - cash | "Date updated" 2026-01-05; downloaded 2026-10-23 |
 
-Still to come at the valuation date: DGS10 on the 10-Q filing date (refreshed with the same script), and the market yield on the 6.375% 2034 notes from FINRA TRACE (https://www.finra.org/finra-data/fixed-income). FINRA's bond-level data is only available through its browser search, so that yield is read there by hand and recorded here with the date, CUSIP and trade.
+DGS10 was refreshed on 2026-11-03 (`python -m src.data.download_market --refresh`). The model looks up two dates in it: 29 Oct 2026, the valuation date (4.98%), and 30 Sep 2026, the date of the notes' fair value (5.29%). The FOMC long-run series are looked up on the 16 Sep 2026 projection date, so a later refresh can't change them.
+
+**Cost of debt: 6.375% senior notes due 2034.** The plan was a TRACE yield from FINRA (https://www.finra.org/finra-data/fixed-income) on the valuation date. That wasn't possible. The notes are a private Rule 144A issue: the offering was announced and priced in the 8-Ks of 18 and 19 May 2026 (0001437749-26-017523, 0001437749-26-017652). It closed under the indenture filed as Exhibit 4.1 to the 8-K of 2 Jun 2026 (0001437749-26-019166). No EDGAR filing gives a CUSIP (the form of note leaves it blank), and FINRA's lookup needs one. Instead:
+
+| Item | Source | Value |
+|---|---|---|
+| Fair value and carrying amount at 30 Sep 2026 | Q3 2026 10-Q (0000861459-26-000042), fair value table, XBRL us-gaap:NotesPayableFairValueDisclosure; Level 2, "based on the median price of the notes in an active market" | USD 579.888m and 600.000m |
+| Coupon, dates, day count | Indenture (Exhibit 4.1 above): 6.375%, interest from 2 Jun 2026, paid 15 Jun and 15 Dec from 15 Dec 2026, 30/360, maturity 15 Jun 2034 | |
+| Yield to maturity | Computed: Excel ODDFYIELD, checked against `src/analysis/bond.py` | 6.94% |
+
+**Q3 2026 filings** (downloaded 2026-11-03 with `python -m src.data.download_sec --refresh`): 10-Q 0000861459-26-000042, filing date 29 Oct 2026, accepted 17:14 New York time; earnings 8-K 0000861459-26-000040, accepted 06:45 the same day.
 
 ## Federal highway funding (IIJA)
 

@@ -5,9 +5,11 @@ copy in data/raw/damodaran/ is the version the model uses. Check the
 "Date updated" cell before refreshing.
 
 Run from the project folder:  python -m src.data.download_market
+Add --refresh to fetch the FRED series again (the Damodaran files are left as they are).
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from common.data import download, fred_series
@@ -31,16 +33,16 @@ ERP_MONTHLY_URL = "https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.
 FRED_SERIES = ["DGS10", "GDPC1MDLR", "PCECTPIMDLR"]
 
 
-def main() -> None:
+def main(refresh: bool = False) -> None:
     for name in DAMODARAN_FILES:
         path = download(DAMODARAN_URL.format(name=name), RAW / "damodaran" / f"{name}.xls")
         print(f"saved {path.relative_to(ROOT)}")
     path = download(ERP_MONTHLY_URL, RAW / "damodaran" / "ERPbymonth.xlsx")
     print(f"saved {path.relative_to(ROOT)}")
     for series in FRED_SERIES:
-        path = fred_series(series, RAW / "fred")
+        path = fred_series(series, RAW / "fred", refresh)
         print(f"saved {path.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
-    main()
+    main(refresh="--refresh" in sys.argv)
