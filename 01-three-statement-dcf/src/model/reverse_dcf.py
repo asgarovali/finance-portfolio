@@ -39,6 +39,7 @@ def cells(path: Path) -> dict[str, str]:
         "rev_row": str(sch["Revenue"]),
         "da_row": str(sch["D&A"]),
         "vps": f"DCF!B{dcf['Value per share (USD)']}",
+        "scen": f"Inputs!B{inp['Scenario (1 base, 2 downside, 3 upside)']}",
     }
 
 
@@ -93,6 +94,7 @@ def run_all(path: Path) -> dict:
     price, ronic = val(c["price"]), val(c["ronic"])
     cols = ["H", "I", "J", "K"]  # FY2027E-FY2030E on Sched
     out = {"price": price}
+    out["scen"] = {k: run_case(path, [(c["scen"], str(k))], [c["vps"]])[0] for k in (2, 3)}
     out["gm"] = run_case(path, [], [c["gm"]], (c["vps"], price, c["gm"]))[0]
     out["ronic_max"] = run_case(path, [(c["ronic"], "1000")], [c["vps"]])[0]
     growth = [(FREE_CELL, "0.09")] + [(f"Sched!{x}{c['org_row']}", f"={FREE_CELL}") for x in cols]

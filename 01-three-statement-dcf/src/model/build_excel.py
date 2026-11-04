@@ -722,6 +722,9 @@ def build() -> Path:
     scalar("r9", "Revenue, 9M 2026", nine("IS", "Revenue"), xl.FMT_NUM, src9)
     scalar("m9", "Materials revenue, 9M 2026", round(q3["materials_rev"], 3), xl.FMT_NUM, src9 + ", segment note")
     scalar("gp9", "Gross profit, 9M 2026", nine("IS", "Gross profit"), xl.FMT_NUM, src9)
+    scalar("r9p", "Revenue, 9M 2025", nine("IS", "Revenue", "9M 2025"), xl.FMT_NUM, src9)
+    scalar("gp9p", "Gross profit, 9M 2025", nine("IS", "Gross profit", "9M 2025"), xl.FMT_NUM, src9)
+    placeholder("q4gm", "Q4 2025 gross margin", "(FY2025 - 9M 2025) gross profit / revenue; the seasonal pattern for Q4 2026E")
     scalar("op9", "Operating income, 9M 2026", nine("IS", "Operating income"), xl.FMT_NUM, src9)
     scalar("op9p", "Operating income, 9M 2025", nine("IS", "Operating income", "9M 2025"), xl.FMT_NUM, src9)
     scalar("int9", "Interest expense, 9M 2026", -nine("IS", "Interest expense"), xl.FMT_NUM, src9)
@@ -774,9 +777,9 @@ def build() -> Path:
     scalar("down", "Downside: FY2027E Construction growth", 0.0, xl.FMT_PCT, "Reauthorisation gap through FY2027; memo s.5")
 
     section("Margins")
-    placeholder("gm26", "FY2026E gross margin", "9M 2026 actual; memo s.6")
-    scalar("gm", "Gross margin from FY2027E, base", 0.15, xl.FMT_PCT,
-           "Midpoint of the 14.6-15.4% FY2025 normalisation range; memo s.6")
+    placeholder("gm26", "FY2026E gross margin", "9M 2026 actual + Q4 2026E at the Q4 2025 margin; memo s.6")
+    scalar("gm", "Gross margin from FY2027E, base", 0.155, xl.FMT_PCT,
+           "Net revisions removed, FY2025 and 9M 2026 together (15.47%), rounded; memo s.6 (decided 4 Nov)")
     scalar("gm_down", "Gross margin from FY2027E, downside", 0.145, xl.FMT_PCT,
            "All FY2025 upward revisions treated as one-off; memo s.6")
     scalar("adj_lo", "FY2026 guidance: adjusted EBITDA margin, low", 0.1225, xl.FMT_PCT, "8-K 30 Jul 2026, Exhibit 99.1")
@@ -1066,7 +1069,8 @@ def build() -> Path:
         "fcff9": (f"={I['op9']}*(1-{I['tax']})+{I['da9']}-{I['gain9']}+{I['capex9']}+{I['proc9']}+{I['wc9']}",
                   xl.FMT_NUM),
         "mshare": (f"={I['m9']}/{I['r9']}", xl.FMT_PCT),
-        "gm26": (f"={I['gp9']}/{I['r9']}", "0.00%"),
+        "q4gm": (f"=(IS!{f25}{is_at['Gross profit']}-{I['gp9p']})/(IS!{f25}{rev}-{I['r9p']})", "0.00%"),
+        "gm26": (f"=({I['gp9']}+({I['rev26']}-{I['r9']})*{I['q4gm']})/{I['rev26']}", "0.00%"),
         "acq26": (f"=-{I['acq9']}", xl.FMT_NUM),
         "nt_mv": (f"=ODDFPRICE({I['val_date']},{I['nt_mat']},{I['nt_issue']},{I['nt_first']},{I['nt_cpn']},"
                   f"{I['kd']},100,2,0)/100*{I['nt_par']}", xl.FMT_NUM),
@@ -1151,6 +1155,11 @@ def check(path: Path) -> None:
                  NOTES["issue"].date(), NOTES["first"].date(), NOTES["maturity"].date(), NOTES["coupon"])
     assert abs(xl_ytm - py_ytm) < 1e-5, f"ODDFYIELD {xl_ytm} vs Python {py_ytm}"
     print(f"6.375% notes yield: Excel {xl_ytm:.4%}, Python {py_ytm:.4%}")
+    sens = wb["Sens"]
+    s_check = next(sens[f"B{r}"].value for r in range(1, sens.max_row + 1)
+                   if str(sens[f"A{r}"].value).startswith("Check: centre"))
+    assert s_check == 0, f"sensitivity tables don't match the DCF ({s_check})"
+    print("Sens check (table centres = DCF values): 0")
     d_check = wb["DCF"]["B3"].value
     assert d_check in ("pending", 0), f"implied growth does not match the long-run growth input ({d_check})"
     print(f"DCF check (Gordon value implies the long-run growth input): {d_check}")
@@ -1195,6 +1204,15 @@ def write_sens(path: Path, res: dict) -> None:
     put(row + 1, 2, f"=Inputs!B{inp['Share price (USD)']}", "0.00")
     row += 1
 
+    head("Scenarios (Inputs: scenario switch)", ["Value per share", "vs price"])
+    for label, vps in (("Downside: no Construction growth in FY2027E, gross margin 14.5%", res["scen"][2]),
+                       ("Base", f"=B4"),
+                       ("Upside: gross margin implied by FY2026 guidance", res["scen"][3])):
+        ws.cell(row=row, column=1, value=label).font = xl.BASE
+        put(row, 2, vps, "0.00")
+        put(row, 3, f"=B{row}/$B$5-1", "0.0%")
+        row += 1
+
     head("Reverse DCF: one driver at a time, everything else at base", ["Base", "Implied by price"])
     for label, base, implied, fmt in (
             ("Gross margin from FY2027E", f"=Inputs!B{inp['Gross margin from FY2027E, base']}", res["gm"], "0.0%"),
@@ -1234,7 +1252,58 @@ def write_sens(path: Path, res: dict) -> None:
             put(row, c, v, fmt)
         row += 1
     ws.cell(row=row, column=1, value="  Materials = 23.4% of segment operating income (FY2022-25 average); memo s.12").font = xl.NOTE
-    ws.print_area = f"A1:G{row}"
+    row += 1
+
+    # Two-way tables, live formulas: only discounting and the terminal value depend on WACC, g or the
+    # multiple, so each cell rebuilds value per share from the DCF rows instead of using a data table.
+    d = lambda k, col="B": f"DCF!${col}${dcf[k]}"
+    fc, tm = f"DCF!$B${dcf['FCFF']}:$F${dcf['FCFF']}", f"DCF!$B${dcf['Years to mid-period']}:$F${dcf['Years to mid-period']}"
+    ronic_ref = f"Inputs!$B${inp[ronic]}"
+    nopat30 = f"Sched!$K${sch['NOPAT']}"
+    bridge = f"({d('Equity value')}-{d('Enterprise value')})"
+    pv = lambda w: f"SUMPRODUCT({fc},(1+{w})^-{tm})"
+
+    def grid(title, col_label, col_vals, col_fmt, tv):
+        nonlocal row
+        row += 1
+        xl.header(ws, row, title, 7)
+        row += 1
+        ws.cell(row=row, column=1, value=f"Rows: WACC. Columns: {col_label}.").font = xl.NOTE
+        for i, v in enumerate(col_vals):
+            c = ws.cell(row=row, column=3 + i, value=v)
+            c.font, c.number_format = (xl.INPUT if not str(v).startswith("=") else xl.BOLD), col_fmt
+        head_row = row
+        row += 1
+        first = row
+        for k in (-2, -1, 0, 1, 2):
+            w = ws.cell(row=row, column=2, value=f"={d('WACC')}+{k}*$B${step_row}")
+            w.font, w.number_format = xl.BOLD, "0.00%"
+            for i in range(len(col_vals)):
+                col = get_column_letter(3 + i)
+                put(row, 3 + i, f"=({pv(f'$B{row}')}+{tv(f'$B{row}', f'{col}${head_row}')}+{bridge})/{d('Diluted shares (m)')}",
+                    "0.00")
+            row += 1
+        return first + 2  # centre row
+
+    row += 1
+    ws.cell(row=row, column=1, value="Step in WACC and long-run growth").font = xl.BASE
+    xl.put_input(ws, f"B{row}", 0.005, "0.00%")
+    step_row = row
+    row += 1
+    g_ref = f"Inputs!$B${inp['Long-run growth (FY2030E and terminal)']}"
+    gordon = lambda w, g: f"{nopat30}*(1+{g})*(1-{g}/{ronic_ref})/({w}-{g})*(1+{w})^-DCF!$F${dcf['Years to mid-period']}"
+    c_g = grid("Value per share: WACC x long-run growth (Gordon)", "long-run growth (must stay below the 4.98% risk-free rate)",
+               [f"={g_ref}-2*$B${step_row}", f"={g_ref}-$B${step_row}", f"={g_ref}", f"={g_ref}+$B${step_row}"], "0.0%", gordon)
+    exit_tv = lambda w, m: (f"({m}*{d('FY2030E EBITDA')}-{d('FY2030E lease liabilities')})"
+                            f"*(1+{w})^-DCF!$F${dcf['Years to end of FY2030E']}")
+    c_x = grid("Value per share: WACC x exit multiple (EV/EBITDA on FY2030E)", "exit multiple; last column is Damodaran's industry multiple",
+               [6, 8, 10, 12, f"={d('EV/EBITDA, value-weighted')}"], "0.0x", exit_tv)
+    row += 1
+    ws.cell(row=row, column=1, value="Check: centre of each table - DCF value per share (0 = OK)").font = xl.BOLD
+    xl.put_formula(ws, f"B{row}", f"=ROUND(E{c_g}-{d('Value per share (USD)')},6)+ROUND(G{c_x}-{d('Value per share (USD)', 'C')},6)", "0.000000")
+    ws.column_dimensions["G"].width = 13
+    ws.column_dimensions["H"].width = 3
+    ws.print_area = f"A1:H{row}"
     ws.page_setup.fitToHeight = 1
     wb.save(path)
 

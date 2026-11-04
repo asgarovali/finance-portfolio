@@ -2,7 +2,7 @@
 
 Working document for the forecast. Each assumption gets a source, a reason and a note on what happens if it's wrong. Numbers in the history tables come from `outputs/tables/history_ratios.csv` and `history_segments.csv`, built by `src/analysis/history.py`.
 
-Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026) and updated for the Q3 2026 results (10-Q filed 29 Oct). The FY2027 growth anchor on backlog (section 5) now uses CAP at 30 Sep 2026. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Sections 9 (cost of capital) and 10 (DCF) are built with all valuation-date inputs (29 Oct 2026). The first results are at the end of section 10; the interpretation is still open.
+Status: sections 1 to 7 agreed (from my own views, 22 Oct 2026) and updated for the Q3 2026 results (10-Q filed 29 Oct). The FY2027 growth anchor on backlog (section 5) now uses CAP at 30 Sep 2026. The smaller-lines rules (section 6) are agreed and built in. Section 8 agreed, including the terminal RONIC (9.7%) and the sales-to-capital ratio excluding goodwill (3.87). Sections 9 (cost of capital) and 10 (DCF) are built with all valuation-date inputs (29 Oct 2026). Decisions of 4 Nov: base gross margin 15.5% from FY2027E, a seasonal Q4 in FY2026E, no Materials RONIC premium, management's 2029 targets as scenarios only (sections 6 and 12). Results and my interpretation are in section 11.
 
 ## 1. Valuation date and balance sheet
 
@@ -151,11 +151,11 @@ For Construction alone the range is 15.0% to 15.5% (reported 16.7%). So the norm
 - Materials gross margin fell to 15.9% in 9M 2026 (20.6% in 9M 2025), below Construction's 16.7%. Granite puts this down to energy surcharges offsetting higher diesel costs.
 - Q3 alone was 19.0%. That's the seasonal peak, so 9M is a better basis than the quarter.
 
-<!-- ALI: keep 15.0% as the base, or move it up towards the 9M 2026 range (for example 15.25-15.5%)? Each 0.5 point of gross margin from FY2027E is worth about USD 7 per share in the Gordon value (section 10). -->
+**Decision (4 Nov): 15.5% from FY2027E.** Revisions are a normal part of contracting, so I only remove the net effect. Removing net revisions gives 15.37% for FY2025 and 15.59% for 9M 2026, 15.47% for the two together, which I round to 15.5%. The downside case stays at 14.5% (all FY2025 upward revisions treated as one-off).
 
 | Case | Gross margin from FY2027E |
 |---|---|
-| Base | **15.0%**, the midpoint of the 14.6-15.4% range above |
+| Base | **15.5%**, net revisions removed, FY2025 and 9M 2026 together (decided 4 Nov; 15.0% until then) |
 | Downside | 14.5%: all FY2025 upward revisions treated as one-off. Combined with the reauthorisation gap in section 5 |
 | Upside | about 17.0%: management's FY2026 guidance, translated as below |
 
@@ -165,11 +165,11 @@ FY2026E uses the 9M actual margin once it's out (see the note on interim values 
 
 **Upside: management guidance.** Guidance is for adjusted EBITDA margin (12.25-13.25% for FY2026), not gross margin, so it needs translating. Using Granite's own definition (net income after the JV partners' share, plus interest, tax, D&A, stock-based compensation and "other costs, net"), I rebuilt FY2025 adjusted EBITDA from the filed lines at 11.9% of revenue, against a 16.1% gross margin, a gap of 4.2 points. For H1 2026 the same rebuild gives 10.1%, against Granite's reported 10.3%, so the definition matches. Adding the 4.2-point gap to the 12.75% guidance midpoint gives an upside gross margin of about 17.0%. This is approximate: forecast SG&A (8.75%) is lower than FY2025's 9.2%, so guidance could be met with a slightly lower gross margin. Adjusted EBITDA starts from net income after the JV partners' share, so it needs interest and NCI, which come with the debt schedule after Q3. Then I'll add an adjusted EBITDA row and check the upside against guidance directly.
 
-**The gap to guidance that remains.** On the same translation, the base case's 15.0% gross margin gives an adjusted EBITDA margin of roughly 10.8%, still 1.5-2.5 points below FY2026 guidance. I keep that gap on purpose, because of Granite's forecasting history. The 2017-2019 restatement came from project forecasts that were too optimistic. FY2025 and H1 2026 margins were helped by claim settlements, which management itself calls out. Until margins without the claim benefits show up in the reported numbers, I don't take guidance as the central case.
+**The gap to guidance that remains.** On the same translation, the base case's 15.5% gross margin gives an adjusted EBITDA margin of about 11.8% from FY2027E, 0.5-1.5 points below FY2026 guidance. I keep that gap on purpose, because of Granite's forecasting history. The 2017-2019 restatement came from project forecasts that were too optimistic. FY2025 and H1 2026 margins were helped by claim settlements, which management itself calls out. Until margins without the claim benefits show up in the reported numbers, I don't take guidance as the central case.
 
 Segment margins follow from the total, with Materials kept above Construction as in every year since FY2021 except FY2024. The exact segment margins are set after Q3.
 
-**FY2026E uses 9M 2026 actuals:** gross margin 16.55% and Materials share 16.6% (until 29 Oct the H1 figures, 14.7% and 16.7%, were placeholders). Margins are seasonal: paving and highway work is concentrated in the warmer months. FY2025 was 16.1% for the full year against 16.7% for 9M 2025, so a Q4 below the 9M average is normal. 9M may slightly overstate FY2026E.
+**FY2026E: 9M 2026 actuals plus a seasonal Q4 (decided 4 Nov).** Margins are seasonal: paving and highway work is concentrated in the warmer months. Q4 2025 gross margin was 14.4% (FY2025 less 9M 2025), against 16.7% for 9M 2025. FY2026E takes the 9M 2026 gross profit and adds Q4 at the Q4 2025 margin. That gives 16.05% for the year, not the 16.55% you'd get by applying the 9M margin to Q4 as well. This is the same seasonal logic as the Q4 cash flow stub in section 10. Materials share is the 9M 2026 actual, 16.6%.
 
 **SG&A: 8.75% of revenue in FY2026E, the top of guidance** (8.25% to 8.75%, including about USD 48m of stock-based compensation). Much of SG&A is fixed: offices, management, systems. If revenue comes in at the low end of guidance, as I assume, the same cost base is a larger share of it, so the ratio sits at the high end. That's consistent with the revenue choice, not just extra caution. After FY2026 SG&A is held at 8.75% of revenue.
 
@@ -246,14 +246,14 @@ The resulting path in the base case, with FY2027E growth anchored on backlog (se
 |---|---|---|---|---|---|---|
 | Increase in revenue | | 488 | 434 | 359 | 267 | |
 | Net investment (÷ 3.87) | | 126 | 112 | 93 | 69 | |
-| of which increase in working capital | 44 | 3 | 14 | 16 | 18 | 0 |
-| of which net capex | | 123 | 98 | 77 | 51 | |
+| of which increase in working capital | 42 | 8 | 13 | 16 | 17 | 0 |
+| of which net capex | | 119 | 99 | 77 | 52 | |
 | Depreciation | 180 | 197 | 211 | 223 | 232 | |
 | Book value of equipment sold | 15 | 16 | 17 | 18 | 19 | |
-| Capex | 150 | 336 | 327 | 318 | 302 | 402 |
-| Capex % revenue | 2.8% | 5.7% | 5.2% | 4.8% | 4.3% | 5.6% |
-| ROIC on opening capital | 15.4% | 12.1% | 12.4% | 12.5% | 12.5% | |
-| FCFF | 316 | 138 | 171 | 205 | 241 | 181 |
+| Capex | 150 | 331 | 328 | 319 | 303 | 414 |
+| Capex % revenue | 2.8% | 5.6% | 5.2% | 4.8% | 4.4% | 5.7% |
+| ROIC on opening capital | 14.3% | 13.2% | 13.5% | 13.6% | 13.7% | |
+| FCFF | 298 | 160 | 195 | 230 | 267 | 197 |
 
 FCFF includes the smaller operating lines from section 6 (other costs, gains and proceeds from equipment sales). Interest, affiliates and other income are outside FCFF. Historical capex is gross too: FY2021-25 proceeds from equipment sales were shown separately in investing cash flow, as here.
 
@@ -273,15 +273,15 @@ Capex in the terminal year therefore comes from this formula, not from a fixed p
 
 **Base case (agreed 22 Oct): RONIC = 9.7%, Granite's FY2022-25 average ROIC**, entered as a formula over the history (7.0%, 5.6%, 12.6% and 13.5%; `history_ratios.csv`). My first proposal was to use the model's own terminal ROIC, on the expectation that it would land near 9.7%. That expectation was wrong. With capex at 3.5% of revenue the model's ROIC climbed to 15.6%, because capital didn't grow with revenue. So the historical average is now an input in its own right.
 
-With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.6% of revenue. That is a step up from 4.3% in FY2030E.
+With RONIC at 9.7% and g at 4%, the terminal reinvestment rate is 41% of NOPAT, and terminal capex is about 5.7% of revenue. That is a step up from 4.4% in FY2030E.
 
-**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 181m, against USD 241m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
-- In FY2027E-30E, each extra dollar of revenue needs 1/3.87 of a dollar of capital and earns the NOPAT margin of about 4.3%. That's a return on new capital of about 16-17% (4.3% × 3.87).
-- In the terminal year, new capital earns RONIC, 9.7%. To grow 4% a year at 9.7%, Granite has to reinvest 41% of NOPAT, against 19% in FY2030E.
+**Why terminal FCFF is below FY2030E.** Terminal FCFF is USD 197m, against USD 267m in FY2030E, even though NOPAT is 4% higher. The difference is the return on new capital:
+- In FY2027E-30E, each extra dollar of revenue needs 1/3.87 of a dollar of capital and earns the NOPAT margin of about 4.6%. That's a return on new capital of about 18% (4.6% × 3.87).
+- In the terminal year, new capital earns RONIC, 9.7%. To grow 4% a year at 9.7%, Granite has to reinvest 41% of NOPAT, against 17% in FY2030E.
 
-I think the step down is right. Returns well above the cost of capital attract competition: other contractors bid more aggressively for the same public work, and margins on new contracts get pushed down. Over a long horizon, excess returns on new investment shrink, so the perpetuity shouldn't assume today's 16-17% on every new dollar. It is still one of the biggest single drivers of the value, so the RONIC sensitivities below matter.
+I think the step down is right. Returns well above the cost of capital attract competition: other contractors bid more aggressively for the same public work, and margins on new contracts get pushed down. Over a long horizon, excess returns on new investment shrink, so the perpetuity shouldn't assume today's 18% on every new dollar. It is still one of the biggest single drivers of the value, so the RONIC sensitivities below matter.
 
-During FY2027E-30E the model's ROIC on opening capital runs at about 12-13% (table above), above the 9.7% assumed for new capital in the terminal year. That's deliberate: by then the returns on today's business shouldn't be assumed to carry over to every new dollar invested.
+During FY2027E-30E the model's ROIC on opening capital runs at about 13-14% (table above), above the 9.7% assumed for new capital in the terminal year. That's deliberate: by then the returns on today's business shouldn't be assumed to carry over to every new dollar invested.
 
 Sensitivities:
 - **RONIC = WACC (conservative):** growth creates no value.
@@ -365,11 +365,11 @@ The calculation is on the DCF sheet. All inputs are from the Q3 10-Q and the val
 - \+ proceeds from equipment sales 16.6m;
 - − the trade working capital build of 22.1m (receivables, contract assets, inventories, payables and accrued liabilities, from the cash flow statement).
 
-That gives USD 280.5m. SBC stays a cost, and interest and acquisitions are left out. FY2026E FCFF is USD 316.4m, so Q4 2026E is USD 35.9m. That's low against the cash flow pattern above, because of what the full-year assumptions leave for Q4:
-- operating income of USD 71m (FY2026E 391m − 9M 320m);
+That gives USD 280.5m. SBC stays a cost, and interest and acquisitions are left out. FY2026E FCFF is USD 298.2m, so Q4 2026E is USD 17.8m. That's low against the cash flow pattern above, because of what the full-year assumptions leave for Q4:
+- operating income of USD 44m (FY2026E 364m − 9M 320m, with Q4 at the Q4 2025 gross margin);
 - capex of USD 60m (the USD 150m guidance midpoint − 89.9m spent);
-- equipment-sale gains of USD 22m, taken out as non-cash;
-- a further USD 22m working capital build.
+- equipment-sale gains of USD 21m, taken out as non-cash;
+- a further USD 19m working capital build.
 
 If Q4 capex comes in lower or working capital releases at year-end, as it often has, Q4 FCFF will be higher. At about 1% of EV, it doesn't change the result.
 
@@ -406,41 +406,49 @@ A small timing gap remains: balances are at 30 Sep and discounting starts at the
 
 Sensitivity tables (WACC × g and WACC × exit multiple) come next, on a separate sheet.
 
-## 11. First results (29 Oct 2026)
+## 11. Results (29 Oct 2026 valuation date; base case as decided on 4 Nov)
 
 | | Gordon growth (main) | Exit multiple (cross-check) |
 |---|---|---|
-| PV of FCFF, Q4 2026E-FY2030E | 654 | 654 |
-| PV of terminal value | 2,678 | 7,481 |
-| Enterprise value | 3,331 | 8,135 |
+| PV of FCFF, Q4 2026E to FY2030E | 716 | 716 |
+| PV of terminal value | 2,913 | 7,897 |
+| Enterprise value | 3,629 | 8,612 |
 | Terminal value % of EV | 80% | 92% |
-| + cash and securities, + affiliates, − debt, − NCI | -1,003 | -1,003 |
-| Equity value | 2,328 | 7,131 |
-| Value per share (USD) | **52.07** | 159.52 |
-| vs share price USD 121.69 | **-57%** | +31% |
+| + cash and securities, + affiliates, − debt, − NCI | -1,004 | -1,004 |
+| Equity value | 2,625 | 7,609 |
+| Value per share (USD) | **58.72** | 170.20 |
+| vs share price USD 121.69 | **-52%** | +40% |
 
-WACC 8.93%; terminal growth 4%; terminal RONIC 9.7%.
+WACC 8.93%; terminal growth 4%; terminal RONIC 9.7%; gross margin 15.5% from FY2027E.
 
 Cross-check between the methods:
-- The Gordon value implies 6.4x FY2030E EBITDA, leases added back. Damodaran's industry multiple is 17.1x.
+- The Gordon value implies 6.5x FY2030E EBITDA, leases added back. Damodaran's industry multiple is 17.1x.
 - The exit multiple implies perpetual growth of 8.6%, on the model's own reinvestment rule.
-- The market price gives Granite an enterprise value of USD 6,444m, about 10.9x FY2026E EBITDA of USD 593m. The Gordon value is 5.6x.
 
-How much a few single changes move the Gordon value per share (each change on its own, everything else at base; scratch runs, not in the model):
+Scenarios (Gordon value per share, USD; Sens sheet and section 12):
 
-| Change | Value per share (USD) |
-|---|---|
-| Base | 52.07 |
-| Gross margin from FY2027E 15.5% (base 15.0%) | 59.13 |
-| Gross margin from FY2027E 16.5% | 73.25 |
-| Upside case: gross margin implied by FY2026 guidance (about 17%) | 79.78 |
-| Terminal RONIC 13% (base 9.7%) | 62.88 |
+| Case | Value per share | vs price |
+|---|---|---|
+| Downside: no Construction growth in FY2027E, gross margin 14.5% | 43.28 | -64% |
+| **Base** | **58.72** | **-52%** |
+| Upside: gross margin implied by FY2026 guidance (about 17%) | 79.37 | -35% |
+| Management 2029 targets, low end (10% growth, 14% adj. EBITDA) | 94.55 | -22% |
+| Management 2029 targets, midpoint (11%, 15%) | 111.38 | -8% |
+| Management 2029 targets, high end (12%, 16%) | 129.02 | +6% |
 
-None of these single changes closes the gap to the share price. The gap comes from the combination of: growth fading to 4% by FY2030 (Granite's 2029 target is 10-12% organic growth a year); an EBITDA margin of about 9.2% from FY2027E (2029 target: 14-16% adjusted EBITDA, which also excludes SBC); and terminal returns on new capital falling to 9.7%. The checks all pass (balance sheet and cash flow history, working capital, g < risk-free rate, Gordon value implies 4.0%), so the gap is about assumptions, not arithmetic.
+The checks all pass (balance sheet and cash flow history, working capital, g < risk-free rate, Gordon value implies 4.0%), so the gap to the price is about assumptions, not arithmetic.
 
-<!-- ALI: interpretation. What explains the gap between the DCF value and the share price, and does any base-case assumption change in light of the Q3 results and the 2029 targets? -->
+**Sensitivity tables (Sens sheet, live formulas).**
 
-## 12. What the share price implies (4 Nov 2026; analysis only, base case unchanged)
+At the base WACC (8.93%), long-run growth from 3.0% to 4.5% moves the value only from USD 56.68 to 60.00. The terminal RONIC (9.7%) is close to WACC, so faster growth needs almost as much extra reinvestment as it adds in profit. With WACC 1 point higher, growth adds almost nothing at all (USD 45.48 to 45.66). That's the main reason the Gordon value is so far below the exit-multiple value: a 17x multiple only makes sense if new investment earns well above the cost of capital for a long time.
+
+WACC matters more than growth: 7.93% gives USD 78.43 and 9.93% gives USD 45.64, both at 4% growth.
+
+**Interpretation.** My base case gives about $59 per share, well below the $121.69 price on 29 Oct. The reverse DCF shows why: the price is roughly what you get if Granite hits the middle of its 2029 targets (about 11% organic growth and a 15% adjusted EBITDA margin) and then slows to 4%. That needs a gross margin of about 18-19%, above anything Granite reported in FY2021-25 (10.4-16.1%). So the gap is mostly a question of whether management delivers its margin targets. The record backlog supports the growth part. Granite's history of optimistic project forecasts, and the open question on federal highway funding, make me cautious about the margin part. I read the current price as leaving little room for error rather than as clearly wrong.
+
+## 12. What the share price implies (4 Nov 2026)
+
+This analysis was run on the earlier base case (15.0% gross margin, FY2026E at the 9M margin), and the numbers below are from that run. The Sens sheet always shows the current values: with the 4 Nov decisions, the price implies a gross margin of 20.0% from FY2027E, and the management midpoint case gives USD 111.38.
 
 The numbers are on the Sens sheet. The build produces them by changing one thing at a time in Excel and using Goal Seek on the Gordon value per share (`src/model/reverse_dcf.py`). The base case itself isn't touched.
 
@@ -518,5 +526,9 @@ With Construction at 9.7% and Materials at 23.4% of segment operating income (FY
 
 Materials is under a quarter of profit, and terminal reinvestment is only part of the value.
 
-<!-- ALI: decisions after this analysis: base gross margin (15.0% or the 15.5% net-only normalisation), and whether the Materials RONIC or anything from the 2029 targets goes into the base case. Then the interpretation in section 11. -->
+**Decisions (4 Nov).**
+- **Base gross margin 15.5%** from FY2027E, removing only the net revisions (section 6).
+- **No Materials RONIC premium.** The terminal RONIC stays 9.7%, because Granite's own Materials returns average about 9%.
+- **Management's 2029 targets stay as scenarios**, not in the base case.
+- **FY2026E Q4 uses the Q4 2025 gross margin pattern** instead of the 9M margin, consistent with the seasonal stub (section 6).
 

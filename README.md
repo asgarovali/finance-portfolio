@@ -1,6 +1,6 @@
 # Finance Portfolio
 
-<!-- ALI: two or three sentences about you and what this portfolio is for -->
+I'm Ali Asgarov, a finance student in Baku. For about three years I have worked in finance at a construction contractor, where I am now a project finance analyst and prepare progress payment claims. I use this repository to practise valuation and econometrics on real, public data. Every number is sourced, and every model can be rebuilt from the scripts.
 
 Each project is a separate folder with its own README, data sources (`data/SOURCES.md`), code and outputs. All data comes from public sources listed in each project. The construction project-finance model uses a fictional, illustrative case.
 
@@ -8,7 +8,7 @@ Each project is a separate folder with its own README, data sources (`data/SOURC
 
 | # | Project | Skills | Tools | Status |
 |---|---------|--------|-------|--------|
-| 1 | Three-statement model + DCF | Financial modelling, valuation | Excel, Python | planned |
+| 1 | [Three-statement model + DCF](01-three-statement-dcf/) (Granite Construction) | Financial modelling, valuation | Excel, Python | draft |
 | 2 | Trading comparables | Relative valuation | Excel, Python | planned |
 | 3 | Equity research report | Equity research writing | PDF | planned |
 | 4 | LBO model | Leveraged finance | Excel | planned |
