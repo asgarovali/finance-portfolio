@@ -8,7 +8,7 @@ Each project is a separate folder with its own README, data sources (`data/SOURC
 
 | # | Project | Skills | Tools | Status |
 |---|---------|--------|-------|--------|
-| 1 | [Three-statement model + DCF](01-three-statement-dcf/) (Granite Construction) | Financial modelling, valuation | Excel, Python | draft |
+| 1 | [Three-statement model + DCF](01-three-statement-dcf/) (Granite Construction) | Financial modelling, valuation | Excel, Python | complete |
 | 2 | Trading comparables | Relative valuation | Excel, Python | planned |
 | 3 | Equity research report | Equity research writing | PDF | planned |
 | 4 | LBO model | Leveraged finance | Excel | planned |

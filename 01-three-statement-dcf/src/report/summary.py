@@ -112,7 +112,7 @@ def build() -> Path:
                   f"EBITDA; the industry's 17.1x would mean growing 8.6% a year forever.", BODY),
         Image(str(ROOT / "outputs" / "figures" / "revenue_margins.png"), width=150 * mm, height=112 * mm),
         Paragraph("Interpretation", H2),
-        Paragraph("My base case gives about $59 per share, well below the $121.69 price on 29 Oct. The reverse DCF shows why: "
+        Paragraph("My base case gives about USD 59 per share, well below the USD 121.69 price on 29 Oct. The reverse DCF shows why: "
                   "the price is roughly what you get if Granite hits the middle of its 2029 targets (about 11% organic growth "
                   "and a 15% adjusted EBITDA margin) and then slows to 4%. That needs a gross margin of about 18-19%, above "
                   "anything Granite reported in FY2021-25 (10.4-16.1%). So the gap is mostly a question of whether management "
@@ -122,9 +122,9 @@ def build() -> Path:
         Paragraph("Limitations", H2),
         Paragraph("Five years of history, all inside the federal infrastructure ramp-up. Reported margins depend on project cost "
                   "estimates, and Granite restated 2017-2019 for exactly that. The credit spread comes from the 30 Sep fair value "
-                  "of the 6.375% notes, not a trade on the valuation date. Construction and Materials share one margin path. The "
-                  "forecast is built as operating schedules driving FCFF; forecast balance sheet and cash flow statements are "
-                  "not built yet.", BODY),
+                  "of the 6.375% notes, not a trade on the valuation date. Construction and Materials share one margin path. "
+                  "Financing in the forecast statements is simplified (SOFR flat, maturities repaid from cash, no buybacks); "
+                  "it affects EPS, not the DCF.", BODY),
         Spacer(1, 4),
         Paragraph("Sources: Granite 10-K and 10-Q filings and 8-Ks (SEC EDGAR, inline XBRL); Damodaran datasets, Jan and Oct 2026 "
                   "(betas, implied ERP, EV/Sales, EV/EBITDA, return on capital, synthetic ratings); FRED (DGS10, GDPC1MDLR, "
