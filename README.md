@@ -2,7 +2,7 @@
 
 I'm Ali Asgarov, a finance student in Baku. For about three years I have worked in finance at a construction contractor, where I am now a project finance analyst and prepare progress payment claims. I use this repository to practise valuation and econometrics on real, public data. Every number is sourced, and every model can be rebuilt from the scripts.
 
-Each project is a separate folder with its own README, data sources (`data/SOURCES.md`), code and outputs. All data comes from public sources listed in each project. The construction project-finance model uses a fictional, illustrative case.
+Each project has its own page with the question, the data, the method and the results. All data comes from public sources listed in each project. The construction project-finance model uses a fictional, illustrative case.
 
 ## Projects
 
@@ -30,19 +30,6 @@ Each project is a separate folder with its own README, data sources (`data/SOURC
 | 20 | Yield curve and bond analytics | Nelson-Siegel-Svensson, probit | Python | planned |
 | 21 | Macro and markets dashboard | Data visualisation | Python, Plotly | planned |
 
-## Setup
+To run the models yourself, see SETUP.md.
 
-Python 3.11 or newer.
-
-```
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-pip install -e .
-```
-
-Copy `.env.example` to `.env` and fill in a free FRED API key and a contact email for the SEC User-Agent. Each project then runs with `python -m src.run` from its own folder.
-
-## Licence
-
-Code is MIT-licensed (see `LICENSE`). Data belongs to the original providers; see each project's `data/SOURCES.md` for their terms.
+Code is MIT-licensed; data belongs to the original providers (see each project's data/SOURCES.md).
