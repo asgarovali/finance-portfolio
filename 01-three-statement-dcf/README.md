@@ -70,13 +70,4 @@ My base case gives about USD 59 per share, well below the USD 121.69 price on 29
 - Things left out on purpose: Amortisation of the 2026 acquisitions' intangibles (no useful lives disclosed yet; tax effect only). Future acquisitions, which Granite plans but which cost money.
 - Next: compare the valuation with the trading comparables in project 2.
 
-## How to reproduce
 
-```
-cd 01-three-statement-dcf
-python -m src.run
-```
-
-This downloads the filings and market data (needs `SEC_EMAIL` and `FRED_API_KEY` in the repo's `.env`), rebuilds the statements in `data/processed/`, prints the reconciliation, writes `model/granite_model.xlsx` and draws the charts in `outputs/figures/`. The model step opens the workbook in Excel to recalculate it, run the checks and solve the reverse DCF with Goal Seek, so it needs Excel on Windows. Downloads are cached; add `--refresh` to `python -m src.data.download_sec` or `download_market` to fetch them again.
-
-A two-page summary is in `report/granite_dcf_summary.pdf`.
